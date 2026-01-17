@@ -38,9 +38,12 @@ public final class Constants {
     public static final int kClimbInLimitSwitch = 1;
     public static final int kClimbOutLimitSwitch = 2;
   }
-  
+
   public static class HopperConstants {
     public static final double singulatorSpeed = 0.5;
+  }
+  public static class Vision {
+    public static final double kDistanceToCloseToDrive = 0.5;
   }
 }
 
