@@ -1,0 +1,22 @@
+{
+  "Clients": {
+    "open": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "4917"
+  },
+  "Server": {
+    "Publishers": {
+      "open": true
+    },
+    "Subscribers": {
+      "open": true
+    }
+  },
+  "transitory": {
+    "DriveState": {
+      "open": true
+    }
+  }
+}
