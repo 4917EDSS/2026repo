@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.security.PublicKey;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -26,9 +28,19 @@ public final class Constants {
     public static final int kShooterMotor = 2;
     public static final int kHoodMotor = 3;
     public static final int kClimbMotor = 4;
-
-    public static final int kIntakeMotor = 5;
-    public static final int kIntakeArmMotor = 6;
+    public static final int kSingulatorMotor = 5;
+    public static final int kIntakeMotor = 6;
+    public static final int kIntakeArmMotor = 7;
 
   }
+
+  public static class DioIds {
+    public static final int kClimbInLimitSwitch = 1;
+    public static final int kClimbOutLimitSwitch = 2;
+  }
+  
+  public static class HopperConstants {
+    public static final double singulatorSpeed = 0.5;
+  }
 }
+
