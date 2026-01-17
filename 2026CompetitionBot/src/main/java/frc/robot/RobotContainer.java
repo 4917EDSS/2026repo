@@ -12,69 +12,95 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSub;
+import static edu.wpi.first.units.Units.*;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ClimbSub;
+import frc.robot.subsystems.DrivetrainSub;
+import frc.robot.subsystems.HopperSub;
+import frc.robot.subsystems.IntakeSub;
+import frc.robot.subsystems.ShooterSub;
+import frc.robot.subsystems.VisionSub;
+
 public class RobotContainer {
   enum defendFirst {
     YES, NO, UNKNOWN
   }
 
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final IntakeSub m_IntakeSub = new IntakeSub();
+  /* Setting up bindings for necessary control of the swerve drive platform */
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
   private defendFirst m_amIDefendingFirst = defendFirst.UNKNOWN;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  private final CommandXboxController m_diverContoller =
+      new CommandXboxController(Constants.OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_operatorContoller =
+      new CommandXboxController(Constants.OperatorConstants.kOperatorControllerPort);
+  public final ClimbSub m_climbSub = new ClimbSub();
+  public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
+  public final HopperSub m_hopperSub = new HopperSub();
+  public final IntakeSub m_intakeSub = new IntakeSub();
+  public final ShooterSub m_shooterSub = new ShooterSub();
+  public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
+
+  public static boolean disableShuffleboardPrint = false;
+  private SendableChooser<Command> m_Chooser = new SendableChooser<>();
+
   public RobotContainer() {
-    // Configure the trigger bindings
     configureBindings();
+    registerNameCommand();
+    autoChooserSetup();
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+
+  private void registerNameCommand() {
+
+  }
+  /*
+   * Use this method to define your trigger->command mappings.
    */
+
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
-    m_driverController.povDown()
-        .onTrue(new InstantCommand(() -> m_IntakeSub.intake()));
-    m_driverController.leftBumper()
-        .onTrue(new InstantCommand(() -> m_IntakeSub.pullArmUp()))
-        .onFalse(new InstantCommand(() -> m_IntakeSub.pullArmDown()));
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+
+    // Note that X is defined as forward according to WPILib convention,
+    // and Y is defined as to the left according to WPILib convention.
+    m_drivetrainSub.setDefaultCommand(
+        // Drivetrain will execute this command periodically
+        m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-m_diverContoller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+            .withVelocityY(-m_diverContoller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(-m_diverContoller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        ));
+
+
+    // Reset the field-centric heading on left bumper press.
+    m_diverContoller.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric));
+
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return m_Chooser.getSelected();
+  }
+  /*
+   * Create a list of auto period action choices+
+   */
+
+  void autoChooserSetup() {
+
+
   }
 
   public String amIDefendingFirst() {

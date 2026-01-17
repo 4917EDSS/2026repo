@@ -44,6 +44,15 @@ public class ClimbSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    //stop if the climb is moving and at the up limit
+    if(isAtOutLimit() && getPower() > 0) {
+      m_climbMotor.set(0.0);
+    }
+    //stop if the climb is at the bottom limit OR shoots below limit AND it is still moving
+    else if((isAtInLimit() || getPosition() <= 0.0) && (getPower() > 0)) {
+      setPower(0);
+    }
   }
 
   //returns if climb is at limit
@@ -93,6 +102,15 @@ public class ClimbSub extends SubsystemBase {
   public double getVelocity() {
     return m_climbMotor.getRotorVelocity().getValueAsDouble();
 
+  }
+
+  /**
+   * Returns current power between -1 and 1
+   * 
+   * @return power
+   */
+  public double getPower() {
+    return m_climbMotor.get();
   }
 
   /**

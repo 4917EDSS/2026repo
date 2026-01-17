@@ -1,0 +1,37 @@
+{
+  "Clients": {
+    "open": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "4917"
+  },
+  "Server": {
+    "Publishers": {
+      "open": true
+    },
+    "Subscribers": {
+      "open": true
+    }
+  },
+  "transitory": {
+    "DriveState": {
+      "Pose2d##v_/DriveState/Pose": {
+        "Rotation2d##v_rotation": {
+          "open": true
+        },
+        "Translation2d##v_translation": {
+          "open": true
+        },
+        "open": true
+      },
+      "open": true
+    },
+    "Pose": {
+      "double[]##v_/Pose/robotPose": {
+        "open": true
+      },
+      "open": true
+    }
+  }
+}
