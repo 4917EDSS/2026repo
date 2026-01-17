@@ -4,15 +4,18 @@
 
 package frc.robot;
 
+import java.util.Optional;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSub;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -21,6 +24,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  enum defendFirst {
+    YES, NO, UNKNOWN
+  }
+
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
@@ -28,6 +35,8 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final IntakeSub m_IntakeSub = new IntakeSub();
+
+  private defendFirst m_amIDefendingFirst = defendFirst.UNKNOWN;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -67,4 +76,70 @@ public class RobotContainer {
     // An example command will be run in autonomous
     return Autos.exampleAuto(m_exampleSubsystem);
   }
+
+  public String amIDefendingFirst() {
+    if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
+      processGameData();
+      if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
+        return "unknown";
+      }
+    }
+
+    if(m_amIDefendingFirst == defendFirst.YES) {
+      return "true";
+    } else {
+      return "false";
+    }
+  }
+
+  // public String canScoreNow() {
+  //   if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
+  //     processGameData();
+  //     if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
+  //       return "unknown";
+  //     }
+  //   }
+
+  //   if(){
+
+  //   }
+
+
+  public void processGameData() {
+    String data = DriverStation.getGameSpecificMessage();
+    String allianceColour = "";
+
+    Optional<Alliance> ally = DriverStation.getAlliance();
+    if(ally.isPresent()) {
+      if(ally.get() == Alliance.Red) {
+        allianceColour = "R";
+      }
+      if(ally.get() == Alliance.Blue) {
+        allianceColour = "B";
+      }
+    } else {
+      return;
+    }
+
+    if(data.length() > 0) {
+      if(data.charAt(0) == allianceColour.charAt(0)) {
+        m_amIDefendingFirst = defendFirst.YES;
+      } else {
+        m_amIDefendingFirst = defendFirst.NO;
+      }
+    } else {
+      m_amIDefendingFirst = defendFirst.UNKNOWN;
+    }
+  }
+
+
+  //canScoreNow
+  //chcek if enum is unknown (if unknown process)
+  //check if unknown again
+  //if not unknown check match timer
+  //find shift
+  //if shift matches with game data and if 
+
+  //130, 105, 80, 55
+
 }
