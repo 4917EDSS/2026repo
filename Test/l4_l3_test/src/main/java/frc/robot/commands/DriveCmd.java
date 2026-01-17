@@ -44,7 +44,7 @@ public class DriveCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    currentPoseArray = startingPoseArray = poseSubscriber.get();
+    currentPoseArray = poseSubscriber.get();
   }
 
   // Called once the command ends or is interrupted.
@@ -56,9 +56,16 @@ public class DriveCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(currentPoseArray[0]-startingPoseArray[0]<distanceToDrive*direction){
+    if(direction>0){
+      if(currentPoseArray[0]-startingPoseArray[0]>distanceToDrive){
       return true;
     }
+    } else {
+      if(currentPoseArray[0]-startingPoseArray[0]<distanceToDrive*direction){
+      return true;
+    }
+    }
+  
     return false;
   }
 }
