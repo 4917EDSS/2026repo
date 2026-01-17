@@ -4,21 +4,10 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
-import edu.wpi.first.networktables.DoubleSubscriber;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.GenericSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.networktables.StructSubscriber;
-import edu.wpi.first.networktables.StructTopic;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
-
 import frc.robot.subsystems.DrivetrainSub;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -33,10 +22,13 @@ public class DriveCmd extends Command {
   DoubleArraySubscriber poseSubscriber;
   double[] startingPoseArray;
   double[] currentPoseArray;
+  int direction;
 
   /** Creates a new driveCmd. */
-  public DriveCmd(DrivetrainSub drivetrainSub) {
+  public DriveCmd(DrivetrainSub drivetrainSub, double distanceToDrive, int direction) {
+    direction = this.direction;
     m_drivetrainSub = drivetrainSub;
+    distanceToDrive = this.distanceToDrive;
     addRequirements(m_drivetrainSub);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -46,8 +38,7 @@ public class DriveCmd extends Command {
   public void initialize() {
     poseSubscriber = table.getDoubleArrayTopic("robotPose").subscribe(null, null);
     startingPoseArray = poseSubscriber.get();
-    distanceToDrive = 15; //Subject to change
-    m_drivetrainSub.setControl(testDrive.withVelocityX(99999999).withVelocityY(0).withRotationalRate(0));
+    m_drivetrainSub.setControl(testDrive.withVelocityX(99999999*direction).withVelocityY(0).withRotationalRate(0));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -65,7 +56,7 @@ public class DriveCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(currentPoseArray[0]-startingPoseArray[0]<15){
+    if(currentPoseArray[0]-startingPoseArray[0]<distanceToDrive*direction){
       return true;
     }
     return false;

@@ -4,10 +4,6 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DrivetrainSub;
 
@@ -15,15 +11,16 @@ import frc.robot.subsystems.DrivetrainSub;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class DriveBackAndForthGrp extends SequentialCommandGroup {
-  private final SwerveRequest testDrive = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
   /** Creates a new DriveBackAndForthCmd. */
   public DriveBackAndForthGrp(DrivetrainSub drivetrainSub) {
     
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      //new RunCommand(drivetrainSub.setControl(testDrive), null)
+      new DriveCmd(drivetrainSub, 5.0, 1),
+      new DriveCmd(drivetrainSub, 5.0, -1),
+      new DriveCmd(drivetrainSub, 5.0, 1),
+      new DriveCmd(drivetrainSub, 5.0, -1)
     );
   }
 }
