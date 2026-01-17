@@ -46,6 +46,7 @@ public class DriveCmd extends Command {
   @Override
   public void execute() {
     currentPoseArray = poseSubscriber.get();
+    System.out.println(currentPoseArray);
   }
 
   // Called once the command ends or is interrupted.
@@ -59,6 +60,7 @@ public class DriveCmd extends Command {
   public boolean isFinished() {
     if(direction>0){
       if(currentPoseArray[0]-startingPoseArray[0]>distanceToDrive){
+        System.out.println("###############################################################################################################################");
       return true;
     }
     } else {
