@@ -13,8 +13,8 @@ import frc.robot.Constants;
 public class IntakeSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
   private boolean m_intakeison = false;
-  private final TalonFX m_IntakeMotor = new TalonFX(Constants.CanIds.kClimbMotor); // To be changed later
-  
+  private final TalonFX m_IntakeMotor = new TalonFX(Constants.CanIds.kIntakeMotor); // To be changed later
+    private final TalonFX m_IntakeArmMotor = new TalonFX(Constants.CanIds.kIntakeArmMotor);
   /** Creates a new IntakeSub. */
   public IntakeSub() {}
 
