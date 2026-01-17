@@ -1,0 +1,43 @@
+{
+  "java.jdt.ls.java.home": "C:\\Users\\Public\\wpilib\\2026\\jdk",
+  "extensions.autoUpdate": false,
+  "settingsSync.ignoredSettings": [
+    "extensions.autoUpdate",
+    "extensions.autoCheckUpdates",
+    "extensions.ignoreRecommendations",
+    "extensions.showRecommendationsOnlyOnDemand",
+    "update.mode",
+    "update.showReleaseNotes",
+    "java.completion.matchCase",
+    "workbench.secondarySideBar.defaultVisibility",
+    "terminal.integrated.env.windows"
+  ],
+  "extensions.autoCheckUpdates": false,
+  "extensions.ignoreRecommendations": true,
+  "extensions.showRecommendationsOnlyOnDemand": true,
+  "update.mode": "none",
+  "update.showReleaseNotes": false,
+  "java.completion.matchCase": "off",
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
+  "terminal.integrated.env.windows": {
+    "JAVA_HOME": "C:\\Users\\Public\\wpilib\\2026\\jdk",
+    "PATH": "C:\\Users\\Public\\wpilib\\2026\\jdk\\bin;${env:PATH}"
+  },
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "C:\\Users\\Public\\wpilib\\2026\\jdk",
+      "default": true
+    }
+  ],
+  "settingsSync.ignoredExtensions": [
+    "wpilibsuite.vscode-wpilib"
+  ],
+  "editor.tabSize": 2,
+  "editor.inlayHints.enabled": "offUnlessPressed",
+  "java.format.settings.profile": "Google4917Style",
+  "java.format.settings.url": "C:\\Users\\Public\\wpilib\\2026\\vscode\\data\\user-data\\User\\eclipse-java-google-4917-style.xml",
+  "editor.formatOnSave": true,
+  "files.hotExit": "off",
+  "editor.detectIndentation": false
+}
