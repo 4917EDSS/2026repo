@@ -23,8 +23,8 @@ public final class Constants {
     // This does not conflict with the roboRIO bus which can also use these IDs
     public static final int kDirectionMotor = 1;
     public static final int kShooterMotor = 2;
-    public static final int kHoodMotor = 2;
-
+    public static final int kHoodMotor = 3;
+    public static final int kClimbMotor = 4;
   
 
   }
