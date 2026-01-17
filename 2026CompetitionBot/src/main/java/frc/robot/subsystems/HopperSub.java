@@ -19,7 +19,6 @@ public class HopperSub extends SubsystemBase {
   //IMPORTANT: The term singulator refer to the mechanism in the hopper which forces balls into the shooter.
 
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kSingulatorMotor);
-  private final double singulatorSpeed = Constants.HopperConstants.singulatorSpeed;
   private Boolean singulatorMoving = false;
 
   /** Creates a new HopperSub. */
@@ -37,8 +36,8 @@ public class HopperSub extends SubsystemBase {
     talonFXConfigurator.apply(outputConfigs);
   }
 
-  public void runSingulator() {
-    m_singulatorMotor.set(singulatorSpeed);
+  public void runSingulator(double speed) {
+    m_singulatorMotor.set(speed);
     singulatorMoving = true;
   }
 

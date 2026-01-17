@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DrivetrainSub;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -36,7 +37,7 @@ public class DriveCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    poseSubscriber = table.getDoubleArrayTopic("robotPose").subscribe(null, null);
+    poseSubscriber = table.getDoubleArrayTopic("robotPose").subscribe(new double[3], PubSubOption.disableLocal(true));
     startingPoseArray = poseSubscriber.get();
     m_drivetrainSub.setControl(testDrive.withVelocityX(99999999*direction).withVelocityY(0).withRotationalRate(0));
   }
@@ -45,6 +46,7 @@ public class DriveCmd extends Command {
   @Override
   public void execute() {
     currentPoseArray = poseSubscriber.get();
+    System.out.println(currentPoseArray);
   }
 
   // Called once the command ends or is interrupted.
@@ -58,6 +60,7 @@ public class DriveCmd extends Command {
   public boolean isFinished() {
     if(direction>0){
       if(currentPoseArray[0]-startingPoseArray[0]>distanceToDrive){
+        System.out.println("###############################################################################################################################");
       return true;
     }
     } else {
