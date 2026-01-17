@@ -50,6 +50,9 @@ public class RobotContainer {
         .onTrue(new ExampleCommand(m_exampleSubsystem));
     m_driverController.povDown()
         .onTrue(new InstantCommand(() -> m_IntakeSub.intake()));
+    m_driverController.leftBumper()
+        .onTrue(new InstantCommand(() -> m_IntakeSub.pullArmUp()))
+        .onFalse(new InstantCommand(() -> m_IntakeSub.pullArmDown()));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());

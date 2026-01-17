@@ -14,7 +14,9 @@ public class IntakeSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
   private boolean m_intakeison = false;
   private final TalonFX m_IntakeMotor = new TalonFX(Constants.CanIds.kIntakeMotor); // To be changed later
-    private final TalonFX m_IntakeArmMotor = new TalonFX(Constants.CanIds.kIntakeArmMotor);
+  private final TalonFX m_IntakeArmMotor = new TalonFX(Constants.CanIds.kIntakeArmMotor);
+  private double m_ArmPower = 0;
+
   /** Creates a new IntakeSub. */
   public IntakeSub() {}
 
@@ -23,15 +25,31 @@ public class IntakeSub extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("intake status", m_intakeison);
   }
-  public void intake () {
-    m_logger.info(
-      "intake"
-    );
+
+  public void intake() {
+    m_logger.info("intake");
     m_intakeison = true;
   }
-  public void setPower(double power) {
+
+  public void setIntakePower(double power) {
     m_IntakeMotor.set(power);
-    SmartDashboard.putNumber("Intake power", power);
   }
 
+  public void setIntakeArmPower(double power) {
+    m_IntakeArmMotor.set(power);
+  }
+
+  public double getIntakeArmPower() {
+    return m_IntakeArmMotor.get();
+  }
+
+  public void pullArmUp() {
+    m_logger.info("Arms are up");
+    setIntakeArmPower(-5);
+  }
+
+  public void pullArmDown() {
+    m_logger.info("Arms are down");
+    setIntakeArmPower(5);
+  }
 }
