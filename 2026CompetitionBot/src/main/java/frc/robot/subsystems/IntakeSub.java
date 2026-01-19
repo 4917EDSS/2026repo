@@ -18,7 +18,23 @@ public class IntakeSub extends SubsystemBase {
   private double m_ArmPower = 0;
 
   /** Creates a new IntakeSub. */
-  public IntakeSub() {}
+  public IntakeSub() {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+
+    /*
+     * Sets the range when the arm is in down/up position.
+     */
+    // Define the range: 0 (min) to 20 (max) rotations
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 20.0;
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+
+    // Apply to the m_IntakeArmMotor
+    m_IntakeArmMotor.getConfigurator().apply(config);
+  }
+
 
   @Override
   public void periodic() {
