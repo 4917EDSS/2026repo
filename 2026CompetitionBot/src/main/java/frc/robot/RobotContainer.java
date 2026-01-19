@@ -118,29 +118,47 @@ public class RobotContainer {
     }
   }
 
-  // public String canScoreNow() {
-  //   if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
-  //     processGameData();
-  //     if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
-  //       return "unknown";
-  //     }
-  //   }
+  public String canScoreNow() {
+    if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
+      processGameData();
+      if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
+        return "unknown";
+      } else {
+        Double timer = DriverStation.getMatchTime();
+        if ((timer <= 130 && timer > 105) || (timer <= 80 && timer > 55)) {
+          return (m_amIDefendingFirst == defendFirst.YES) ? "no" : "yes";
+        } else if ((timer <= 105 && timer > 80) || (timer <= 55 && timer > 30)) {
+          return (m_amIDefendingFirst == defendFirst.YES) ? "yes" : "no";
+        } else {
+          return "yes";
+        }
+      }
+    }
+    return "unknown";
+  }
 
-  //   if(){
+  //canScoreNow
+  //chcek if enum is unknown (if unknown process) 
+  //check if unknown again
+  //if not unknown check match timer
 
-  //   }
+  //find shift
+  //if shift matches with game data and if 
+
+  //130, 105, 80, 55, 30
+
 
 
   public void processGameData() {
     String data = DriverStation.getGameSpecificMessage();
     String allianceColour = "";
 
-    Optional<Alliance> ally = DriverStation.getAlliance();
-    if(ally.isPresent()) {
-      if(ally.get() == Alliance.Red) {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if(alliance.isPresent()) {
+      if(alliance.get() == Alliance.Red) { // could be opposite
         allianceColour = "R";
       }
-      if(ally.get() == Alliance.Blue) {
+      if(alliance.get() == Alliance.Blue) {
         allianceColour = "B";
       }
     } else {
@@ -159,13 +177,5 @@ public class RobotContainer {
   }
 
 
-  //canScoreNow
-  //chcek if enum is unknown (if unknown process)
-  //check if unknown again
-  //if not unknown check match timer
-  //find shift
-  //if shift matches with game data and if 
-
-  //130, 105, 80, 55
 
 }
