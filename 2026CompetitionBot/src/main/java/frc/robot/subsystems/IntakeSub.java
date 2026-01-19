@@ -17,6 +17,7 @@ public class IntakeSub extends SubsystemBase {
   private final TalonFX m_IntakeMotor = new TalonFX(Constants.CanIds.kIntakeMotor); // To be changed later
   private final TalonFX m_IntakeArmMotor = new TalonFX(Constants.CanIds.kIntakeArmMotor);
   private double m_ArmPower = 0;
+  
 
   /** Creates a new IntakeSub. */
   public IntakeSub() {

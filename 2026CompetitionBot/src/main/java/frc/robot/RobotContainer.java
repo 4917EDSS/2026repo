@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -46,7 +47,7 @@ public class RobotContainer {
 
   private defendFirst m_amIDefendingFirst = defendFirst.UNKNOWN;
 
-  private final CommandXboxController m_diverContoller =
+  private final CommandXboxController m_driverController =
       new CommandXboxController(Constants.OperatorConstants.kDriverControllerPort);
   private final CommandXboxController m_operatorContoller =
       new CommandXboxController(Constants.OperatorConstants.kOperatorControllerPort);
@@ -80,14 +81,16 @@ public class RobotContainer {
     // and Y is defined as to the left according to WPILib convention.
     m_drivetrainSub.setDefaultCommand(
         // Drivetrain will execute this command periodically
-        m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-m_diverContoller.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-            .withVelocityY(-m_diverContoller.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-m_diverContoller.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
 
     // Reset the field-centric heading on left bumper press.
-    m_diverContoller.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric));
+    m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric));
+
+    m_driverController.a().whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
 
   }
 
@@ -118,29 +121,36 @@ public class RobotContainer {
     }
   }
 
-  // public String canScoreNow() {
-  //   if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
-  //     processGameData();
-  //     if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
-  //       return "unknown";
-  //     }
-  //   }
-
-  //   if(){
-
-  //   }
+  public String canScoreNow() {
+    if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
+      processGameData();
+      if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
+        return "unknown";
+      } else {
+        Double timer = DriverStation.getMatchTime();
+        if ((timer <= 130 && timer > 105) || (timer <= 80 && timer > 55)) {
+          return (m_amIDefendingFirst == defendFirst.YES) ? "no" : "yes";
+        } else if ((timer <= 105 && timer > 80) || (timer <= 55 && timer > 30)) {
+          return (m_amIDefendingFirst == defendFirst.YES) ? "yes" : "no";
+        } else {
+          return "yes";
+        }
+      }
+    }
+    return "unknown";
+  }
 
 
   public void processGameData() {
     String data = DriverStation.getGameSpecificMessage();
     String allianceColour = "";
 
-    Optional<Alliance> ally = DriverStation.getAlliance();
-    if(ally.isPresent()) {
-      if(ally.get() == Alliance.Red) {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    if(alliance.isPresent()) {
+      if(alliance.get() == Alliance.Red) { // could be opposite
         allianceColour = "R";
       }
-      if(ally.get() == Alliance.Blue) {
+      if(alliance.get() == Alliance.Blue) {
         allianceColour = "B";
       }
     } else {
@@ -159,13 +169,5 @@ public class RobotContainer {
   }
 
 
-  //canScoreNow
-  //chcek if enum is unknown (if unknown process)
-  //check if unknown again
-  //if not unknown check match timer
-  //find shift
-  //if shift matches with game data and if 
-
-  //130, 105, 80, 55
 
 }
