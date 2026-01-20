@@ -7,8 +7,10 @@ package frc.robot;
 import java.util.Optional;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -30,6 +32,7 @@ import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.subsystems.FeedbackSub;
 
 public class RobotContainer {
   enum defendFirst {
@@ -57,6 +60,7 @@ public class RobotContainer {
   public final IntakeSub m_intakeSub = new IntakeSub();
   public final ShooterSub m_shooterSub = new ShooterSub();
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
+  public final FeedbackSub m_FeedbackSub = new FeedbackSub(m_driverController);
 
   public static boolean disableShuffleboardPrint = false;
   private SendableChooser<Command> m_Chooser = new SendableChooser<>();
@@ -90,8 +94,8 @@ public class RobotContainer {
     // Reset the field-centric heading on left bumper press.
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric));
 
-    m_driverController.a().whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
-
+    m_driverController.a()
+        .whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
   }
 
   public Command getAutonomousCommand() {
@@ -128,9 +132,9 @@ public class RobotContainer {
         return "unknown";
       } else {
         Double timer = DriverStation.getMatchTime();
-        if ((timer <= 130 && timer > 105) || (timer <= 80 && timer > 55)) {
+        if((timer <= 130 && timer > 105) || (timer <= 80 && timer > 55)) {
           return (m_amIDefendingFirst == defendFirst.YES) ? "no" : "yes";
-        } else if ((timer <= 105 && timer > 80) || (timer <= 55 && timer > 30)) {
+        } else if((timer <= 105 && timer > 80) || (timer <= 55 && timer > 30)) {
           return (m_amIDefendingFirst == defendFirst.YES) ? "yes" : "no";
         } else {
           return "yes";
@@ -167,7 +171,6 @@ public class RobotContainer {
       m_amIDefendingFirst = defendFirst.UNKNOWN;
     }
   }
-
 
 
 }
