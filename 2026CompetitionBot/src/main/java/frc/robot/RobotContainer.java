@@ -32,9 +32,7 @@ import frc.robot.subsystems.ShooterSub;
 import frc.robot.subsystems.VisionSub;
 
 public class RobotContainer {
-  enum defendFirst {
-    YES, NO, UNKNOWN
-  }
+
 
   // The robot's subsystems and commands are defined here...
   private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -45,7 +43,6 @@ public class RobotContainer {
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
-  private defendFirst m_amIDefendingFirst = defendFirst.UNKNOWN;
 
   private final CommandXboxController m_driverController =
       new CommandXboxController(Constants.OperatorConstants.kDriverControllerPort);
@@ -90,7 +87,8 @@ public class RobotContainer {
     // Reset the field-centric heading on left bumper press.
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric));
 
-    m_driverController.a().whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
+    m_driverController.a()
+        .whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
 
   }
 
@@ -105,69 +103,6 @@ public class RobotContainer {
 
 
   }
-
-  public String amIDefendingFirst() {
-    if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
-      processGameData();
-      if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
-        return "unknown";
-      }
-    }
-
-    if(m_amIDefendingFirst == defendFirst.YES) {
-      return "true";
-    } else {
-      return "false";
-    }
-  }
-
-  public String canScoreNow() {
-    if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
-      processGameData();
-      if(m_amIDefendingFirst == defendFirst.UNKNOWN) {
-        return "unknown";
-      } else {
-        Double timer = DriverStation.getMatchTime();
-        if ((timer <= 130 && timer > 105) || (timer <= 80 && timer > 55)) {
-          return (m_amIDefendingFirst == defendFirst.YES) ? "no" : "yes";
-        } else if ((timer <= 105 && timer > 80) || (timer <= 55 && timer > 30)) {
-          return (m_amIDefendingFirst == defendFirst.YES) ? "yes" : "no";
-        } else {
-          return "yes";
-        }
-      }
-    }
-    return "unknown";
-  }
-
-
-  public void processGameData() {
-    String data = DriverStation.getGameSpecificMessage();
-    String allianceColour = "";
-
-    Optional<Alliance> alliance = DriverStation.getAlliance();
-    if(alliance.isPresent()) {
-      if(alliance.get() == Alliance.Red) { // could be opposite
-        allianceColour = "R";
-      }
-      if(alliance.get() == Alliance.Blue) {
-        allianceColour = "B";
-      }
-    } else {
-      return;
-    }
-
-    if(data.length() > 0) {
-      if(data.charAt(0) == allianceColour.charAt(0)) {
-        m_amIDefendingFirst = defendFirst.YES;
-      } else {
-        m_amIDefendingFirst = defendFirst.NO;
-      }
-    } else {
-      m_amIDefendingFirst = defendFirst.UNKNOWN;
-    }
-  }
-
 
 
 }

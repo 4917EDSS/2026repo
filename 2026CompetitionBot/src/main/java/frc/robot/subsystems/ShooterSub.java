@@ -26,6 +26,10 @@ public class ShooterSub extends SubsystemBase {
 
   public ShooterSub() {}
 
+  public static double ballFlightTime(double distance) {
+    //TODO do parabola math
+    return distance;
+  }
 
   @Override
   public void periodic() {

@@ -81,10 +81,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    String gameData;
-    gameData = DriverStation.getGameSpecificMessage();
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {
