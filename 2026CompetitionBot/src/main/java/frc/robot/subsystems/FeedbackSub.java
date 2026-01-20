@@ -27,18 +27,18 @@ public class FeedbackSub extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if(m_stopVibratingTime.isBefore(Instant.now())) {
-      disableVibration();
+    if(m_stopVibratingTime != null) {
+      if(m_stopVibratingTime.isBefore(Instant.now())) {
+        disableVibration();
+      }
     }
-
     // This method will be called once per scheduler run
   }
 
   public void vibrateFeedback(Integer seconds) {
     m_stopVibratingTime = Instant.now().plus(seconds, ChronoUnit.SECONDS);
     enableVibration();
-    //Rumble only works on the robot, not in the simulation
-
+    //Rumble requires the Driver Station, it does not work in the simulator
   }
 
   private void enableVibration() {
@@ -47,13 +47,11 @@ public class FeedbackSub extends SubsystemBase {
 
   private void disableVibration() {
     m_gameController.getHID().setRumble(RumbleType.kBothRumble, 0.0);
-
   }
 
   public Command vibrate(Integer duration) {
     //return new Command(()-> vibrateFeedback(duration));
     //return new StartEndCommand(null, null, null)
     return run(() -> vibrateFeedback(duration));
-  };
+  }
 }
-
