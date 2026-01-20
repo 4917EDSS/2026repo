@@ -7,8 +7,10 @@ package frc.robot;
 import java.util.Optional;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -30,6 +32,7 @@ import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.subsystems.FeedbackSub;
 
 public class RobotContainer {
 
@@ -54,6 +57,7 @@ public class RobotContainer {
   public final IntakeSub m_intakeSub = new IntakeSub();
   public final ShooterSub m_shooterSub = new ShooterSub();
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
+  public final FeedbackSub m_FeedbackSub = new FeedbackSub(m_driverController);
 
   public static boolean disableShuffleboardPrint = false;
   private SendableChooser<Command> m_Chooser = new SendableChooser<>();
@@ -103,6 +107,4 @@ public class RobotContainer {
 
 
   }
-
-
 }
