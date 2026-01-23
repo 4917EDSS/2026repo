@@ -40,6 +40,13 @@ public final class Constants {
     public static final int kClimbOutLimitSwitch = 2;
   }
 
+  public static class FieldElements {
+    public static final double kRedHubX = 4.675;
+    public static final double kRedHubY = 4.035;
+    public static final double kBlueHubX = 11.856;
+    public static final double kBlueHubY = 4.035;
+  }
+
   public static class HopperConstants {
     public static final double singulatorSpeed = 0.5;
   }
