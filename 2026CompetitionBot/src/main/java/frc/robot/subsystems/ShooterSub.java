@@ -5,9 +5,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-
-import edu.wpi.first.wpilibj.drive.RobotDriveBase.MotorType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -19,9 +16,9 @@ public class ShooterSub extends SubsystemBase {
   private final TalonFX m_shooterMotor2 = new TalonFX(Constants.CanIds.kShooterMotor);
   private final TalonFX m_hoodMotor2 = new TalonFX(Constants.CanIds.kHoodMotor);
 
-  private double m_targetAngle = 0;
-  private double m_targetMotorspeed = 0;
-  private double m_targetHoodAngle = 0;
+  private double m_targetYawAngle = 0;
+  private double m_targetPitchAngle = 0;
+  private double m_targetFlywheelVelocity = 0;
 
 
   public ShooterSub() {}
@@ -37,21 +34,20 @@ public class ShooterSub extends SubsystemBase {
   }
 
 
-  public void setDirectionAngle(double angle) {
+  public void setTargetYawAngle(double angle) {
     // Not doing anything yet
-    m_targetAngle = angle;
+    m_targetYawAngle = angle;
 
   }
 
-  public void setShooterAngle(double angle) {
+  public void setTargetPitchAngle(double angle) {
     // Not doing anything yet
-    m_targetMotorspeed = angle;
+    m_targetPitchAngle = angle;
 
   }
 
-  public void setTargetAngle(double angle) {
+  public void setTargetFlywheelVelocity(double velocity) {
     // Not doing anything yet
-    m_targetHoodAngle = angle;
-
+    m_targetFlywheelVelocity = velocity;
   }
 }
