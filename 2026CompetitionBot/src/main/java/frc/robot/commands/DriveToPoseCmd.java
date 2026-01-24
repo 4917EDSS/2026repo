@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DrivetrainSub;
 
@@ -26,15 +27,15 @@ public class DriveToPoseCmd extends Command {
   private final SwerveRequest.FieldCentric m_autoDrive = new SwerveRequest.FieldCentric()
       .withDriveRequestType(DriveRequestType.Velocity).withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
-  private final double m_driveP = 0.0;
-  private final double m_rotP = 0.0;
+  private final double m_driveP = 1.0;
+  private final double m_rotP = 0.05;
 
-  private final double m_feedforward = 0.0;
-  private final double m_rotationalFeedForward = 0.0;
+  private final double m_feedforward = 0.5;
+  private final double m_rotationalFeedForward = 0.1;
 
-  private final double xThreshold = 0.0;
-  private final double yThreshold = 0.0;
-  private final double rotThreshold = 0.0;
+  private final double xThreshold = 0.01;
+  private final double yThreshold = 0.01;
+  private final double rotThreshold = 2.0;
 
   private double xPower;
   private double yPower;
@@ -69,26 +70,25 @@ public class DriveToPoseCmd extends Command {
 
     double outputRotPower = m_error.getRotation().getDegrees() * m_rotP;
 
-    if(m_targetPose.getX() - m_currentPose.getX() > xThreshold) {
+    if(Math.abs(m_targetPose.getX() - m_currentPose.getX()) > xThreshold) {
       xPower = outputDrivePower.getX() + m_feedforward;
     } else {
       xPower = 0.0;
     }
 
-    if(m_targetPose.getY() - m_currentPose.getY() > yThreshold) {
+    if(Math.abs(m_targetPose.getY() - m_currentPose.getY()) > yThreshold) {
       yPower = outputDrivePower.getY() + m_feedforward;
     } else {
       yPower = 0.0;
     }
 
-    if(m_targetPose.getRotation().getDegrees() - m_currentPose.getRotation().getDegrees() > rotThreshold) {
+    if(Math.abs(m_targetPose.getRotation().getDegrees() - m_currentPose.getRotation().getDegrees()) > rotThreshold) {
       rotPower = outputRotPower + m_rotationalFeedForward;
     } else {
       rotPower = 0.0;
     }
 
     m_drivetrainSub.setControl(m_autoDrive.withVelocityX(xPower).withVelocityY(yPower).withRotationalRate(rotPower));
-
   }
 
   // Called once the command ends or is interrupted.
@@ -100,9 +100,12 @@ public class DriveToPoseCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if((m_targetPose.getX() - m_currentPose.getX() < xThreshold)
-        && (m_targetPose.getY() - m_currentPose.getY() < yThreshold)
-        && (m_targetPose.getRotation().getDegrees() - m_currentPose.getRotation().getDegrees() < rotThreshold)) {
+    if((Math.abs(m_targetPose.getX() - m_currentPose.getX()) < xThreshold)
+        && (Math.abs(m_targetPose.getY() - m_currentPose.getY()) < yThreshold)
+        && (Math
+            .abs(m_targetPose.getRotation().getDegrees() - m_currentPose.getRotation().getDegrees()) < rotThreshold)) {
+      System.out.println(
+          "##########################################################################################################");
       return true;
     }
     return false;
