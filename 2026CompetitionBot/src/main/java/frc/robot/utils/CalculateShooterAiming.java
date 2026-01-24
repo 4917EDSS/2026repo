@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
 
 /** Add your docs here. */
-public class CalculateShooterAngle {
+public class CalculateShooterAiming {
   public double getAngle(Pose3d robot) {
     Alliance alliance = GameData.getAlliance();
 
@@ -44,6 +44,35 @@ public class CalculateShooterAngle {
 
     return angle;
   }
+
+
+  public double getTimeOfFlight(Double range, Double elevation, Double launchVelocity, Double launchAngle) {
+    // Use Kinematic equation: y = vy * t - 0.5 * g * t^2
+    // Rearanged: 0.5 * g * t^2 - vy * t + elevation = 0
+    // Solve using the quaderatic formula 
+
+    // Vertical component of velocity 
+    double vy = launchVelocity * Math.sin(launchAngle);
+
+    double GRAVITY = 9.81;
+
+    double a = 0.5 * GRAVITY;
+    double b = -vy;
+    double c = elevation;
+    double discriminant = b * b - 4 * a * c;
+
+    if(discriminant < 0) {
+      return -1;
+    }
+
+    // 2 solutions we want the positive one : forward in time
+    double t1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+    double t2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+
+    return Math.max(t1, t2);
+
+  }
+
 
   private static Pose3d componentToField(Pose3d componentRelativePose, Pose3d robotPose,
       Transform3d componentToRobotTransform) {
