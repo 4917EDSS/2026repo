@@ -26,11 +26,11 @@ public class CalculateShooterAngle {
     double distY = 0;
 
     if(alliance == Alliance.Blue) { // get the distance based on alliance
-      distX = robot.getX() - Constants.FieldElements.kBlueHubX;
-      distY = robot.getY() - Constants.FieldElements.kBlueHubY;
+      distX = shooterPoseinfield.getX() - Constants.FieldElements.kBlueHubX;
+      distY = shooterPoseinfield.getY() - Constants.FieldElements.kBlueHubY;
     } else if(alliance == Alliance.Red) {
-      distX = robot.getX() - Constants.FieldElements.kRedHubX;
-      distY = robot.getY() - Constants.FieldElements.kRedHubY;
+      distX = shooterPoseinfield.getX() - Constants.FieldElements.kRedHubX;
+      distY = shooterPoseinfield.getY() - Constants.FieldElements.kRedHubY;
     }
 
     // calculate the shooter angle, atan2 works in all quadrants, atan doesn't
