@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package commands;
+package frc.robot.commands;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -32,6 +32,14 @@ public class DriveToPoseCmd extends Command {
   private final double m_feedforward = 0.0;
   private final double m_rotationalFeedForward = 0.0;
 
+  private final double xThreshold = 0.0;
+  private final double yThreshold = 0.0;
+  private final double rotThreshold = 0.0;
+
+  private double xPower;
+  private double yPower;
+  private double rotPower;
+
   /** Creates a new DriveToPoseCmd. */
   public DriveToPoseCmd(Pose2d targetPose, DrivetrainSub drivetrainSub) {
     m_targetPose = targetPose;
@@ -46,6 +54,7 @@ public class DriveToPoseCmd extends Command {
   @Override
   public void initialize() {
     m_error = new Transform2d();
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -60,10 +69,23 @@ public class DriveToPoseCmd extends Command {
 
     double outputRotPower = m_error.getRotation().getDegrees() * m_rotP;
 
-    double xPower = outputDrivePower.getX() + m_feedforward;
-    double yPower = outputDrivePower.getY() + m_feedforward;
+    if(m_targetPose.getX() - m_currentPose.getX() > xThreshold) {
+      xPower = outputDrivePower.getX() + m_feedforward;
+    } else {
+      xPower = 0.0;
+    }
 
-    double rotPower = outputRotPower + m_rotationalFeedForward;
+    if(m_targetPose.getY() - m_currentPose.getY() > yThreshold) {
+      yPower = outputDrivePower.getY() + m_feedforward;
+    } else {
+      yPower = 0.0;
+    }
+
+    if(m_targetPose.getRotation().getDegrees() - m_currentPose.getRotation().getDegrees() > rotThreshold) {
+      rotPower = outputRotPower + m_rotationalFeedForward;
+    } else {
+      rotPower = 0.0;
+    }
 
     m_drivetrainSub.setControl(m_autoDrive.withVelocityX(xPower).withVelocityY(yPower).withRotationalRate(rotPower));
 
@@ -78,8 +100,9 @@ public class DriveToPoseCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if((m_targetPose.getX() - m_currentPose.getX() < 0.0) && (m_targetPose.getY() - m_currentPose.getY() < 0.0)
-        && (m_targetPose.getRotation().getDegrees() - m_currentPose.getRotation().getDegrees() < 0.0)) {
+    if((m_targetPose.getX() - m_currentPose.getX() < xThreshold)
+        && (m_targetPose.getY() - m_currentPose.getY() < yThreshold)
+        && (m_targetPose.getRotation().getDegrees() - m_currentPose.getRotation().getDegrees() < rotThreshold)) {
       return true;
     }
     return false;

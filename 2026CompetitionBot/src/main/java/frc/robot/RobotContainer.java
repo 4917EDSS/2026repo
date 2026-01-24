@@ -5,6 +5,9 @@
 package frc.robot;
 
 import java.util.Optional;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -15,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.subsystems.IntakeSub;
 import static edu.wpi.first.units.Units.*;
 
@@ -91,8 +95,11 @@ public class RobotContainer {
     // Reset the field-centric heading on left bumper press.
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric));
 
-    m_driverController.a()
-        .whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
+    // m_driverController.a()
+    //  .whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
+
+    m_driverController.x()
+        .whileTrue(new DriveToPoseCmd(new Pose2d(new Translation2d(0, 0), new Rotation2d(0.0)), m_drivetrainSub));
 
   }
 
