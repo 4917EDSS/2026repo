@@ -25,9 +25,9 @@ public final class Constants {
     // These are the roboRIO CAN bus IDs
     // CTRE Swerve drivetrain uses CAN IDs 1-13 on CANivore bus
     // This does not conflict with the roboRIO bus which can also use these IDs
-    public static final int kDirectionMotor = 1;
+    public static final int kYawMotor = 1;
     public static final int kShooterMotor = 2;
-    public static final int kHoodMotor = 3;
+    public static final int kPitchMotor = 3;
     public static final int kClimbMotor = 4;
     public static final int kSingulatorMotor = 5;
     public static final int kIntakeMotor = 6;
@@ -38,6 +38,14 @@ public final class Constants {
   public static class DioIds {
     public static final int kClimbInLimitSwitch = 1;
     public static final int kClimbOutLimitSwitch = 2;
+    public static final int kIntakeInLimitSwitch = 3;
+    public static final int kIntakeOutLimitSwitch = 4;
+    public static final int kIntakeAbsoluteEncoder1 = 5;
+    public static final int kIntakeAbsoluteEncoder2 = 6;
+    public static final int kShooterYawAbsoluteEncoder1 = 7;
+    public static final int kShooterYawAbsoluteEncoder2 = 8;
+    public static final int kShooterPitchAbsoluteEncoder1 = 9;
+    public static final int kShooterPitchAbsoluteEncoder2 = 10;
   }
 
   public static class FieldElements {
