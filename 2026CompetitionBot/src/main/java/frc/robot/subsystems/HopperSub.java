@@ -17,6 +17,12 @@ import frc.robot.Constants;
 public class HopperSub extends SubsystemBase {
 
   //IMPORTANT: The term singulator refer to the mechanism in the hopper which forces balls into the shooter.
+  //kraken x60 motor for singulator rotation (done)
+  //2 ir sensors for hopper full and hopper empty (1 each)
+  //internal encoder for singulator velocity
+
+  double targetVelocity = 0.0;
+  double targetPower = 0.0;
 
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kSingulatorMotor);
   private Boolean singulatorMoving = false;
@@ -31,7 +37,7 @@ public class HopperSub extends SubsystemBase {
     talonFXConfigurator.apply(limitConfigs);
 
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
-    outputConfigs.Inverted = InvertedValue.Clockwise_Positive; //subject to change, i have no idea lol
+    outputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFXConfigurator.apply(outputConfigs);
   }
@@ -46,10 +52,37 @@ public class HopperSub extends SubsystemBase {
     singulatorMoving = false;
   }
 
+  public double getSingulatorVelocity() {
+    singulatorMoving = true;
+    return m_singulatorMotor.getVelocity().getValueAsDouble();
+  }
+
+  public void setSpindulatorTargetVelocity(double velocity) {
+    targetVelocity = velocity;
+  }
+
+  public boolean isAtTargetVelocity() {
+    if(Constants.HopperConstants.singulatorVelocityFlexibility > Math.abs(targetVelocity - getSingulatorVelocity())) {
+      return true;
+    }
+    return false;
+  }
+
+  public void runVelocityControl() {
+    if(isAtTargetVelocity()) {
+      //stop accelerating
+      runSingulator(0);
+      return;
+    }
+    //change power
+  }
+
+
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Singulating", singulatorMoving);
     SmartDashboard.putNumber("Singulator Velocity", m_singulatorMotor.getVelocity().getValueAsDouble());
     // This method will be called once per scheduler run
+
   }
 }

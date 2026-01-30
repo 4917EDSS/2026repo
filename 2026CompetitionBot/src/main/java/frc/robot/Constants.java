@@ -57,6 +57,7 @@ public final class Constants {
 
   public static class HopperConstants {
     public static final double singulatorSpeed = 0.5;
+    public static final double singulatorVelocityFlexibility = 0.0;
   }
   public static class Vision {
     public static final double kDistanceToCloseToDrive = 0.5;
