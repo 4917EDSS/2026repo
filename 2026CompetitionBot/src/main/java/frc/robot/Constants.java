@@ -31,7 +31,8 @@ public final class Constants {
     public static final int kClimbMotor = 4;
     public static final int kSingulatorMotor = 5;
     public static final int kIntakeMotor = 6;
-    public static final int kIntakeArmMotor = 7;
+    public static final int kDeployMotor1 = 7;
+    public static final int kDeployMotor2 = 8;
 
   }
 
