@@ -36,10 +36,10 @@ public class CalculateShooterAiming {
       distY = shooterPoseinfield.getY() - Constants.FieldElements.kRedHubY;
     }
 
-    // calculate the shooter angle, atan2 works in all quadrants, atan doesn't
+    // calculate the shooter yaw angle, atan2 works in all quadrants, atan doesn't
     double angle = Math.toDegrees(Math.atan2(distY, distX));
 
-    // get the robot's angle
+    // get the robot's yaw
     double heading = shooterPoseinfield.toPose2d().getRotation().getDegrees();
 
     // subtract the robot heading from the shooter angle

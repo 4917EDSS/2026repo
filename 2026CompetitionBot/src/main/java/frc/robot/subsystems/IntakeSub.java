@@ -11,21 +11,36 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLimitSwitch;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
 import frc.robot.Constants;
+
+// 2 Neo 550s for deployment
+// 1 Vortex (sparkmax) for belts
+// 2 limit switches (in and out)
+// 1 position encoder
 
 public class IntakeSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
   private boolean m_intakeIsOn = false;
-  private final TalonFX m_intakeMotor = new TalonFX(Constants.CanIds.kIntakeMotor); // To be changed later
+  private final SparkMax m_beltMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
   private final Encoder m_intakeAbsoluteEncoder =
       new Encoder(Constants.DioIds.kIntakeAbsoluteEncoder1, Constants.DioIds.kIntakeAbsoluteEncoder2);
 
 
-  private final TalonFX m_IntakeArmMotor = new TalonFX(Constants.CanIds.kIntakeArmMotor);
+  private final SparkMax m_deployMotor1 = new SparkMax(Constants.CanIds.kDeployMotor1, MotorType.kBrushless);
+  private final SparkMax m_deployMotor2 = new SparkMax(Constants.CanIds.kDeployMotor2, MotorType.kBrushless);
   private final DigitalInput m_intakeInLimit = new DigitalInput(Constants.DioIds.kIntakeInLimitSwitch);
   private final DigitalInput m_intakeOutLimit = new DigitalInput(Constants.DioIds.kIntakeOutLimitSwitch);
 
-  private double m_ArmPower = 0;
+  private double m_armPower = 0;
 
 
   /** Creates a new IntakeSub. */
@@ -34,20 +49,27 @@ public class IntakeSub extends SubsystemBase {
     m_intakeAbsoluteEncoder.setReverseDirection(false);
     resetEncoder();
 
-    TalonFXConfiguration config = new TalonFXConfiguration();
+    SparkMaxConfig motorConfig = new SparkMaxConfig();
+    motorConfig
+        .inverted(true) // Set to true to invert the forward motor direction
+        .smartCurrentLimit(60) // Current limit in amps
+        .idleMode(IdleMode.kBrake).encoder
+            .positionConversionFactor(0)
+            .velocityConversionFactor(0);
 
-    /*
-     * Sets the range when the arm is in down/up position.
-     */
-    // Define the range: 0 (min) to 20 (max) rotations
-    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
-    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
+    encoderConfig.zeroOffset(0);
+    motorConfig.apply(encoderConfig);
 
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 20.0;
-    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-
-    // Apply to the m_IntakeArmMotor
-    m_IntakeArmMotor.getConfigurator().apply(config);
+    // Save the configuration to the motor
+    // Only persist parameters when configuring the motor on start up as this
+    // operation can be slow
+    m_beltMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters);
+    m_deployMotor1.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters);
+    m_deployMotor2.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters);
   }
 
   @Override
@@ -62,15 +84,15 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public void setIntakePower(double power) {
-    m_intakeMotor.set(power);
+    m_beltMotor.set(power);
   }
 
   public void setIntakeArmPower(double power) {
-    m_IntakeArmMotor.set(power);
+    m_deployMotor1.set(power);
   }
 
   public double getIntakeArmPower() {
-    return m_IntakeArmMotor.get();
+    return m_deployMotor1.get();
   }
 
   public boolean isIntakeAtInLimit() {

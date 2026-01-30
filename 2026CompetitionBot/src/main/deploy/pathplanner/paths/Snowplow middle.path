@@ -3,51 +3,87 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.3740227272727275,
-        "y": 5.4573409090909095
+        "x": 3.4257954545454545,
+        "y": 2.870329545454546
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.9707429697172865,
-        "y": 5.891847777667715
+        "x": 5.045967753437833,
+        "y": 2.568422347061188
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.249386363636363,
-        "y": 6.786920454545455
+        "x": 7.785579545454922,
+        "y": 2.0148636363626498
       },
       "prevControl": {
-        "x": 7.413838969854879,
-        "y": 7.337890973457333
+        "x": 6.947373197023642,
+        "y": 1.310256543121511
       },
       "nextControl": {
-        "x": 8.947931078842588,
-        "y": 6.326291234605623
+        "x": 8.506709702514302,
+        "y": 2.621054969517164
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.249,
-        "y": 1.293386363636364
+        "x": 7.785579545454922,
+        "y": 5.756238636362649
       },
       "prevControl": {
-        "x": 8.454660903713785,
-        "y": 5.087044871437248
+        "x": 8.296324463671535,
+        "y": 5.301704151110722
+      },
+      "nextControl": {
+        "x": 7.23470527481323,
+        "y": 6.246486006652604
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.0025,
+        "y": 5.756238636362649
+      },
+      "prevControl": {
+        "x": 6.680140555216186,
+        "y": 5.754528239267088
+      },
+      "nextControl": {
+        "x": 5.661838119538155,
+        "y": 5.757098483203906
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.1165909090909087,
+        "y": 5.756238636362649
+      },
+      "prevControl": {
+        "x": 3.8383310546424494,
+        "y": 5.795197303829808
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Snowplow end"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9999999999999999,
-      "rotationDegrees": 135.0
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 3,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -62,14 +98,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 135.0
+    "velocity": 3.0,
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Top Start",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 130.48601154199886
+    "velocity": 0.0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
