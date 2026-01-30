@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.1165909090909087,
+        "y": 5.756238636362649
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.4955022974956327,
+        "y": 5.7219537285614495
+      },
+      "isLocked": false,
+      "linkedName": "Snowplow end"
+    },
+    {
+      "anchor": {
+        "x": 1.137681818181818,
+        "y": 5.952068181818181
+      },
+      "prevControl": {
+        "x": 0.8261006320012432,
+        "y": 5.984238368894257
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Bump to Depot End"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Top Start",
+  "idealStartingState": {
+    "velocity": 3.0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}
