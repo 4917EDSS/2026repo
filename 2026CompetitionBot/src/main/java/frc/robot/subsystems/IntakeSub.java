@@ -21,11 +21,11 @@ public class IntakeSub extends SubsystemBase {
       new Encoder(Constants.DioIds.kIntakeAbsoluteEncoder1, Constants.DioIds.kIntakeAbsoluteEncoder2);
 
 
-  private final TalonFX m_IntakeArmMotor = new TalonFX(Constants.CanIds.kIntakeArmMotor);
+  private final TalonFX m_intakeArmMotor = new TalonFX(Constants.CanIds.kIntakeArmMotor);
   private final DigitalInput m_intakeInLimit = new DigitalInput(Constants.DioIds.kIntakeInLimitSwitch);
   private final DigitalInput m_intakeOutLimit = new DigitalInput(Constants.DioIds.kIntakeOutLimitSwitch);
 
-  private double m_ArmPower = 0;
+  private double m_armPower = 0;
 
 
   /** Creates a new IntakeSub. */
@@ -47,7 +47,7 @@ public class IntakeSub extends SubsystemBase {
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
     // Apply to the m_IntakeArmMotor
-    m_IntakeArmMotor.getConfigurator().apply(config);
+    m_intakeArmMotor.getConfigurator().apply(config);
   }
 
   @Override
@@ -66,11 +66,11 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public void setIntakeArmPower(double power) {
-    m_IntakeArmMotor.set(power);
+    m_intakeArmMotor.set(power);
   }
 
   public double getIntakeArmPower() {
-    return m_IntakeArmMotor.get();
+    return m_intakeArmMotor.get();
   }
 
   public boolean isIntakeAtInLimit() {
