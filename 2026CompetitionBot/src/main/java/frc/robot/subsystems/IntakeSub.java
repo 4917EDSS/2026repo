@@ -40,7 +40,7 @@ public class IntakeSub extends SubsystemBase {
   private final DigitalInput m_intakeInLimit = new DigitalInput(Constants.DioIds.kIntakeInLimitSwitch);
   private final DigitalInput m_intakeOutLimit = new DigitalInput(Constants.DioIds.kIntakeOutLimitSwitch);
 
-  private double m_ArmPower = 0;
+  private double m_armPower = 0;
 
 
   /** Creates a new IntakeSub. */
