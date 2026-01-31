@@ -28,10 +28,10 @@ public class DriveToPoseCmd extends Command {
       .withDriveRequestType(DriveRequestType.Velocity).withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
   private final double m_driveP = 1.0;
-  private final double m_rotP = 0.05;
+  private final double m_rotP = 0.01;
 
-  private final double m_feedforward = 0.5;
-  private final double m_rotationalFeedForward = 0.1;
+  private final double m_feedforward = 0.0;
+  private final double m_rotationalFeedForward = 0.0;
 
   private final double xThreshold = 0.01;
   private final double yThreshold = 0.01;
@@ -88,7 +88,7 @@ public class DriveToPoseCmd extends Command {
       rotPower = 0.0;
     }
 
-    m_drivetrainSub.setControl(m_autoDrive.withVelocityX(xPower).withVelocityY(yPower).withRotationalRate(rotPower));
+    m_drivetrainSub.setControl(m_autoDrive.withVelocityX(-xPower).withVelocityY(-yPower).withRotationalRate(rotPower));
   }
 
   // Called once the command ends or is interrupted.
