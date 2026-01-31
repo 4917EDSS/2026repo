@@ -27,6 +27,7 @@ public final class Constants {
     // This does not conflict with the roboRIO bus which can also use these IDs
     public static final int kYawMotor = 1;
     public static final int kShooterMotor1 = 2;
+    public static final int kShooterMotor2 = 12;
     public static final int kPitchMotor = 3;
     public static final int kRotateMotor = 4;
     public static final int kSingulatorMotor = 5;
@@ -77,6 +78,7 @@ public final class Constants {
   public static class Vision {
     public static final double kDistanceToCloseToDrive = 0.5;
   }
+
   public static class Shooter {
     public static final double kShooterYawKS = 0.25;
     public static final double kShooterYawKV = 0.12;
@@ -86,9 +88,7 @@ public final class Constants {
     public static final double kPitchMaxPower = 10;
   }
 
-
-  public static final double kRotationToDegrees = 270.0 / 3;
+  public static class IntakeConstants {
+    public static final double kRotationToDegrees = 270.0 / 3;
+  }
 }
-
-
- 

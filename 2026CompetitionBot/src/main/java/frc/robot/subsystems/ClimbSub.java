@@ -65,7 +65,7 @@ public class ClimbSub extends SubsystemBase {
     }
     //stop if the climb is at the bottom limit OR shoots below limit AND it is still moving
     else if((isAtInLimit() || getPosition() <= 0.0) && (getPower() > 0)) {
-      setPower(0);
+      //setPower(0);
     }
   }
 
