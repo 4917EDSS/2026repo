@@ -10,6 +10,12 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
@@ -17,14 +23,22 @@ import frc.robot.Constants;
 
 public class ClimbSub extends SubsystemBase {
 
-  private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
+  private final TalonFX m_rotateMotor = new TalonFX(Constants.CanIds.kRotateMotor);
+  private final SparkMax m_deployMotor = new SparkMax(Constants.CanIds.kClimbDeployMotor, MotorType.kBrushless);
   private final DigitalInput m_climbInLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
   private final DigitalInput m_climbOutLimit = new DigitalInput(Constants.DioIds.kClimbOutLimitSwitch);
 
   /** Creates a new ClimbSub. */
   public ClimbSub() {
+    TalonFXConfigurator talonFXConfigurator = m_rotateMotor.getConfigurator();
+    SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
 
-    TalonFXConfigurator talonFXConfigurator = m_climbMotor.getConfigurator();
+    sparkMaxConfig
+        .inverted(true)
+        .smartCurrentLimit(5)
+        .idleMode(IdleMode.kBrake);
+
+    m_deployMotor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     //This is how you set a current limit inside the motor (vs on the input power supply)
     //subject to change
@@ -47,7 +61,7 @@ public class ClimbSub extends SubsystemBase {
 
     //stop if the climb is moving and at the up limit
     if(isAtOutLimit() && getPower() > 0) {
-      m_climbMotor.set(0.0);
+      m_rotateMotor.set(0.0);
     }
     //stop if the climb is at the bottom limit OR shoots below limit AND it is still moving
     else if((isAtInLimit() || getPosition() <= 0.0) && (getPower() > 0)) {
@@ -71,18 +85,26 @@ public class ClimbSub extends SubsystemBase {
    * 
    * @param power power value -1.0 to 1.0
    */
-  public void setPower(double power) {
-    m_climbMotor.set(power);
+  public void setRotatePower(double power) {
+    m_rotateMotor.set(power);
 
+  }
+
+  public void setDeployPower(double power) {
+    m_deployMotor.set(power);
   }
 
   /**
    * Sets the current angle as the zero angle
    */
   public void resetPosition() {
-    m_climbMotor.setPosition(0);
+    m_rotateMotor.setPosition(0);
 
   }
+
+  //  public boolean isAtRotationZero() {
+  // return (m_climbMotor.)
+  //}
 
   /**
    * Returns the current angular position of the climb arm
@@ -90,7 +112,7 @@ public class ClimbSub extends SubsystemBase {
    * @return position in degrees
    */
   public double getPosition() {
-    return m_climbMotor.getPosition().getValueAsDouble();
+    return m_rotateMotor.getPosition().getValueAsDouble();
 
   }
 
@@ -100,9 +122,13 @@ public class ClimbSub extends SubsystemBase {
    * @return velocity in degrees per second
    */
   public double getVelocity() {
-    return m_climbMotor.getRotorVelocity().getValueAsDouble();
+    return m_rotateMotor.getRotorVelocity().getValueAsDouble();
 
   }
+
+  // public double getDeployDistance() {
+  //   return m_deployMotor.
+  // }
 
   /**
    * Returns current power between -1 and 1
@@ -110,7 +136,7 @@ public class ClimbSub extends SubsystemBase {
    * @return power
    */
   public double getPower() {
-    return m_climbMotor.get();
+    return m_rotateMotor.get();
   }
 
   /**
@@ -119,7 +145,7 @@ public class ClimbSub extends SubsystemBase {
    * @return current in amps or -1.0 if motor can't measure current
    */
   public double getElectricalCurrent() {
-    return m_climbMotor.getStatorCurrent().getValueAsDouble();
+    return m_rotateMotor.getStatorCurrent().getValueAsDouble();
 
   }
 }

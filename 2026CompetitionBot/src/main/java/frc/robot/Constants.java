@@ -28,12 +28,13 @@ public final class Constants {
     public static final int kYawMotor = 1;
     public static final int kShooterMotor = 2;
     public static final int kPitchMotor = 3;
-    public static final int kClimbMotor = 4;
+    public static final int kRotateMotor = 4;
     public static final int kSingulatorMotor = 5;
     public static final int kIntakeMotor = 6;
     public static final int kDeployMotor1 = 7;
     public static final int kDeployMotor2 = 8;
     public static final int kFeederMotor = 9;
+    public static final int kClimbDeployMotor = 10;
 
   }
 
