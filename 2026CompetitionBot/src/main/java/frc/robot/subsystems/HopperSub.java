@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
@@ -26,20 +27,24 @@ public class HopperSub extends SubsystemBase {
 
   //request objects for velocity PID control
   final VelocityVoltage m_singulatorVelocityRequest = new VelocityVoltage(0).withSlot(0);
-  final VelocityVoltage m_feederVelocityRequest = new VelocityVoltage(0).withSlot(0);
+  final VelocityVoltage m_escalatorVelocityRequest = new VelocityVoltage(0).withSlot(0);
 
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kSingulatorMotor);
-  private final TalonFX m_feederMotor = new TalonFX(Constants.CanIds.kFeederMotor);
+  private final TalonFX m_escalatorMotor = new TalonFX(Constants.CanIds.kEscalatorMotor);
 
   private Boolean singulatorEnabled = false;
-  private boolean feederEnabled = false;
+  private boolean EscalatorEnabled = false;
   private double targetSingulatorVelocity = 0.0;
-  private double targetFeederVelocity = 0.0;
+  private double targetEscalatorVelocity = 0.0;
 
   /** Creates a new HopperSub. */
   public HopperSub() {
     //singulator configurating
     TalonFXConfigurator talonFXSingulatorConfigurator = m_singulatorMotor.getConfigurator();
+
+    FeedbackConfigs singulatorFeedbackConfigs = new FeedbackConfigs();
+    singulatorFeedbackConfigs.SensorToMechanismRatio = Constants.HopperConstants.kSingulatorTicksInMeter;
+    talonFXSingulatorConfigurator.apply(singulatorFeedbackConfigs);
 
     //current limits configurations for singulator
     CurrentLimitsConfigs limitSingulatorConfigs = new CurrentLimitsConfigs();
@@ -63,29 +68,33 @@ public class HopperSub extends SubsystemBase {
     talonFXSingulatorConfigurator.apply(outputSingulatorConfigs);
 
 
-    //feeder configurating
-    TalonFXConfigurator talonFXFeederConfigurator = m_feederMotor.getConfigurator();
+    //Escalator configurating
+    TalonFXConfigurator talonFXEscalatorConfigurator = m_escalatorMotor.getConfigurator();
 
-    //current limit configurations for feeder
-    CurrentLimitsConfigs limitFeederConfigs = new CurrentLimitsConfigs();
-    limitFeederConfigs.StatorCurrentLimit = 60; //this might be too high idk
-    limitFeederConfigs.StatorCurrentLimitEnable = true;
-    talonFXFeederConfigurator.apply(limitFeederConfigs);
+    FeedbackConfigs escalatorFeedbackConfigs = new FeedbackConfigs();
+    escalatorFeedbackConfigs.SensorToMechanismRatio = Constants.HopperConstants.kEscalatorTicksInMeter;
+    talonFXEscalatorConfigurator.apply(escalatorFeedbackConfigs);
 
-    // PID configurations for feeder
-    var slot0FeederConfigs = new Slot0Configs();
-    slot0FeederConfigs.kS = 0.1; // Add 0.1 V output to overcome static friction
-    slot0FeederConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
-    slot0FeederConfigs.kP = 0.11; // An error of 1 rps results in 0.11 V output
-    slot0FeederConfigs.kI = 0; // no output for integrated error
-    slot0FeederConfigs.kD = 0; // no output for error derivative
-    talonFXSingulatorConfigurator.apply(slot0FeederConfigs);
+    //current limit configurations for Escalator
+    CurrentLimitsConfigs limitEscalatorConfigs = new CurrentLimitsConfigs();
+    limitEscalatorConfigs.StatorCurrentLimit = 60; //this might be too high idk
+    limitEscalatorConfigs.StatorCurrentLimitEnable = true;
+    talonFXEscalatorConfigurator.apply(limitEscalatorConfigs);
 
-    //motor configurations for feeder
-    MotorOutputConfigs outputFeederConfigs = new MotorOutputConfigs();
-    outputFeederConfigs.Inverted = InvertedValue.Clockwise_Positive;
-    outputFeederConfigs.NeutralMode = NeutralModeValue.Brake;
-    talonFXFeederConfigurator.apply(outputFeederConfigs);
+    // PID configurations for Escalator
+    var slot0EscalatorConfigs = new Slot0Configs();
+    slot0EscalatorConfigs.kS = 0.1; // Add 0.1 V output to overcome static friction
+    slot0EscalatorConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
+    slot0EscalatorConfigs.kP = 0.11; // An error of 1 rps results in 0.11 V output
+    slot0EscalatorConfigs.kI = 0; // no output for integrated error
+    slot0EscalatorConfigs.kD = 0; // no output for error derivative
+    talonFXEscalatorConfigurator.apply(slot0EscalatorConfigs);
+
+    //motor configurations for Escalator
+    MotorOutputConfigs outputEscalatorConfigs = new MotorOutputConfigs();
+    outputEscalatorConfigs.Inverted = InvertedValue.Clockwise_Positive;
+    outputEscalatorConfigs.NeutralMode = NeutralModeValue.Brake;
+    talonFXEscalatorConfigurator.apply(outputEscalatorConfigs);
   }
 
   public void enableSingulator() {
@@ -94,6 +103,10 @@ public class HopperSub extends SubsystemBase {
 
   public void disableSingulator() {
     singulatorEnabled = false;
+  }
+
+  public void setSingulatorPower(double power) {
+    m_singulatorMotor.set(power);
   }
 
   //set singulator velocity with PID in RPS
@@ -108,7 +121,7 @@ public class HopperSub extends SubsystemBase {
   }
 
   public double getSingulatorPosition() {
-    return m_singulatorMotor.getPosition().getValueAsDouble() / Constants.HopperConstants.kSingulatorTicksInMeter;
+    return m_singulatorMotor.getPosition().getValueAsDouble();
   }
 
   public boolean isSingulatorAtTargetVelocity() {
@@ -120,32 +133,37 @@ public class HopperSub extends SubsystemBase {
   }
 
 
-  public void enableFeeder() {
-    feederEnabled = true;
+  public void enableEscalator() {
+    EscalatorEnabled = true;
   }
 
-  public void disableFeeder() {
-    feederEnabled = false;
+  public void disableEscalator() {
+    EscalatorEnabled = false;
   }
 
-  //set feeder velocity with PID in RPS
-  public void setFeederVelocity(double velocity) {
-    targetFeederVelocity = velocity;
+  public void setEscalatorPower(double power) {
+    m_escalatorMotor.set(power);
+  }
+
+  //set Escalator velocity with PID in RPS
+  public void setEscalatorVelocity(double velocity) {
+    targetEscalatorVelocity = velocity;
     //use pid control to set velocity
-    m_singulatorMotor.setControl(m_singulatorVelocityRequest.withVelocity(velocity).withFeedForward(0.0));
+    m_escalatorMotor.setControl(m_escalatorVelocityRequest.withVelocity(velocity).withFeedForward(0.0));
   }
 
-  public double getFeederPosition() {
-    return m_feederMotor.getPosition().getValueAsDouble() / Constants.HopperConstants.kFeederTicksInMeter;
+  public double getEscalatorPosition() {
+    return m_escalatorMotor.getPosition().getValueAsDouble();
   }
 
-  public double getFeederVelocity() {
-    return m_singulatorMotor.getVelocity().getValueAsDouble();
+  public double getEscalatorVelocity() {
+    return m_escalatorMotor.getVelocity().getValueAsDouble();
   }
 
 
-  public boolean isFeederAtTargetVelocity() {
-    if(Constants.HopperConstants.kFeederVelocityTolerance > Math.abs(targetFeederVelocity - getFeederVelocity())) {
+  public boolean isEscalatorAtTargetVelocity() {
+    if(Constants.HopperConstants.kEscalatorVelocityTolerance > Math
+        .abs(targetEscalatorVelocity - getEscalatorVelocity())) {
       return true;
     }
     return false;
@@ -155,16 +173,16 @@ public class HopperSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Singulating", singulatorEnabled);
-    SmartDashboard.putNumber("Singulator Velocity", m_singulatorMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putBoolean("feeding", feederEnabled);
-    SmartDashboard.putNumber("Feeder Velocity", m_feederMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Singulator Velocity", m_escalatorMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putBoolean("Escalating", EscalatorEnabled);
+    SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.getVelocity().getValueAsDouble());
 
     if(singulatorEnabled) {
       setSingulatorVelocity(Constants.HopperConstants.kSingulatorVelocity);
     }
 
-    if(feederEnabled) {
-      setFeederVelocity(Constants.HopperConstants.kFeederVelocity);
+    if(EscalatorEnabled) {
+      setEscalatorVelocity(Constants.HopperConstants.kEscalatorVelocity);
     }
   }
 }
