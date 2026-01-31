@@ -26,13 +26,14 @@ public final class Constants {
     // CTRE Swerve drivetrain uses CAN IDs 1-13 on CANivore bus
     // This does not conflict with the roboRIO bus which can also use these IDs
     public static final int kYawMotor = 1;
-    public static final int kShooterMotor = 2;
+    public static final int kShooterMotor1 = 2;
     public static final int kPitchMotor = 3;
     public static final int kClimbMotor = 4;
     public static final int kSingulatorMotor = 5;
     public static final int kIntakeMotor = 6;
     public static final int kDeployMotor1 = 7;
     public static final int kDeployMotor2 = 8;
+    public static final int kShooterMotor2 = 9;
 
   }
 
@@ -47,6 +48,10 @@ public final class Constants {
     public static final int kShooterYawAbsoluteEncoder2 = 8;
     public static final int kShooterPitchAbsoluteEncoder1 = 9;
     public static final int kShooterPitchAbsoluteEncoder2 = 10;
+    public static final int kShooterIsAtYawCWLimit = 11;
+    public static final int kShooterIsAtYawCCWLimit = 12;
+    public static final int kShooterIsAtPitchLowerLimit = 13;
+    public static final int kShooterIsAtPitchUpperLimit = 14;
   }
 
   public static class FieldElements {
@@ -63,5 +68,16 @@ public final class Constants {
   public static class Vision {
     public static final double kDistanceToCloseToDrive = 0.5;
   }
+
+  public static class Shooter {
+    public static final double kGearRatio = 100;
+    public static final double kShooterYawKS = 0.25;
+    public static final double kShooterYawKV = 0.12;
+    public static final double kShooterYawKP = 0.1;
+    public static final double kShooterYawKI = 0.0;
+    public static final double kShooterYawKD = 0.05;
+    public static final double kPitchMaxPower = 10;
+  }
+
 }
 
