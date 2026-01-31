@@ -71,5 +71,8 @@ public final class Constants {
   public static class Vision {
     public static final double kDistanceToCloseToDrive = 0.5;
   }
+  public static class IntakeConstants {
+    public static final double kRotationToDegrees = 270.0 / 3;
+  }
 }
 
