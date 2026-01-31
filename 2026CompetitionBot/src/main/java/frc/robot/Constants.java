@@ -28,12 +28,14 @@ public final class Constants {
     public static final int kYawMotor = 1;
     public static final int kShooterMotor1 = 2;
     public static final int kPitchMotor = 3;
-    public static final int kClimbMotor = 4;
+    public static final int kRotateMotor = 4;
     public static final int kSingulatorMotor = 5;
     public static final int kIntakeMotor = 6;
     public static final int kDeployMotor1 = 7;
     public static final int kDeployMotor2 = 8;
-    public static final int kShooterMotor2 = 9;
+    public static final int kFeederMotor = 9;
+    public static final int kClimbDeployMotor = 10;
+    public static final int kEscalatorMotor = 11;
 
   }
 
@@ -62,15 +64,20 @@ public final class Constants {
   }
 
   public static class HopperConstants {
-    public static final double singulatorSpeed = 0.5;
-    public static final double singulatorVelocityFlexibility = 0.0;
+    public static final double kSingulatorVelocityTolerance = 4.0;
+    public static final double kMaxSingulatorVelocity = 111.1;
+    public static final double kSingulatorVelocity = 11.1; //singulator velocity needs to be lower than Escalator velocity so we don't get fuel building up in certain areas
+    public static final double kSingulatorTicksInMeter = 6767.1;
+
+    public static final double kEscalatorVelocityTolerance = 4.0;
+    public static final double kMaxEscalatorVelocity = 111.1;
+    public static final double kEscalatorVelocity = 420.1; //Escalator velocity needs to be higher than singulator velocity so we don't get fuel building up in certain areas
+    public static final double kEscalatorTicksInMeter = 6967.1;
   }
   public static class Vision {
     public static final double kDistanceToCloseToDrive = 0.5;
   }
-
   public static class Shooter {
-    public static final double kGearRatio = 100;
     public static final double kShooterYawKS = 0.25;
     public static final double kShooterYawKV = 0.12;
     public static final double kShooterYawKP = 0.1;
@@ -79,5 +86,9 @@ public final class Constants {
     public static final double kPitchMaxPower = 10;
   }
 
+
+  public static final double kRotationToDegrees = 270.0 / 3;
 }
 
+
+ 
