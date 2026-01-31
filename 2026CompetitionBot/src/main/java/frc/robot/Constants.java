@@ -76,5 +76,9 @@ public final class Constants {
   public static class IntakeConstants {
     public static final double kRotationToDegrees = 270.0 / 3;
   }
+
+  public static class Climb {
+    public static final double kEncoderPositionConversionFactor = 1; // needs real value
+  }
 }
 
