@@ -99,7 +99,8 @@ public class RobotContainer {
     //  .whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
 
     m_driverController.x()
-        .whileTrue(new DriveToPoseCmd(new Pose2d(new Translation2d(12.0, 5.5), new Rotation2d(0.0)), m_drivetrainSub));
+        .whileTrue(
+            new DriveToPoseCmd(new Pose2d(new Translation2d(15.222, 5.04), new Rotation2d(-90.0)), m_drivetrainSub));
 
   }
 

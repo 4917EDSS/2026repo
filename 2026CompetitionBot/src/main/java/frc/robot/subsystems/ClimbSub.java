@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -17,7 +18,6 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
 
@@ -25,8 +25,8 @@ public class ClimbSub extends SubsystemBase {
 
   private final TalonFX m_rotateMotor = new TalonFX(Constants.CanIds.kRotateMotor);
   private final SparkMax m_deployMotor = new SparkMax(Constants.CanIds.kClimbDeployMotor, MotorType.kBrushless);
-  private final DigitalInput m_climbInLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
-  private final DigitalInput m_climbOutLimit = new DigitalInput(Constants.DioIds.kClimbOutLimitSwitch);
+  private final SparkLimitSwitch m_inboardLimit = m_deployMotor.getForwardLimitSwitch();
+  private final SparkLimitSwitch m_outboardLimit = m_deployMotor.getReverseLimitSwitch();
 
   /** Creates a new ClimbSub. */
   public ClimbSub() {
@@ -34,9 +34,10 @@ public class ClimbSub extends SubsystemBase {
     SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
 
     sparkMaxConfig
-        .inverted(true)
-        .smartCurrentLimit(5)
-        .idleMode(IdleMode.kBrake);
+        .inverted(false)
+        .smartCurrentLimit(100)
+        .idleMode(IdleMode.kBrake).encoder
+            .positionConversionFactor(Constants.Climb.kEncoderPositionConversionFactor);
 
     m_deployMotor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -60,24 +61,22 @@ public class ClimbSub extends SubsystemBase {
     // This method will be called once per scheduler run
 
     //stop if the climb is moving and at the up limit
-    if(isAtOutLimit() && getPower() > 0) {
+    if(isAtOutLimit() && getRotatePower() > 0) {
       m_rotateMotor.set(0.0);
     }
     //stop if the climb is at the bottom limit OR shoots below limit AND it is still moving
-    else if((isAtInLimit() || getPosition() <= 0.0) && (getPower() > 0)) {
-      //setPower(0);
+    else if((isAtInLimit() || getRotatePosition() <= 0.0) && (getRotatePower() > 0)) {
+      setRotatePower(0);
     }
   }
 
   //returns if climb is at limit
   public boolean isAtInLimit() {
-    return !m_climbInLimit.get();
-
+    return m_inboardLimit.isPressed();
   }
 
   public boolean isAtOutLimit() {
-    return !m_climbOutLimit.get();
-
+    return m_outboardLimit.isPressed();
   }
 
   /**
@@ -99,21 +98,19 @@ public class ClimbSub extends SubsystemBase {
    */
   public void resetPosition() {
     m_rotateMotor.setPosition(0);
-
   }
 
-  //  public boolean isAtRotationZero() {
-  // return (m_climbMotor.)
-  //}
+  public boolean isEncoderResetSwitchHit() {
+    return false; // get cansub rotation limit switch
+  }
 
   /**
    * Returns the current angular position of the climb arm
    * 
    * @return position in degrees
    */
-  public double getPosition() {
-    return m_rotateMotor.getPosition().getValueAsDouble();
-
+  public double getRotatePosition() {
+    return m_rotateMotor.getPosition().getValueAsDouble(); // likely not in degrees
   }
 
   /**
@@ -123,19 +120,18 @@ public class ClimbSub extends SubsystemBase {
    */
   public double getVelocity() {
     return m_rotateMotor.getRotorVelocity().getValueAsDouble();
-
   }
 
-  // public double getDeployDistance() {
-  //   return m_deployMotor.
-  // }
+  public double getDeployDistance() {
+    return m_deployMotor.getEncoder().getPosition();
+  }
 
   /**
    * Returns current power between -1 and 1
    * 
    * @return power
    */
-  public double getPower() {
+  public double getRotatePower() {
     return m_rotateMotor.get();
   }
 
