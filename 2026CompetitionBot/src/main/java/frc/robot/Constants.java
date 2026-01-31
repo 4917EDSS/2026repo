@@ -33,6 +33,7 @@ public final class Constants {
     public static final int kIntakeMotor = 6;
     public static final int kDeployMotor1 = 7;
     public static final int kDeployMotor2 = 8;
+    public static final int kFeederMotor = 9;
 
   }
 
@@ -57,8 +58,15 @@ public final class Constants {
   }
 
   public static class HopperConstants {
-    public static final double singulatorSpeed = 0.5;
-    public static final double singulatorVelocityFlexibility = 0.0;
+    public static final double kSingulatorVelocityTolerance = 4.0;
+    public static final double kMaxSingulatorVelocity = 111.1;
+    public static final double kSingulatorVelocity = 11.1; //singulator velocity needs to be lower than feeder velocity so we don't get fuel building up in certain areas
+    public static final double kSingulatorTicksInMeter = 6767.1;
+
+    public static final double kFeederVelocityTolerance = 4.0;
+    public static final double kMaxFeederVelocity = 111.1;
+    public static final double kFeederVelocity = 420.1; //feeder velocity needs to be higher than singulator velocity so we don't get fuel building up in certain areas
+    public static final double kFeederTicksInMeter = 6967.1;
   }
   public static class Vision {
     public static final double kDistanceToCloseToDrive = 0.5;
