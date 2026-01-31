@@ -5,8 +5,11 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -21,68 +24,165 @@ public class HopperSub extends SubsystemBase {
   //2 ir sensors for hopper full and hopper empty (1 each)
   //internal encoder for singulator velocity
 
-  double targetVelocity = 0.0;
-  double targetPower = 0.0;
+
+  //request objects for velocity PID control
+  final VelocityVoltage m_singulatorVelocityRequest = new VelocityVoltage(0).withSlot(0);
+  final VelocityVoltage m_escalatorVelocityRequest = new VelocityVoltage(0).withSlot(0);
 
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kSingulatorMotor);
-  private Boolean singulatorMoving = false;
+  private final TalonFX m_escalatorMotor = new TalonFX(Constants.CanIds.kEscalatorMotor);
+
+  private Boolean singulatorEnabled = false;
+  private boolean EscalatorEnabled = false;
+  private double targetSingulatorVelocity = 0.0;
+  private double targetEscalatorVelocity = 0.0;
 
   /** Creates a new HopperSub. */
   public HopperSub() {
-    TalonFXConfigurator talonFXConfigurator = m_singulatorMotor.getConfigurator();
+    //singulator configurating
+    TalonFXConfigurator talonFXSingulatorConfigurator = m_singulatorMotor.getConfigurator();
 
-    CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-    limitConfigs.StatorCurrentLimit = 60; //this might be too high idk
-    limitConfigs.StatorCurrentLimitEnable = true;
-    talonFXConfigurator.apply(limitConfigs);
+    FeedbackConfigs singulatorFeedbackConfigs = new FeedbackConfigs();
+    singulatorFeedbackConfigs.SensorToMechanismRatio = Constants.HopperConstants.kSingulatorTicksInMeter;
+    talonFXSingulatorConfigurator.apply(singulatorFeedbackConfigs);
 
-    MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
-    outputConfigs.Inverted = InvertedValue.Clockwise_Positive;
-    outputConfigs.NeutralMode = NeutralModeValue.Brake;
-    talonFXConfigurator.apply(outputConfigs);
+    //current limits configurations for singulator
+    CurrentLimitsConfigs limitSingulatorConfigs = new CurrentLimitsConfigs();
+    limitSingulatorConfigs.StatorCurrentLimit = 60; //this might be too high idk
+    limitSingulatorConfigs.StatorCurrentLimitEnable = true;
+    talonFXSingulatorConfigurator.apply(limitSingulatorConfigs);
+
+    // PID configurations for singulator
+    var slot0SingulatorConfigs = new Slot0Configs();
+    slot0SingulatorConfigs.kS = 0.1; // Add 0.1 V output to overcome static friction
+    slot0SingulatorConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
+    slot0SingulatorConfigs.kP = 0.11; // An error of 1 rps results in 0.11 V output
+    slot0SingulatorConfigs.kI = 0; // no output for integrated error
+    slot0SingulatorConfigs.kD = 0; // no output for error derivative
+    talonFXSingulatorConfigurator.apply(slot0SingulatorConfigs);
+
+    //motor configurations for singulator
+    MotorOutputConfigs outputSingulatorConfigs = new MotorOutputConfigs();
+    outputSingulatorConfigs.Inverted = InvertedValue.Clockwise_Positive;
+    outputSingulatorConfigs.NeutralMode = NeutralModeValue.Brake;
+    talonFXSingulatorConfigurator.apply(outputSingulatorConfigs);
+
+
+    //Escalator configurating
+    TalonFXConfigurator talonFXEscalatorConfigurator = m_escalatorMotor.getConfigurator();
+
+    FeedbackConfigs escalatorFeedbackConfigs = new FeedbackConfigs();
+    escalatorFeedbackConfigs.SensorToMechanismRatio = Constants.HopperConstants.kEscalatorTicksInMeter;
+    talonFXEscalatorConfigurator.apply(escalatorFeedbackConfigs);
+
+    //current limit configurations for Escalator
+    CurrentLimitsConfigs limitEscalatorConfigs = new CurrentLimitsConfigs();
+    limitEscalatorConfigs.StatorCurrentLimit = 60; //this might be too high idk
+    limitEscalatorConfigs.StatorCurrentLimitEnable = true;
+    talonFXEscalatorConfigurator.apply(limitEscalatorConfigs);
+
+    // PID configurations for Escalator
+    var slot0EscalatorConfigs = new Slot0Configs();
+    slot0EscalatorConfigs.kS = 0.1; // Add 0.1 V output to overcome static friction
+    slot0EscalatorConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
+    slot0EscalatorConfigs.kP = 0.11; // An error of 1 rps results in 0.11 V output
+    slot0EscalatorConfigs.kI = 0; // no output for integrated error
+    slot0EscalatorConfigs.kD = 0; // no output for error derivative
+    talonFXEscalatorConfigurator.apply(slot0EscalatorConfigs);
+
+    //motor configurations for Escalator
+    MotorOutputConfigs outputEscalatorConfigs = new MotorOutputConfigs();
+    outputEscalatorConfigs.Inverted = InvertedValue.Clockwise_Positive;
+    outputEscalatorConfigs.NeutralMode = NeutralModeValue.Brake;
+    talonFXEscalatorConfigurator.apply(outputEscalatorConfigs);
   }
 
-  public void runSingulator(double speed) {
-    m_singulatorMotor.set(speed);
-    singulatorMoving = true;
+  public void enableSingulator() {
+    singulatorEnabled = true;
   }
 
-  public void stopSingulator() {
-    m_singulatorMotor.set(0.0);
-    singulatorMoving = false;
+  public void disableSingulator() {
+    singulatorEnabled = false;
+  }
+
+  public void setSingulatorPower(double power) {
+    m_singulatorMotor.set(power);
+  }
+
+  //set singulator velocity with PID in RPS
+  public void setSingulatorVelocity(double velocity) {
+    targetSingulatorVelocity = velocity;
+    //use pid control to set velocity
+    m_singulatorMotor.setControl(m_singulatorVelocityRequest.withVelocity(velocity).withFeedForward(0.0));
   }
 
   public double getSingulatorVelocity() {
-    singulatorMoving = true;
     return m_singulatorMotor.getVelocity().getValueAsDouble();
   }
 
-  public void setSpindulatorTargetVelocity(double velocity) {
-    targetVelocity = velocity;
+  public double getSingulatorPosition() {
+    return m_singulatorMotor.getPosition().getValueAsDouble();
   }
 
-  public boolean isAtTargetVelocity() {
-    if(Constants.HopperConstants.singulatorVelocityFlexibility > Math.abs(targetVelocity - getSingulatorVelocity())) {
+  public boolean isSingulatorAtTargetVelocity() {
+    if(Constants.HopperConstants.kSingulatorVelocityTolerance > Math
+        .abs(targetSingulatorVelocity - getSingulatorVelocity())) {
       return true;
     }
     return false;
   }
 
-  public void runVelocityControl() {
-    if(isAtTargetVelocity()) {
-      //stop accelerating
-      runSingulator(0);
-      return;
-    }
-    //change power
+
+  public void enableEscalator() {
+    EscalatorEnabled = true;
+  }
+
+  public void disableEscalator() {
+    EscalatorEnabled = false;
+  }
+
+  public void setEscalatorPower(double power) {
+    m_escalatorMotor.set(power);
+  }
+
+  //set Escalator velocity with PID in RPS
+  public void setEscalatorVelocity(double velocity) {
+    targetEscalatorVelocity = velocity;
+    //use pid control to set velocity
+    m_escalatorMotor.setControl(m_escalatorVelocityRequest.withVelocity(velocity).withFeedForward(0.0));
+  }
+
+  public double getEscalatorPosition() {
+    return m_escalatorMotor.getPosition().getValueAsDouble();
+  }
+
+  public double getEscalatorVelocity() {
+    return m_escalatorMotor.getVelocity().getValueAsDouble();
   }
 
 
+  public boolean isEscalatorAtTargetVelocity() {
+    if(Constants.HopperConstants.kEscalatorVelocityTolerance > Math
+        .abs(targetEscalatorVelocity - getEscalatorVelocity())) {
+      return true;
+    }
+    return false;
+  }
+
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Singulating", singulatorMoving);
-    SmartDashboard.putNumber("Singulator Velocity", m_singulatorMotor.getVelocity().getValueAsDouble());
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Singulating", singulatorEnabled);
+    SmartDashboard.putNumber("Singulator Velocity", m_escalatorMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putBoolean("Escalating", EscalatorEnabled);
+    SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.getVelocity().getValueAsDouble());
 
+    if(singulatorEnabled) {
+      setSingulatorVelocity(Constants.HopperConstants.kSingulatorVelocity);
+    }
+
+    if(EscalatorEnabled) {
+      setEscalatorVelocity(Constants.HopperConstants.kEscalatorVelocity);
+    }
   }
 }

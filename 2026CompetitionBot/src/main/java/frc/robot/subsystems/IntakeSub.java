@@ -4,22 +4,19 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.logging.Logger;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLimitSwitch;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
-
 import frc.robot.Constants;
 
 // 2 Neo 550s for deployment
@@ -33,6 +30,7 @@ public class IntakeSub extends SubsystemBase {
   private final SparkMax m_beltMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
   private final Encoder m_intakeAbsoluteEncoder =
       new Encoder(Constants.DioIds.kIntakeAbsoluteEncoder1, Constants.DioIds.kIntakeAbsoluteEncoder2);
+  private final SparkMax m_pivotMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
 
 
   private final SparkMax m_deployMotor1 = new SparkMax(Constants.CanIds.kDeployMotor1, MotorType.kBrushless);
@@ -41,6 +39,7 @@ public class IntakeSub extends SubsystemBase {
   private final DigitalInput m_intakeOutLimit = new DigitalInput(Constants.DioIds.kIntakeOutLimitSwitch);
 
   private double m_armPower = 0;
+  // Not the final conversion values
 
 
   /** Creates a new IntakeSub. */
@@ -54,7 +53,7 @@ public class IntakeSub extends SubsystemBase {
         .inverted(true) // Set to true to invert the forward motor direction
         .smartCurrentLimit(60) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(0)
+            .positionConversionFactor(Constants.IntakeConstants.kRotationToDegrees)
             .velocityConversionFactor(0);
 
     AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
@@ -64,18 +63,21 @@ public class IntakeSub extends SubsystemBase {
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this
     // operation can be slow
-    m_beltMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters);
-    m_deployMotor1.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters);
-    m_deployMotor2.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters);
+    m_beltMotor.configure(motorConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+    m_deployMotor1.configure(motorConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+    m_deployMotor2.configure(motorConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+
+
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("intake status", m_intakeIsOn);
+
   }
 
   public void intake() {
@@ -110,4 +112,9 @@ public class IntakeSub extends SubsystemBase {
   public void getIntakeEncoder() {
     m_intakeAbsoluteEncoder.getDistance();
   }
+
+  public double getCurrentAngle() {
+    return m_pivotMotor.getEncoder().getPosition();
+  }
+
 }
