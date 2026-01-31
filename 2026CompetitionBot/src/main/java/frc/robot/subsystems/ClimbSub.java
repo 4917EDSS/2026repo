@@ -65,7 +65,7 @@ public class ClimbSub extends SubsystemBase {
       m_rotateMotor.set(0.0);
     }
     //stop if the climb is at the bottom limit OR shoots below limit AND it is still moving
-    else if((isAtInLimit() || getRotatePosition() <= 0.0) && (getRotatePower() > 0)) {
+    else if((isAtInLimit() || getRotationAngle() <= 0.0) && (getRotatePower() > 0)) {
       setRotatePower(0);
     }
   }
@@ -109,8 +109,8 @@ public class ClimbSub extends SubsystemBase {
    * 
    * @return position in degrees
    */
-  public double getRotatePosition() {
-    return m_rotateMotor.getPosition().getValueAsDouble(); // likely not in degrees
+  public double getRotationAngle() {
+    return m_rotateMotor.getPosition().getValueAsDouble() * 360; // likely not in degrees
   }
 
   /**
