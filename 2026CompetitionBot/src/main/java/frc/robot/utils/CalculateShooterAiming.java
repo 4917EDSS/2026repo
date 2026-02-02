@@ -14,9 +14,7 @@ import frc.robot.Constants;
 /** Add your docs here. */
 public class CalculateShooterAiming {
 
-  public final double GRAVITY = 9.81;
-
-  public double getAngle(Pose3d robot) {
+  public double getYawAngle(Pose3d robot) {
     Alliance alliance = GameData.getAlliance();
 
     Pose3d shooterPoseinfield = new Pose3d();
@@ -58,7 +56,7 @@ public class CalculateShooterAiming {
     double vy = launchVelocity * Math.sin(launchAngle);
 
 
-    double a = 0.5 * GRAVITY;
+    double a = 0.5 * Constants.Shooter.kGravity;
     double b = -vy;
     double c = elevation;
     double discriminant = b * b - 4 * a * c;
@@ -87,7 +85,7 @@ public class CalculateShooterAiming {
     }
 
     double vy0 = launchVelocity * Math.sin(launchAngle);
-    double vyAtTarget = vy0 * GRAVITY * timeOfFlight;
+    double vyAtTarget = vy0 * Constants.Shooter.kGravity * timeOfFlight;
 
 
     return Math.atan2(vyAtTarget, vx);

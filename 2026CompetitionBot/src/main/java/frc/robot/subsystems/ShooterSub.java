@@ -53,7 +53,7 @@ public class ShooterSub extends SubsystemBase {
 
   private final TalonFX m_shooterMotor1 = new TalonFX(Constants.CanIds.kShooterMotor1);
   private final TalonFX m_shooterMotor2 = new TalonFX(Constants.CanIds.kShooterMotor2);
-  private StatusSignal<AngularVelocity> m_shooterVelcocitySignal;
+  private StatusSignal<AngularVelocity> m_shooterVelocitySignal;
 
   // private final Encoder m_yawAbsoluteEncoder =
   //     new Encoder(Constants.DioIds.kShooterYawAbsoluteEncoder1, Constants.DioIds.kShooterYawAbsoluteEncoder2);
@@ -64,6 +64,9 @@ public class ShooterSub extends SubsystemBase {
   private double m_targetYawAngle = 0;
   private double m_targetPitchAngle = 0;
   private double m_targetFlywheelVelocity = 0;
+
+  private boolean m_runVelocityControl = false;
+  private double m_targetPower = 0.7; // set default feed forward power, probably want to set this proportional 
 
   //Pid Controls
   private double m_pitchKp = 0.02;
@@ -112,9 +115,25 @@ public class ShooterSub extends SubsystemBase {
     talonFXConfigurator.apply(outputConfigs);
 
     //setting up internal encoder for TalonFX
-    m_shooterVelcocitySignal = m_shooterMotor1.getVelocity();
+    m_shooterVelocitySignal = m_shooterMotor1.getVelocity();
   }
 
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+
+    // if the current flywheel velocity is less than the target flywheel velocity, speed it up proportionally, if its greater, slow it down
+    if (m_runVelocityControl) {
+      if (getFlywheelVelocity() < m_targetFlywheelVelocity) {
+        setFlywheelPower(Math.min(m_targetPower + ((m_targetFlywheelVelocity - getFlywheelVelocity()) / m_targetFlywheelVelocity), 1.0));
+      } else if (getFlywheelVelocity() > m_targetFlywheelVelocity) {
+        setFlywheelPower(Math.max(((getFlywheelVelocity() - m_targetFlywheelVelocity) / getFlywheelVelocity()), 0.0));
+      } else {
+        setFlywheelPower(m_targetFlywheelVelocity);
+      }
+    }
+  }
 
   public boolean shooterIsAtYawCWLimit() {
     return m_yawMotor.getForwardLimitSwitch().isPressed();
@@ -141,11 +160,9 @@ public class ShooterSub extends SubsystemBase {
     return distance;
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void setFlywheelPower(double power) {
+    m_shooterMotor1.set(power);
   }
-
 
   public void setTargetYawAngle(double angle) {
     // Not doing anything yet
@@ -188,9 +205,13 @@ public class ShooterSub extends SubsystemBase {
     double activeAngle = m_targetPitchAngle;
   }
 
+  public void runFlyhweelVelocityControl(boolean run) {
+    m_runVelocityControl = run;
+  }
+
   public double getFlywheelVelocity() {
     //returning in RPM
-    return m_shooterVelcocitySignal.getValueAsDouble() * 60;
+    return m_shooterVelocitySignal.getValueAsDouble() * 60;
   }
 
   public boolean isAtTargetVelocity() {

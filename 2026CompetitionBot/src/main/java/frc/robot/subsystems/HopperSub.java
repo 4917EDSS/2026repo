@@ -169,6 +169,14 @@ public class HopperSub extends SubsystemBase {
     return false;
   }
 
+  public boolean isFull() {
+    return true; // need sensor from cansub
+  }
+
+  public boolean isEmpty() {
+    return false; // need sensor from cansub
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

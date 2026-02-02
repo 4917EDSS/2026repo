@@ -60,11 +60,11 @@ public class ClimbSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    //stop if the climb is moving and at the up limit
+    //stop if the climb is moving and at the out limit
     if(isAtOutLimit() && getRotatePower() > 0) {
       m_rotateMotor.set(0.0);
     }
-    //stop if the climb is at the bottom limit OR shoots below limit AND it is still moving
+    //stop if the climb is at the in limit OR shoots below limit AND it is still moving
     else if((isAtInLimit() || getRotationAngle() <= 0.0) && (getRotatePower() > 0)) {
       setRotatePower(0);
     }
@@ -93,11 +93,27 @@ public class ClimbSub extends SubsystemBase {
     m_deployMotor.set(power);
   }
 
+  public void setTargetAngle(double angle, double power) { // placeholder, needs kraken motion magic
+    while (getRotationAngle() < angle) {
+      setRotatePower(power);
+    }
+  }
+  
+  public void setTargetDeployDistance(double distance, double power) { // same, maybe fixed power
+    while (getDeployDistance() < distance) { 
+      m_deployMotor.set(power);
+    }
+  }
+
   /**
    * Sets the current angle as the zero angle
    */
   public void resetPosition() {
     m_rotateMotor.setPosition(0);
+  }
+
+  public boolean isAtTargetDistance(double distance) {
+    return (getDeployDistance() > distance); // maybe put in between +-error value
   }
 
   public boolean isEncoderResetSwitchHit() {
@@ -110,7 +126,7 @@ public class ClimbSub extends SubsystemBase {
    * @return position in degrees
    */
   public double getRotationAngle() {
-    return m_rotateMotor.getPosition().getValueAsDouble() * 360; // likely not in degrees
+    return m_rotateMotor.getPosition().getValueAsDouble() * 360;
   }
 
   /**
