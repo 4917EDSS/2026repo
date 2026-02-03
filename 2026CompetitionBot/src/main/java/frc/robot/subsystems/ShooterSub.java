@@ -244,7 +244,7 @@ public class ShooterSub extends SubsystemBase {
     m_shooterMotor1.setVoltage(voltage);
   }
 
-
+  //set current power based on target for yaw
   private void runYawControl(boolean updateYawPower) {
     double activeAngle = m_targetYawAngle;
 
@@ -259,6 +259,7 @@ public class ShooterSub extends SubsystemBase {
     setYawVoltage(pidPower);
   }
 
+  //set current power based on target for pitch
   private void runPitchControl() {
     Double currentAngle = getPitchAngle();
 
@@ -277,6 +278,7 @@ public class ShooterSub extends SubsystemBase {
     m_runVelocityControl = run;
   }
 
+  //set current power based on target for flywheel velocity
   private void runFlyhweelVelocityControl(boolean run) {
     // Flywheel needs to spin at set velocity prior to m_pivotSub.spinBothFeeders being executed. 
     if(m_runVelocityControl) {
