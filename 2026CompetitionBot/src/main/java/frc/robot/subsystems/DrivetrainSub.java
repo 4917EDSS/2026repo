@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -231,7 +232,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
 
     SmartDashboard.putNumber("current x", getState().Pose.getX());
     SmartDashboard.putNumber("current y", getState().Pose.getY());
-    SmartDashboard.putNumber("current rot", getState().Pose.getRotation().getDegrees());
+    SmartDashboard.putNumber("current rot", getPigeonGyro().getYaw().getValueAsDouble());
   }
 
   private void startSimThread() {
@@ -292,5 +293,9 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
   @Override
   public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
     return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
+  }
+
+  public Pigeon2 getPigeonGyro() {
+    return getPigeon2();
   }
 }
