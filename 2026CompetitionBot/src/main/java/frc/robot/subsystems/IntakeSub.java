@@ -31,7 +31,7 @@ public class IntakeSub extends SubsystemBase {
   private final SparkMax m_beltMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
   private final Encoder m_intakeAbsoluteEncoder =
       new Encoder(Constants.DioIds.kIntakeAbsoluteEncoder1, Constants.DioIds.kIntakeAbsoluteEncoder2);
-  private final SparkMax m_pivotMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
+  //private final SparkMax m_pivotMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
 
 
   private final SparkMax m_deployMotor1 = new SparkMax(Constants.CanIds.kDeployMotor1, MotorType.kBrushless);
@@ -114,9 +114,9 @@ public class IntakeSub extends SubsystemBase {
     m_intakeAbsoluteEncoder.getDistance();
   }
 
-  public double getCurrentAngle() {
-    return m_pivotMotor.getEncoder().getPosition();
-  }
+  //public double getCurrentAngle() {
+  //return m_pivotMotor.getEncoder().getPosition();
+  //}
 
   public void setAngle(double m_TargetAngle) {
     // m_pivotMotor 
