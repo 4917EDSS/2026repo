@@ -99,6 +99,7 @@ public class HopperSub extends SubsystemBase {
     talonFXEscalatorConfigurator.apply(outputEscalatorConfigs);
   }
 
+  // TODO potentienly activate singulator and escalator at the same time
   public void enableSingulator() {
     singulatorEnabled = true;
   }
