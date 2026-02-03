@@ -7,12 +7,16 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.HopperSub;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SpinEscalator extends Command {
+/*
+ * You should consider using the more terse Command factories API instead
+ * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
+ */
+public class SpinEscalatorCmd extends Command {
   HopperSub m_hopperSub;
   double m_velocity;
+
   /** Creates a new SpinEscalator. */
-  public SpinEscalator(HopperSub hoppersub, double velocity) {
+  public SpinEscalatorCmd(HopperSub hoppersub, double velocity) {
     m_hopperSub = hoppersub;
     m_velocity = velocity;
     addRequirements(m_hopperSub);

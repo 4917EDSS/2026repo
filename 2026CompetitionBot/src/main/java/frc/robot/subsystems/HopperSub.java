@@ -36,9 +36,11 @@ public class HopperSub extends SubsystemBase {
   private boolean escalatorEnabled = false;
   private double targetSingulatorVelocity = 0.0;
   private double targetEscalatorVelocity = 0.0;
+  CanSub m_canSub;
 
   /** Creates a new HopperSub. */
-  public HopperSub() {
+  public HopperSub(CanSub canSub) {
+    m_canSub = canSub;
     //singulator configurating
     TalonFXConfigurator talonFXSingulatorConfigurator = m_singulatorMotor.getConfigurator();
 
@@ -106,7 +108,7 @@ public class HopperSub extends SubsystemBase {
   }
 
   public void setSingulatorPower(double power) {
-     // Disable velocity control to stop interferring 
+    // Disable velocity control to stop interferring 
     disableSingulator();
     m_singulatorMotor.set(power);
   }
@@ -174,11 +176,15 @@ public class HopperSub extends SubsystemBase {
   }
 
   public boolean isFull() {
-    return true; // need sensor from cansub
+    return m_canSub.isHopperFull(); // need sensor from cansub
+  }
+
+  public boolean isFuelInEscalator() {
+    return m_canSub.isFuelInEscalator();
   }
 
   public boolean isEmpty() {
-    return false; // need sensor from cansub
+    return m_canSub.isHopperEmpty(); // need sensor from cansub
   }
 
   @Override
