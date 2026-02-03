@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.HopperSub;
@@ -56,8 +57,9 @@ public class RobotContainer {
   private final CommandXboxController m_operatorContoller =
       new CommandXboxController(Constants.OperatorConstants.kOperatorControllerPort);
   public final ClimbSub m_climbSub = new ClimbSub();
+  public final CanSub m_CanSub = new CanSub();
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
-  public final HopperSub m_hopperSub = new HopperSub();
+  public final HopperSub m_hopperSub = new HopperSub(m_CanSub);
   public final IntakeSub m_intakeSub = new IntakeSub();
   public final ShooterSub m_shooterSub = new ShooterSub();
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);

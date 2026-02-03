@@ -33,12 +33,14 @@ public class HopperSub extends SubsystemBase {
   private final TalonFX m_escalatorMotor = new TalonFX(Constants.CanIds.kEscalatorMotor);
 
   private Boolean singulatorEnabled = false;
-  private boolean EscalatorEnabled = false;
+  private boolean escalatorEnabled = false;
   private double targetSingulatorVelocity = 0.0;
   private double targetEscalatorVelocity = 0.0;
+  CanSub m_canSub;
 
   /** Creates a new HopperSub. */
-  public HopperSub() {
+  public HopperSub(CanSub canSub) {
+    m_canSub = canSub;
     //singulator configurating
     TalonFXConfigurator talonFXSingulatorConfigurator = m_singulatorMotor.getConfigurator();
 
@@ -97,6 +99,7 @@ public class HopperSub extends SubsystemBase {
     talonFXEscalatorConfigurator.apply(outputEscalatorConfigs);
   }
 
+  // TODO potentienly activate singulator and escalator at the same time
   public void enableSingulator() {
     singulatorEnabled = true;
   }
@@ -106,6 +109,8 @@ public class HopperSub extends SubsystemBase {
   }
 
   public void setSingulatorPower(double power) {
+    // Disable velocity control to stop interferring 
+    disableSingulator();
     m_singulatorMotor.set(power);
   }
 
@@ -116,12 +121,12 @@ public class HopperSub extends SubsystemBase {
     m_singulatorMotor.setControl(m_singulatorVelocityRequest.withVelocity(velocity).withFeedForward(0.0));
   }
 
-  public double getSingulatorVelocity() {
-    return m_singulatorMotor.getVelocity().getValueAsDouble();
+  public boolean isSingulatorEnabled() {
+    return singulatorEnabled;
   }
 
-  public double getSingulatorPosition() {
-    return m_singulatorMotor.getPosition().getValueAsDouble();
+  public double getSingulatorVelocity() {
+    return m_singulatorMotor.getVelocity().getValueAsDouble();
   }
 
   public boolean isSingulatorAtTargetVelocity() {
@@ -134,14 +139,20 @@ public class HopperSub extends SubsystemBase {
 
 
   public void enableEscalator() {
-    EscalatorEnabled = true;
+    escalatorEnabled = true;
   }
 
   public void disableEscalator() {
-    EscalatorEnabled = false;
+    escalatorEnabled = false;
+  }
+
+  public boolean isEscalatorEnabled() {
+    return escalatorEnabled;
   }
 
   public void setEscalatorPower(double power) {
+    // disable velocity control to stop interferring 
+    disableEscalator();
     m_escalatorMotor.set(power);
   }
 
@@ -150,10 +161,6 @@ public class HopperSub extends SubsystemBase {
     targetEscalatorVelocity = velocity;
     //use pid control to set velocity
     m_escalatorMotor.setControl(m_escalatorVelocityRequest.withVelocity(velocity).withFeedForward(0.0));
-  }
-
-  public double getEscalatorPosition() {
-    return m_escalatorMotor.getPosition().getValueAsDouble();
   }
 
   public double getEscalatorVelocity() {
@@ -169,19 +176,31 @@ public class HopperSub extends SubsystemBase {
     return false;
   }
 
+  public boolean isFull() {
+    return m_canSub.isHopperFull(); // need sensor from cansub
+  }
+
+  public boolean isFuelInEscalator() {
+    return m_canSub.isFuelInEscalator();
+  }
+
+  public boolean isEmpty() {
+    return m_canSub.isHopperEmpty(); // need sensor from cansub
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Singulating", singulatorEnabled);
     SmartDashboard.putNumber("Singulator Velocity", m_escalatorMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putBoolean("Escalating", EscalatorEnabled);
+    SmartDashboard.putBoolean("Escalating", escalatorEnabled);
     SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.getVelocity().getValueAsDouble());
 
     if(singulatorEnabled) {
       setSingulatorVelocity(Constants.HopperConstants.kSingulatorVelocity);
     }
 
-    if(EscalatorEnabled) {
+    if(escalatorEnabled) {
       setEscalatorVelocity(Constants.HopperConstants.kEscalatorVelocity);
     }
   }

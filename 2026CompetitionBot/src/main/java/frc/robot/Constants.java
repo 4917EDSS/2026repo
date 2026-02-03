@@ -86,6 +86,8 @@ public final class Constants {
     public static final double kShooterYawKI = 0.0;
     public static final double kShooterYawKD = 0.05;
     public static final double kPitchMaxPower = 10;
+    public static final double kYawMaxPower = 10;
+    public static final double kGravity = 9.80665;
   }
 
   public static class IntakeConstants {
