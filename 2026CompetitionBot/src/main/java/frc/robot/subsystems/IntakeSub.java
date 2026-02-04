@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.util.logging.Logger;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.controller.PIDController;
 import frc.robot.Constants;
 
 // 2 Neo 550s for deployment
@@ -29,15 +31,19 @@ public class IntakeSub extends SubsystemBase {
   private final SparkMax m_beltMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
   private final Encoder m_intakeAbsoluteEncoder =
       new Encoder(Constants.DioIds.kIntakeAbsoluteEncoder1, Constants.DioIds.kIntakeAbsoluteEncoder2);
-  private final SparkMax m_pivotMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
+  //private final SparkMax m_pivotMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
 
 
   private final SparkMax m_deployMotor1 = new SparkMax(Constants.CanIds.kDeployMotor1, MotorType.kBrushless);
   private final SparkMax m_deployMotor2 = new SparkMax(Constants.CanIds.kDeployMotor2, MotorType.kBrushless);
-  private final DigitalInput m_intakeInLimit = new DigitalInput(Constants.DioIds.kIntakeInLimitSwitch);
-  private final DigitalInput m_intakeOutLimit = new DigitalInput(Constants.DioIds.kIntakeOutLimitSwitch);
 
   private double m_armPower = 0;
+  private boolean m_runTargetControl = false;
+  private double m_targetAngle = 0;
+  private double m_kP = 0.022;
+  private double m_kI = 0.0;
+  private double m_kD = 0.0;
+  private final PIDController m_deployPid = new PIDController(m_kP, m_kI, m_kD);
   // Not the final conversion values
 
 
@@ -49,7 +55,7 @@ public class IntakeSub extends SubsystemBase {
 
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
-        .inverted(true) // Set to true to invert the forward motor direction
+        .inverted(false) // Set to true to invert the forward motor direction
         .smartCurrentLimit(60) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.IntakeConstants.kRotationToDegrees)
@@ -84,24 +90,20 @@ public class IntakeSub extends SubsystemBase {
     m_intakeIsOn = true;
   }
 
-  public void setIntakePower(double power) {
+  public void setBeltPower(double power) {
     m_beltMotor.set(power);
   }
 
-  public void setIntakeArmPower(double power) {
+  public void setDeployPower(double power) {
     m_deployMotor1.set(power);
   }
 
-  public double getIntakeArmPower() {
-    return m_deployMotor1.get();
+  public boolean isAtInLimit() {
+    return m_deployMotor1.getReverseLimitSwitch().isPressed();
   }
 
-  public boolean isIntakeAtInLimit() {
-    return m_intakeInLimit.get();
-  }
-
-  public boolean isIntakeAtOutLimit() {
-    return m_intakeOutLimit.get();
+  public boolean isAtOutLimit() {
+    return m_deployMotor1.getForwardLimitSwitch().isPressed();
   }
 
   public void resetEncoder() {
@@ -112,8 +114,21 @@ public class IntakeSub extends SubsystemBase {
     m_intakeAbsoluteEncoder.getDistance();
   }
 
-  public double getCurrentAngle() {
-    return m_pivotMotor.getEncoder().getPosition();
+  //public double getCurrentAngle() {
+  //return m_pivotMotor.getEncoder().getPosition();
+  //}
+
+  public void setAngle(double m_TargetAngle) {
+    // m_pivotMotor 
+    //to do later
+  }
+
+  private void runAngleControl(boolean updatePower) {
+    double activeAngle = m_targetAngle;
+    // if holding set low power 
+    double pidPower = m_deployPid.calculate(getCurrentAngle(), activeAngle);
+    // setPower(PidPower)
+    // to do
   }
 
 }
