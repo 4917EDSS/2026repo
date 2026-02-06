@@ -18,13 +18,15 @@ import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 // Neo 550(yaw)
@@ -51,7 +53,7 @@ public class ShooterSub extends SubsystemBase {
 
   private final TalonFX m_shooterMotor1 = new TalonFX(Constants.CanIds.kShooterMotor1);
   private final TalonFX m_shooterMotor2 = new TalonFX(Constants.CanIds.kShooterMotor2);
-  private StatusSignal<AngularVelocity> m_shooterVelocitySignal;
+  private StatusSignal<AngularVelocity> m_shooterVelcocitySignal;
 
   // private final Encoder m_yawAbsoluteEncoder =
   //     new Encoder(Constants.DioIds.kShooterYawAbsoluteEncoder1, Constants.DioIds.kShooterYawAbsoluteEncoder2);
@@ -63,33 +65,15 @@ public class ShooterSub extends SubsystemBase {
   private double m_targetPitchAngle = 0;
   private double m_targetFlywheelVelocity = 0;
 
-  private boolean m_runVelocityControl = false;
-  private boolean m_runYawControl = false;
-  private boolean m_runPitchControl = false;
-  private double m_targetPower = 0.7; // set default feed forward power, probably want to set this proportional 
-
   //Pid Controls
   private double m_pitchKp = 0.02;
   private double m_pitchKi = 0.0;
-  private double m_pitchKd = 0.0;
+  private double m_kD = 0.0;
 
-  private double m_yawKp = 0.02;
-  private double m_yawKi = 0.0;
-  private double m_yawKd = 0.0;
+  private final PIDController m_pitchPidController = new PIDController(m_pitchKp, m_pitchKi, m_kD);
 
-  private double m_flywheelKs = 0.01;
-  private double m_flywheelKv = 0.0;
 
-  private final PIDController m_pitchPidController = new PIDController(m_pitchKp, m_pitchKi, m_pitchKd);
-  private final PIDController m_yawPidController = new PIDController(m_yawKp, m_yawKi, m_yawKd);
-
-  private final SimpleMotorFeedforward m_flyWheelFeedforward =
-      new SimpleMotorFeedforward(m_flywheelKs, m_flywheelKv);
-
-  private final PIDController m_flyWheelPID = new PIDController(0.012, 0.0, 0.0);
-  double FlywheelShootVelocity;
-
-  public ShooterSub() { // Motor Configs need to be tested
+  public ShooterSub() {
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(true) // Set to true to invert the forward motor direction
@@ -128,41 +112,40 @@ public class ShooterSub extends SubsystemBase {
     talonFXConfigurator.apply(outputConfigs);
 
     //setting up internal encoder for TalonFX
-    m_shooterVelocitySignal = m_shooterMotor1.getVelocity();
+    m_shooterVelcocitySignal = m_shooterMotor1.getVelocity();
+  }
+
+
+  public boolean shooterIsAtYawCWLimit() {
+    return m_yawMotor.getForwardLimitSwitch().isPressed();
+  }
+
+
+  public boolean shooterIsAtYawCCWLimit() {
+    return m_yawMotor.getReverseLimitSwitch().isPressed();
+  }
+
+
+  public boolean shooterIsAtPitchLowerLimit() {
+    return m_pitchMotor.getForwardLimitSwitch().isPressed();
+  }
+
+
+  public boolean shooterIsAtPitchUpperLimit() {
+    return m_pitchMotor.getReverseLimitSwitch().isPressed();
+  }
+
+
+  public static double ballFlightTime(double distance) {
+    //TODO do parabola math
+    return distance;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    runYawControl(m_runYawControl);
-    runPitchControl(m_runPitchControl);
-    runFlyhweelVelocityControl(m_runVelocityControl);
-    // runFlywheelBangBang(m_runVelocityControl);
   }
 
-  public boolean isAtYawAtCWLimit() {
-    return m_yawMotor.getForwardLimitSwitch().isPressed();
-  }
-
-
-  public boolean isAtYawAtCCWLimit() {
-    return m_yawMotor.getReverseLimitSwitch().isPressed();
-  }
-
-
-  public boolean isAtPitchLowerLimit() {
-    return m_pitchMotor.getForwardLimitSwitch().isPressed();
-  }
-
-
-  public boolean isAtPitchUpperLimit() {
-    return m_pitchMotor.getReverseLimitSwitch().isPressed();
-  }
-
-  public void setFlywheelPower(double power) {
-    m_shooterMotor1.set(power);
-  }
 
   public void setTargetYawAngle(double angle) {
     // Not doing anything yet
@@ -197,13 +180,20 @@ public class ShooterSub extends SubsystemBase {
     return m_pitchMotor.getEncoder().getPosition();
   }
 
+  private void runYawControl(boolean updateYawPower) {
+    double activeAngle = m_targetYawAngle;
+  }
+
+  private void runPitchControl(boolean updatePitchPower) {
+    double activeAngle = m_targetPitchAngle;
+  }
 
   public double getFlywheelVelocity() {
     //returning in RPM
-    return m_shooterVelocitySignal.getValueAsDouble() / 60;
+    return m_shooterVelcocitySignal.getValueAsDouble() * 60;
   }
 
-  public boolean isAtTargetFlywheelVelocity() {
+  public boolean isAtTargetVelocity() {
     return getFlywheelVelocity() == m_targetFlywheelVelocity;
   }
 
@@ -218,43 +208,20 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public double getYawAngle() {
-    return getYawEncoder() * 360; //Is this value correct?
+    return getYawEncoder() * 360;
   }
 
   public double getPitchAngle() {
-    return getPitchEncoder() * 360; //Is this value correct?
+    return getPitchEncoder() * 360;
   }
 
-  private void setYawVoltage(Double voltage) {
-    m_yawMotor.setVoltage(voltage);
+  private void setPitchPower(Double power) {
+    m_pitchMotor.set(power);
   }
 
-  private void setPitchVoltage(Double voltage) {
-    m_pitchMotor.setVoltage(voltage);
-  }
-
-  private void setFlywheelVoltage(double voltage) {
-    m_shooterMotor1.setVoltage(voltage);
-  }
-
-  //set current power based on target for yaw
-  private void runYawControl(boolean updateYawControl) {
-    double activeAngle = m_targetYawAngle;
-
-    double pidPower = m_yawPidController.calculate(activeAngle, m_targetYawAngle);
-    //TO DO create constant for this
-    if(Math.abs(pidPower) > Constants.Shooter.kYawMaxPower) {
-      double sign = (pidPower >= 0.0) ? 1.0 : -1.0;
-      pidPower = Constants.Shooter.kYawMaxPower * sign;
-    }
-
-
-    setYawVoltage(pidPower);
-  }
-
-  //set current power based on target for pitch
-  private void runPitchControl(boolean runPitchControl) {
+  private void runPitchAngleControl() {
     Double currentAngle = getPitchAngle();
+
 
     double pidPower = m_pitchPidController.calculate(currentAngle, m_targetPitchAngle);
     //TO DO create constant for this
@@ -264,39 +231,8 @@ public class ShooterSub extends SubsystemBase {
     }
 
 
-    setPitchVoltage(pidPower);
+    setPitchPower(pidPower);
   }
 
-  public void enableFlyhweelVelocityControl(boolean run) {
-    m_runVelocityControl = run;
-  }
-
-  //set current power based on target for flywheel velocity
-  private void runFlyhweelVelocityControl(boolean run) {
-    // Flywheel needs to spin at set velocity prior to m_pivotSub.spinBothFeeders being executed. 
-    if(m_runVelocityControl) {
-      double feedForwardVoltage = m_flyWheelFeedforward.calculate(m_targetFlywheelVelocity, 0.0);
-      // So far, we don't need the PID control.  Feedforward is doing well on its own
-      double pidVoltage = m_flyWheelPID.calculate(getFlywheelVelocity(), m_targetFlywheelVelocity);
-
-      setFlywheelVoltage(feedForwardVoltage + pidVoltage);
-    } else {
-      setFlywheelVoltage(0.0);
-    }
-  }
-
-  private void runFlywheelBangBang(boolean run) {
-    // if the current flywheel velocity is less than the target flywheel velocity, speed it up proportionally, if its greater, slow it down
-    if(m_runVelocityControl) {
-      if(getFlywheelVelocity() < m_targetFlywheelVelocity) {
-        setFlywheelPower(Math
-            .min(m_targetPower + ((m_targetFlywheelVelocity - getFlywheelVelocity()) / m_targetFlywheelVelocity), 1.0));
-      } else if(getFlywheelVelocity() > m_targetFlywheelVelocity) {
-        setFlywheelPower(Math.max(((getFlywheelVelocity() - m_targetFlywheelVelocity) / getFlywheelVelocity()), 0.0));
-      } else {
-        setFlywheelPower(m_targetFlywheelVelocity);
-      }
-    }
-  }
 
 }
