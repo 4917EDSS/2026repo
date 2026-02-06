@@ -38,15 +38,15 @@ public class IntakeSub extends SubsystemBase {
   private double m_armPower = 0.0;
   private boolean m_runPositonControl = false;
   private double m_targetAngle = 0.0;
-  private double m_kP = 0.022;
-  private double m_kI = 0.0;
-  private double m_kD = 0.0;
-  private final PIDController m_deployPid = new PIDController(m_kP, m_kI, m_kD);
+  private double m_deployKP = 0.022;
+  private double m_deployKI = 0.0;
+  private double m_deployKD = 0.0;
+  private final PIDController m_deployPid = new PIDController(m_deployKP, m_deployKI, m_deployKD);
   // Not the final conversion values
 
 
   /** Creates a new IntakeSub. */
-  public IntakeSub() {
+  public IntakeSub() { // Motor Configs need to be tested
     m_intakeAbsoluteEncoder.setDistancePerPulse(0.0); // Converts encoder ticks to mm 
     m_intakeAbsoluteEncoder.setReverseDirection(false);
     resetEncoder();
@@ -83,7 +83,7 @@ public class IntakeSub extends SubsystemBase {
 
   }
 
-  public void intake() {
+  public void runIntake() {
     m_logger.info("intake");
     m_isIntakeOn = true;
   }
