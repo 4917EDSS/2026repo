@@ -58,13 +58,13 @@ public final class Constants {
   }
 
   public static class FieldElements {
-    public static final double kRedHubX = 4.675;
+    public static final double kRedHubX = 4.675; // coordinates of the hub on the field
     public static final double kRedHubY = 4.035;
     public static final double kBlueHubX = 11.856;
     public static final double kBlueHubY = 4.035;
   }
 
-  public static class HopperConstants {
+  public static class Hopper {
     public static final double kSingulatorVelocityTolerance = 4.0;
     public static final double kMaxSingulatorVelocity = 111.1;
     public static final double kSingulatorVelocity = 11.1; //singulator velocity needs to be lower than Escalator velocity so we don't get fuel building up in certain areas
@@ -76,7 +76,7 @@ public final class Constants {
     public static final double kEscalatorTicksInMeter = 6967.1;
   }
   public static class Vision {
-    public static final double kDistanceToCloseToDrive = 0.5;
+    public static final double kDistanceTooCloseToDrive = 0.5;
   }
 
   public static class Shooter {
@@ -90,7 +90,7 @@ public final class Constants {
     public static final double kGravity = 9.80665;
   }
 
-  public static class IntakeConstants {
+  public static class Intake {
     public static final double kRotationToDegrees = 270.0 / 3;
   }
 

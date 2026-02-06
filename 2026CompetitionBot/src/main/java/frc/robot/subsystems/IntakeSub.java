@@ -56,7 +56,7 @@ public class IntakeSub extends SubsystemBase {
         .inverted(false) // Set to true to invert the forward motor direction
         .smartCurrentLimit(60) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(Constants.IntakeConstants.kRotationToDegrees)
+            .positionConversionFactor(Constants.Intake.kRotationToDegrees)
             .velocityConversionFactor(0);
 
     AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();

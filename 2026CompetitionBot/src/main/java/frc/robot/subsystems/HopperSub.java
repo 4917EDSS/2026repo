@@ -45,7 +45,7 @@ public class HopperSub extends SubsystemBase {
     TalonFXConfigurator talonFXSingulatorConfigurator = m_singulatorMotor.getConfigurator();
 
     FeedbackConfigs singulatorFeedbackConfigs = new FeedbackConfigs();
-    singulatorFeedbackConfigs.SensorToMechanismRatio = Constants.HopperConstants.kSingulatorTicksInMeter;
+    singulatorFeedbackConfigs.SensorToMechanismRatio = Constants.Hopper.kSingulatorTicksInMeter;
     talonFXSingulatorConfigurator.apply(singulatorFeedbackConfigs);
 
     //current limits configurations for singulator
@@ -74,7 +74,7 @@ public class HopperSub extends SubsystemBase {
     TalonFXConfigurator talonFXEscalatorConfigurator = m_escalatorMotor.getConfigurator();
 
     FeedbackConfigs escalatorFeedbackConfigs = new FeedbackConfigs();
-    escalatorFeedbackConfigs.SensorToMechanismRatio = Constants.HopperConstants.kEscalatorTicksInMeter;
+    escalatorFeedbackConfigs.SensorToMechanismRatio = Constants.Hopper.kEscalatorTicksInMeter;
     talonFXEscalatorConfigurator.apply(escalatorFeedbackConfigs);
 
     //current limit configurations for Escalator
@@ -130,7 +130,7 @@ public class HopperSub extends SubsystemBase {
   }
 
   public boolean isSingulatorAtTargetVelocity() {
-    if(Constants.HopperConstants.kSingulatorVelocityTolerance > Math
+    if(Constants.Hopper.kSingulatorVelocityTolerance > Math
         .abs(targetSingulatorVelocity - getSingulatorVelocity())) {
       return true;
     }
@@ -169,7 +169,7 @@ public class HopperSub extends SubsystemBase {
 
 
   public boolean isEscalatorAtTargetVelocity() {
-    if(Constants.HopperConstants.kEscalatorVelocityTolerance > Math
+    if(Constants.Hopper.kEscalatorVelocityTolerance > Math
         .abs(targetEscalatorVelocity - getEscalatorVelocity())) {
       return true;
     }
@@ -197,11 +197,11 @@ public class HopperSub extends SubsystemBase {
     SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.getVelocity().getValueAsDouble());
 
     if(singulatorEnabled) {
-      setSingulatorVelocity(Constants.HopperConstants.kSingulatorVelocity);
+      setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity);
     }
 
     if(escalatorEnabled) {
-      setEscalatorVelocity(Constants.HopperConstants.kEscalatorVelocity);
+      setEscalatorVelocity(Constants.Hopper.kEscalatorVelocity);
     }
   }
 }
