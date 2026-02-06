@@ -23,7 +23,7 @@ public class CalculateAimingInMotion {
     Pose2d currentRobotPose = swerveDriveState.Pose;
     for(int i = 0; i < 5; i++) {
       double distance = currentRobotPose.getTranslation().minus(futureGoal).getNorm();
-      double time = ShooterSub.ballFlightTime(distance);
+      double time = ballFlightTime(distance);
       // Translation2d movement = swerveDriveState.Speeds
 
       //how long to shoot from current distance in seconds
@@ -31,6 +31,11 @@ public class CalculateAimingInMotion {
       //
     }
     return futureGoal;
+  }
+
+  public static double ballFlightTime(double distance) {
+    //TODO do parabola math
+    return distance;
   }
 
 }

@@ -7,13 +7,11 @@ package frc.robot.subsystems;
 import java.util.logging.Logger;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,19 +25,19 @@ import frc.robot.Constants;
 
 public class IntakeSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
-  private boolean m_intakeIsOn = false;
-  private final SparkMax m_beltMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
+  private boolean m_isIntakeOn = false;
+  private final SparkMax m_intakeMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
   private final Encoder m_intakeAbsoluteEncoder =
       new Encoder(Constants.DioIds.kIntakeAbsoluteEncoder1, Constants.DioIds.kIntakeAbsoluteEncoder2);
   //private final SparkMax m_pivotMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
 
 
-  private final SparkMax m_deployMotor1 = new SparkMax(Constants.CanIds.kDeployMotor1, MotorType.kBrushless);
-  private final SparkMax m_deployMotor2 = new SparkMax(Constants.CanIds.kDeployMotor2, MotorType.kBrushless);
+  private final SparkMax m_deployMotorL = new SparkMax(Constants.CanIds.kDeployMotorL, MotorType.kBrushless);
+  private final SparkMax m_deployMotorR = new SparkMax(Constants.CanIds.kDeployMotorR, MotorType.kBrushless); // Run in tandem
 
-  private double m_armPower = 0;
-  private boolean m_runTargetControl = false;
-  private double m_targetAngle = 0;
+  private double m_armPower = 0.0;
+  private boolean m_runPositonControl = false;
+  private double m_targetAngle = 0.0;
   private double m_kP = 0.022;
   private double m_kI = 0.0;
   private double m_kD = 0.0;
@@ -68,11 +66,11 @@ public class IntakeSub extends SubsystemBase {
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this
     // operation can be slow
-    m_beltMotor.configure(motorConfig, ResetMode.kResetSafeParameters,
+    m_intakeMotor.configure(motorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
-    m_deployMotor1.configure(motorConfig, ResetMode.kResetSafeParameters,
+    m_deployMotorL.configure(motorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
-    m_deployMotor2.configure(motorConfig, ResetMode.kResetSafeParameters,
+    m_deployMotorR.configure(motorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
 
@@ -81,29 +79,29 @@ public class IntakeSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("intake status", m_intakeIsOn);
+    SmartDashboard.putBoolean("intake status", m_isIntakeOn);
 
   }
 
   public void intake() {
     m_logger.info("intake");
-    m_intakeIsOn = true;
+    m_isIntakeOn = true;
   }
 
   public void setBeltPower(double power) {
-    m_beltMotor.set(power);
+    m_intakeMotor.set(power);
   }
 
   public void setDeployPower(double power) {
-    m_deployMotor1.set(power);
+    m_deployMotorL.set(power);
   }
 
   public boolean isAtInLimit() {
-    return m_deployMotor1.getReverseLimitSwitch().isPressed();
+    return m_deployMotorL.getReverseLimitSwitch().isPressed();
   }
 
   public boolean isAtOutLimit() {
-    return m_deployMotor1.getForwardLimitSwitch().isPressed();
+    return m_deployMotorL.getForwardLimitSwitch().isPressed();
   }
 
   public void resetEncoder() {
@@ -112,6 +110,10 @@ public class IntakeSub extends SubsystemBase {
 
   public void getIntakeEncoder() {
     m_intakeAbsoluteEncoder.getDistance();
+  }
+
+  public double getCurrentAngle() {
+    return m_deployMotorL.getEncoder().getPosition(); // need converson
   }
 
   //public double getCurrentAngle() {

@@ -20,14 +20,11 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.DigitalInput;
 
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 // Neo 550(yaw)
@@ -67,6 +64,8 @@ public class ShooterSub extends SubsystemBase {
   private double m_targetFlywheelVelocity = 0;
 
   private boolean m_runVelocityControl = false;
+  private boolean m_runYawControl = false;
+  private boolean m_runPitchControl = false;
   private double m_targetPower = 0.7; // set default feed forward power, probably want to set this proportional 
 
   //Pid Controls
@@ -90,7 +89,7 @@ public class ShooterSub extends SubsystemBase {
   private final PIDController m_flyWheelPID = new PIDController(0.012, 0.0, 0.0);
   double FlywheelShootVelocity;
 
-  public ShooterSub() {
+  public ShooterSub() { // Motor Configs need to be tested
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(true) // Set to true to invert the forward motor direction
@@ -136,18 +135,18 @@ public class ShooterSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    runYawControl(m_runVelocityControl);
-    runPitchControl();
+    runYawControl(m_runYawControl);
+    runPitchControl(m_runPitchControl);
     runFlyhweelVelocityControl(m_runVelocityControl);
     // runFlywheelBangBang(m_runVelocityControl);
   }
 
-  public boolean isAtYawCWLimit() {
+  public boolean isAtYawAtCWLimit() {
     return m_yawMotor.getForwardLimitSwitch().isPressed();
   }
 
 
-  public boolean isAtYawCCWLimit() {
+  public boolean isAtYawAtCCWLimit() {
     return m_yawMotor.getReverseLimitSwitch().isPressed();
   }
 
@@ -159,12 +158,6 @@ public class ShooterSub extends SubsystemBase {
 
   public boolean isAtPitchUpperLimit() {
     return m_pitchMotor.getReverseLimitSwitch().isPressed();
-  }
-
-
-  public static double ballFlightTime(double distance) {
-    //TODO do parabola math
-    return distance;
   }
 
   public void setFlywheelPower(double power) {
@@ -207,7 +200,7 @@ public class ShooterSub extends SubsystemBase {
 
   public double getFlywheelVelocity() {
     //returning in RPM
-    return m_shooterVelocitySignal.getValueAsDouble() * 60;
+    return m_shooterVelocitySignal.getValueAsDouble() / 60;
   }
 
   public boolean isAtTargetFlywheelVelocity() {
@@ -225,11 +218,11 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public double getYawAngle() {
-    return getYawEncoder() * 360;
+    return getYawEncoder() * 360; //Is this value correct?
   }
 
   public double getPitchAngle() {
-    return getPitchEncoder() * 360;
+    return getPitchEncoder() * 360; //Is this value correct?
   }
 
   private void setYawVoltage(Double voltage) {
@@ -245,7 +238,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   //set current power based on target for yaw
-  private void runYawControl(boolean updateYawPower) {
+  private void runYawControl(boolean updateYawControl) {
     double activeAngle = m_targetYawAngle;
 
     double pidPower = m_yawPidController.calculate(activeAngle, m_targetYawAngle);
@@ -260,7 +253,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   //set current power based on target for pitch
-  private void runPitchControl() {
+  private void runPitchControl(boolean runPitchControl) {
     Double currentAngle = getPitchAngle();
 
     double pidPower = m_pitchPidController.calculate(currentAngle, m_targetPitchAngle);
