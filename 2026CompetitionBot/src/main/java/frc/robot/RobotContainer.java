@@ -4,31 +4,30 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeDeployCmd;
-import frc.robot.subsystems.IntakeSub;
-import static edu.wpi.first.units.Units.*;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-
+import frc.robot.commands.SpinSingulatorCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
+import frc.robot.subsystems.FeedbackSub;
 import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
 import frc.robot.subsystems.VisionSub;
-import frc.robot.subsystems.FeedbackSub;
 
 public class RobotContainer {
 
@@ -96,8 +95,8 @@ public class RobotContainer {
             new DriveToPoseCmd(new Pose2d(new Translation2d(15.25, 5.16), new Rotation2d(-90.0)), m_drivetrainSub));
 
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
-
-
+    m_driverController.rightTrigger()
+        .whileTrue(new SpinSingulatorCmd(m_hopperSub));
     m_driverController.leftBumper().onTrue(new ClimbCmd(m_climbSub));
   }
 
