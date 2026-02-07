@@ -88,7 +88,7 @@ public class DriveToPoseCmd extends Command {
       rotPower = 0.0;
     }
 
-    m_drivetrainSub.setControl(m_autoDrive.withVelocityX(-xPower).withVelocityY(-yPower).withRotationalRate(rotPower));
+    m_drivetrainSub.setControl(m_autoDrive.withVelocityX(xPower).withVelocityY(yPower).withRotationalRate(rotPower));
   }
 
   // Called once the command ends or is interrupted.
