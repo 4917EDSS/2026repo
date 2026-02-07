@@ -92,7 +92,7 @@ public class RobotContainer {
 
     m_driverController.x()
         .whileTrue(
-            new DriveToPoseCmd(new Pose2d(new Translation2d(15.222, 5.04), new Rotation2d(-90.0)), m_drivetrainSub));
+            new DriveToPoseCmd(new Pose2d(new Translation2d(15.25, 5.16), new Rotation2d(-90.0)), m_drivetrainSub));
 
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
 
