@@ -20,7 +20,7 @@ import frc.robot.utils.LimelightHelpers;
 public class VisionSub extends SubsystemBase {
 
   /*
-   * THIS CODE HAS BEEN COPIED FROM 2025 VISION. NEEDS TO BE UPDATED 
+   * THIS CODE HAS BEEN COPIED FROM 2025 VISION. NEEDS TO BE UPDATED
    */
 
   private static String LEFT = "limelight-left";
@@ -116,10 +116,12 @@ public class VisionSub extends SubsystemBase {
       botposeTarget = m_botposeTargetL.getDoubleArray(new double[8]);
       botpose = m_botposeL.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", true);
+      updateOdometryLeft(m_drivetrainSub.getState());
+
     } else {
       id = m_tidR.getInteger(0);
       t2d = m_t2dR.getDoubleArray(new double[2]);
-      tv = m_tvR.getInteger(-1);
+      tv = m_tvR.getInteger(0);
       x = m_txR.getDouble(0.0);
       y = m_tyR.getDouble(0.0);
       a = m_taR.getDouble(0.0);
@@ -128,6 +130,8 @@ public class VisionSub extends SubsystemBase {
       botposeTarget = m_botposeTargetR.getDoubleArray(new double[8]);
       botpose = m_botposeR.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", false);
+      updateOdometryRight(m_drivetrainSub.getState());
+
     }
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Vi Primary ID", id);
@@ -139,8 +143,6 @@ public class VisionSub extends SubsystemBase {
     SmartDashboard.putNumber("Vi Pipeline", pipeline);
     SmartDashboard.putString("Vi Pipetype", pipetype);
     // SmartDashboard.putString("Main Limelight:", "none");
-
-    updateOdometry(m_drivetrainSub.getState());
   }
 
   public Pose2d getTagPose2d() {
@@ -157,20 +159,26 @@ public class VisionSub extends SubsystemBase {
 
   public boolean isFarFromAprilTag() {
     //y distance is negative
-    if(botposeTarget[2] < Constants.Vision.kDistanceToCloseToDrive) {
+    if(botposeTarget[2] < Constants.Vision.kDistanceTooCloseToDrive) {
       return true;
     } else {
       return false;
     }
   }
 
-  private void updateOdometry(SwerveDriveState swerveDriveState) {
+  private void updateOdometryRight(SwerveDriveState swerveDriveState) {
     updateOdemetry(swerveDriveState, LEFT);
     updateOdemetry(swerveDriveState, RIGHT);
   }
 
+  private void updateOdometryLeft(SwerveDriveState swerveDriveState) {
+    updateOdemetry(swerveDriveState, RIGHT);
+    updateOdemetry(swerveDriveState, LEFT);
+  }
+
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
-    LimelightHelpers.SetRobotOrientation(camera, swerveDriveState.Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation(camera, m_drivetrainSub.getPigeonGyro().getYaw().getValueAsDouble(), 0, 0, 0,
+        0, 0);
     mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
     if(mt2 == null) {
       return;
@@ -190,7 +198,7 @@ public class VisionSub extends SubsystemBase {
       if(mt2.tagCount == 0 || mt2.avgTagArea == 0) {
         return;
       }
-      standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 15.0);
+      //standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 15.0);
 
       m_drivetrainSub.addVisionMeasurement(
           mt2.pose,

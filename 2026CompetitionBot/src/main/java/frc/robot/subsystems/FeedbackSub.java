@@ -6,11 +6,8 @@ package frc.robot.subsystems;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 

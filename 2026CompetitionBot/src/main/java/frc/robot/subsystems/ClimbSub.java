@@ -10,21 +10,36 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.SparkLimitSwitch;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
 
 public class ClimbSub extends SubsystemBase {
 
-  private final TalonFX m_climbMotor = new TalonFX(Constants.CanIds.kClimbMotor);
-  private final DigitalInput m_climbInLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
-  private final DigitalInput m_climbOutLimit = new DigitalInput(Constants.DioIds.kClimbOutLimitSwitch);
+  private final TalonFX m_rotateMotor = new TalonFX(Constants.CanIds.kRotateMotor);
+  private final SparkMax m_deployMotor = new SparkMax(Constants.CanIds.kClimbDeployMotor, MotorType.kBrushless);
+  private final SparkLimitSwitch m_inboardLimit = m_deployMotor.getForwardLimitSwitch();
+  private final SparkLimitSwitch m_outboardLimit = m_deployMotor.getReverseLimitSwitch();
 
   /** Creates a new ClimbSub. */
   public ClimbSub() {
+    TalonFXConfigurator talonFXConfigurator = m_rotateMotor.getConfigurator();
+    SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
 
-    TalonFXConfigurator talonFXConfigurator = m_climbMotor.getConfigurator();
+    sparkMaxConfig
+        .inverted(false)
+        .smartCurrentLimit(100)
+        .idleMode(IdleMode.kBrake).encoder
+            .positionConversionFactor(Constants.Climb.kEncoderPositionConversionFactor);
+
+    m_deployMotor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     //This is how you set a current limit inside the motor (vs on the input power supply)
     //subject to change
@@ -45,25 +60,23 @@ public class ClimbSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    //stop if the climb is moving and at the up limit
-    if(isAtOutLimit() && getPower() > 0) {
-      m_climbMotor.set(0.0);
+    //stop if the climb is moving and at the out limit
+    if(isAtOutLimit() && getRotatePower() > 0) {
+      m_rotateMotor.set(0.0);
     }
-    //stop if the climb is at the bottom limit OR shoots below limit AND it is still moving
-    else if((isAtInLimit() || getPosition() <= 0.0) && (getPower() > 0)) {
-      setPower(0);
+    //stop if the climb is at the in limit OR shoots below limit AND it is still moving
+    else if((isAtInLimit() || getRotationAngle() <= 0.0) && (getRotatePower() > 0)) {
+      setRotatePower(0);
     }
   }
 
   //returns if climb is at limit
   public boolean isAtInLimit() {
-    return !m_climbInLimit.get();
-
+    return m_inboardLimit.isPressed();
   }
 
   public boolean isAtOutLimit() {
-    return !m_climbOutLimit.get();
-
+    return m_outboardLimit.isPressed();
   }
 
   /**
@@ -71,17 +84,40 @@ public class ClimbSub extends SubsystemBase {
    * 
    * @param power power value -1.0 to 1.0
    */
-  public void setPower(double power) {
-    m_climbMotor.set(power);
+  public void setRotatePower(double power) {
+    m_rotateMotor.set(power);
 
+  }
+
+  public void setDeployPower(double power) {
+    m_deployMotor.set(power);
+  }
+
+  public void setTargetAngle(double angle, double power) { // placeholder, needs kraken motion magic
+    while (getRotationAngle() < angle) {
+      setRotatePower(power);
+    }
+  }
+  
+  public void setTargetDeployDistance(double distance, double power) { // same, maybe fixed power
+    while (getDeployDistance() < distance) { 
+      m_deployMotor.set(power);
+    }
   }
 
   /**
    * Sets the current angle as the zero angle
    */
   public void resetPosition() {
-    m_climbMotor.setPosition(0);
+    m_rotateMotor.setPosition(0);
+  }
 
+  public boolean isAtTargetDistance(double distance) {
+    return (getDeployDistance() > distance); // maybe put in between +-error value
+  }
+
+  public boolean isEncoderResetSwitchHit() {
+    return false; // get cansub rotation limit switch
   }
 
   /**
@@ -89,9 +125,8 @@ public class ClimbSub extends SubsystemBase {
    * 
    * @return position in degrees
    */
-  public double getPosition() {
-    return m_climbMotor.getPosition().getValueAsDouble();
-
+  public double getRotationAngle() {
+    return m_rotateMotor.getPosition().getValueAsDouble() * 360;
   }
 
   /**
@@ -100,8 +135,11 @@ public class ClimbSub extends SubsystemBase {
    * @return velocity in degrees per second
    */
   public double getVelocity() {
-    return m_climbMotor.getRotorVelocity().getValueAsDouble();
+    return m_rotateMotor.getRotorVelocity().getValueAsDouble();
+  }
 
+  public double getDeployDistance() {
+    return m_deployMotor.getEncoder().getPosition();
   }
 
   /**
@@ -109,8 +147,8 @@ public class ClimbSub extends SubsystemBase {
    * 
    * @return power
    */
-  public double getPower() {
-    return m_climbMotor.get();
+  public double getRotatePower() {
+    return m_rotateMotor.get();
   }
 
   /**
@@ -119,7 +157,7 @@ public class ClimbSub extends SubsystemBase {
    * @return current in amps or -1.0 if motor can't measure current
    */
   public double getElectricalCurrent() {
-    return m_climbMotor.getStatorCurrent().getValueAsDouble();
+    return m_rotateMotor.getStatorCurrent().getValueAsDouble();
 
   }
 }

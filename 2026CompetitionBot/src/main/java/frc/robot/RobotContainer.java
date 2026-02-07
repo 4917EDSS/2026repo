@@ -4,20 +4,11 @@
 
 package frc.robot;
 
-import java.util.Optional;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.subsystems.IntakeSub;
 import static edu.wpi.first.units.Units.*;
@@ -26,10 +17,9 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.HopperSub;
@@ -56,8 +46,9 @@ public class RobotContainer {
   private final CommandXboxController m_operatorContoller =
       new CommandXboxController(Constants.OperatorConstants.kOperatorControllerPort);
   public final ClimbSub m_climbSub = new ClimbSub();
+  public final CanSub m_CanSub = new CanSub();
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
-  public final HopperSub m_hopperSub = new HopperSub();
+  public final HopperSub m_hopperSub = new HopperSub(m_CanSub);
   public final IntakeSub m_intakeSub = new IntakeSub();
   public final ShooterSub m_shooterSub = new ShooterSub();
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
@@ -99,7 +90,8 @@ public class RobotContainer {
     //  .whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
 
     m_driverController.x()
-        .whileTrue(new DriveToPoseCmd(new Pose2d(new Translation2d(12.0, 5.5), new Rotation2d(0.0)), m_drivetrainSub));
+        .whileTrue(
+            new DriveToPoseCmd(new Pose2d(new Translation2d(15.222, 5.04), new Rotation2d(-90.0)), m_drivetrainSub));
 
   }
 

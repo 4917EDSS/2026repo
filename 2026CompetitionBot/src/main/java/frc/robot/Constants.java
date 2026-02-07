@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.security.PublicKey;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -26,13 +24,17 @@ public final class Constants {
     // CTRE Swerve drivetrain uses CAN IDs 1-13 on CANivore bus
     // This does not conflict with the roboRIO bus which can also use these IDs
     public static final int kYawMotor = 1;
-    public static final int kShooterMotor = 2;
+    public static final int kShooterMotor1 = 2;
+    public static final int kShooterMotor2 = 12;
     public static final int kPitchMotor = 3;
-    public static final int kClimbMotor = 4;
+    public static final int kRotateMotor = 4;
     public static final int kSingulatorMotor = 5;
     public static final int kIntakeMotor = 6;
-    public static final int kDeployMotor1 = 7;
-    public static final int kDeployMotor2 = 8;
+    public static final int kDeployMotorL = 7;
+    public static final int kDeployMotorR = 8;
+    public static final int kFeederMotor = 9;
+    public static final int kClimbDeployMotor = 10;
+    public static final int kEscalatorMotor = 11;
 
   }
 
@@ -47,21 +49,50 @@ public final class Constants {
     public static final int kShooterYawAbsoluteEncoder2 = 8;
     public static final int kShooterPitchAbsoluteEncoder1 = 9;
     public static final int kShooterPitchAbsoluteEncoder2 = 10;
+    public static final int kShooterIsAtYawCWLimit = 11;
+    public static final int kShooterIsAtYawCCWLimit = 12;
+    public static final int kShooterIsAtPitchLowerLimit = 13;
+    public static final int kShooterIsAtPitchUpperLimit = 14;
   }
 
   public static class FieldElements {
-    public static final double kRedHubX = 4.675;
+    public static final double kRedHubX = 4.675; // coordinates of the hub on the field
     public static final double kRedHubY = 4.035;
     public static final double kBlueHubX = 11.856;
     public static final double kBlueHubY = 4.035;
   }
 
-  public static class HopperConstants {
-    public static final double singulatorSpeed = 0.5;
-    public static final double singulatorVelocityFlexibility = 0.0;
+  public static class Hopper {
+    public static final double kSingulatorVelocityTolerance = 4.0;
+    public static final double kMaxSingulatorVelocity = 111.1;
+    public static final double kSingulatorVelocity = 11.1; //singulator velocity needs to be lower than Escalator velocity so we don't get fuel building up in certain areas
+    public static final double kSingulatorTicksInMeter = 6767.1;
+
+    public static final double kEscalatorVelocityTolerance = 4.0;
+    public static final double kMaxEscalatorVelocity = 111.1;
+    public static final double kEscalatorVelocity = 420.1; //Escalator velocity needs to be higher than singulator velocity so we don't get fuel building up in certain areas
+    public static final double kEscalatorTicksInMeter = 6967.1;
   }
   public static class Vision {
-    public static final double kDistanceToCloseToDrive = 0.5;
+    public static final double kDistanceTooCloseToDrive = 0.5;
+  }
+
+  public static class Shooter {
+    public static final double kShooterYawKS = 0.25;
+    public static final double kShooterYawKV = 0.12;
+    public static final double kShooterYawKP = 0.1;
+    public static final double kShooterYawKI = 0.0;
+    public static final double kShooterYawKD = 0.05;
+    public static final double kPitchMaxPower = 10;
+    public static final double kYawMaxPower = 10;
+    public static final double kGravity = 9.80665;
+  }
+
+  public static class Intake {
+    public static final double kRotationToDegrees = 270.0 / 3;
+  }
+
+  public static class Climb {
+    public static final double kEncoderPositionConversionFactor = 1; // needs real value
   }
 }
-
