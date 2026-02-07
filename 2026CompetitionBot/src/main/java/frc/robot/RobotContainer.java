@@ -95,7 +95,7 @@ public class RobotContainer {
 
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
     m_driverController.rightTrigger()
-        .whileTrue(new SpinSingulatorCmd(m_hopperSub, Constants.Hopper.kSingulatorVelocity));
+        .whileTrue(new SpinSingulatorCmd(m_hopperSub));
   }
 
   public Command getAutonomousCommand() {

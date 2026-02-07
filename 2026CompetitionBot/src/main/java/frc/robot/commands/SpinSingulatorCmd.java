@@ -17,18 +17,16 @@ public class SpinSingulatorCmd extends Command {
   double m_velocity;
 
   /** Creates a new SpinSinglator. */
-  public SpinSingulatorCmd(HopperSub hopperSub, double velocity) {
+  public SpinSingulatorCmd(HopperSub hopperSub) {
     m_hopperSub = hopperSub;
-    m_velocity = velocity;
-    addRequirements(m_hopperSub);
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(m_hopperSub);
   }
 
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_hopperSub.setSingulatorVelocity(m_velocity);
     m_hopperSub.enableSingulator();
   }
 
