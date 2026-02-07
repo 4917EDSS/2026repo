@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class HopperSub extends SubsystemBase {
+ private final CanSub m_canSub;
+
 
   //IMPORTANT: The term singulator refer to the mechanism in the hopper which forces balls into the shooter.
   //kraken x60 motor for singulator rotation (done)
@@ -32,16 +34,16 @@ public class HopperSub extends SubsystemBase {
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kSingulatorMotor);
   private final TalonFX m_escalatorMotor = new TalonFX(Constants.CanIds.kEscalatorMotor);
 
-  private Boolean singulatorEnabled = false;
-  private boolean escalatorEnabled = false;
-  private double targetSingulatorVelocity = 0.0;
-  private double targetEscalatorVelocity = 0.0;
-  CanSub m_canSub;
+  private boolean m_singulatorEnabled = false;
+  private boolean m_escalatorEnabled = false;
+  private double m_targetSingulatorVelocity = 0.0;
+  private double m_targetEscalatorVelocity = 0.0;
 
   /** Creates a new HopperSub. */
   public HopperSub(CanSub canSub) {
     m_canSub = canSub;
     //singulator configurating
+    // configuration is untested
     TalonFXConfigurator talonFXSingulatorConfigurator = m_singulatorMotor.getConfigurator();
 
     FeedbackConfigs singulatorFeedbackConfigs = new FeedbackConfigs();
@@ -101,11 +103,11 @@ public class HopperSub extends SubsystemBase {
 
   // TODO potentienly activate singulator and escalator at the same time
   public void enableSingulator() {
-    singulatorEnabled = true;
+    m_singulatorEnabled = true;
   }
 
   public void disableSingulator() {
-    singulatorEnabled = false;
+    m_singulatorEnabled = false;
   }
 
   public void setSingulatorPower(double power) {
@@ -116,13 +118,13 @@ public class HopperSub extends SubsystemBase {
 
   //set singulator velocity with PID in RPS
   public void setSingulatorVelocity(double velocity) {
-    targetSingulatorVelocity = velocity;
+    m_targetSingulatorVelocity = velocity;
     //use pid control to set velocity
     m_singulatorMotor.setControl(m_singulatorVelocityRequest.withVelocity(velocity).withFeedForward(0.0));
   }
 
-  public boolean isSingulatorEnabled() {
-    return singulatorEnabled;
+  public boolean isM_singulatorEnabled() {
+    return m_singulatorEnabled;
   }
 
   public double getSingulatorVelocity() {
@@ -131,7 +133,7 @@ public class HopperSub extends SubsystemBase {
 
   public boolean isSingulatorAtTargetVelocity() {
     if(Constants.Hopper.kSingulatorVelocityTolerance > Math
-        .abs(targetSingulatorVelocity - getSingulatorVelocity())) {
+        .abs(m_targetSingulatorVelocity - getSingulatorVelocity())) {
       return true;
     }
     return false;
@@ -139,15 +141,15 @@ public class HopperSub extends SubsystemBase {
 
 
   public void enableEscalator() {
-    escalatorEnabled = true;
+    m_escalatorEnabled = true;
   }
 
   public void disableEscalator() {
-    escalatorEnabled = false;
+    m_escalatorEnabled = false;
   }
 
-  public boolean isEscalatorEnabled() {
-    return escalatorEnabled;
+  public boolean isM_escalatorEnabled() {
+    return m_escalatorEnabled;
   }
 
   public void setEscalatorPower(double power) {
@@ -158,7 +160,7 @@ public class HopperSub extends SubsystemBase {
 
   //set Escalator velocity with PID in RPS
   public void setEscalatorVelocity(double velocity) {
-    targetEscalatorVelocity = velocity;
+    m_targetEscalatorVelocity = velocity;
     //use pid control to set velocity
     m_escalatorMotor.setControl(m_escalatorVelocityRequest.withVelocity(velocity).withFeedForward(0.0));
   }
@@ -170,7 +172,7 @@ public class HopperSub extends SubsystemBase {
 
   public boolean isEscalatorAtTargetVelocity() {
     if(Constants.Hopper.kEscalatorVelocityTolerance > Math
-        .abs(targetEscalatorVelocity - getEscalatorVelocity())) {
+        .abs(m_targetEscalatorVelocity - getEscalatorVelocity())) {
       return true;
     }
     return false;
@@ -191,16 +193,16 @@ public class HopperSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Singulating", singulatorEnabled);
+    SmartDashboard.putBoolean("Singulating", m_singulatorEnabled);
     SmartDashboard.putNumber("Singulator Velocity", m_escalatorMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putBoolean("Escalating", escalatorEnabled);
+    SmartDashboard.putBoolean("Escalating", m_escalatorEnabled);
     SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.getVelocity().getValueAsDouble());
 
-    if(singulatorEnabled) {
+    if(m_singulatorEnabled) {
       setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity);
     }
 
-    if(escalatorEnabled) {
+    if(m_escalatorEnabled) {
       setEscalatorVelocity(Constants.Hopper.kEscalatorVelocity);
     }
   }
