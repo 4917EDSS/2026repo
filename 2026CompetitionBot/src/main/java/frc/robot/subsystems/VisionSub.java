@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -26,6 +27,10 @@ public class VisionSub extends SubsystemBase {
   private static String LEFT = "limelight-left";
   private static String RIGHT = "limelight-right";
   private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
+
+  // Variables to track field posistion
+  private final Field2d m_fieldLLRight = new Field2d();
+  private final Field2d m_fieldLLLeft = new Field2d();
 
   LimelightHelpers.PoseEstimate mt2;
   double m_previousTimestamp = 0.0;// Map<String, Double> m_previousTimestamps = Map.of(LEFT, 0.0);//, RIGHT, 0.0);
@@ -100,7 +105,10 @@ public class VisionSub extends SubsystemBase {
 
   public void init() {
     m_logger.info("Initializing VisionSub Subsystem");
+    SmartDashboard.putData("FieldLLRight", m_fieldLLRight);
+    SmartDashboard.putData("FieldLLLeft", m_fieldLLLeft);
   }
+
 
   @Override
   public void periodic() {
@@ -171,12 +179,12 @@ public class VisionSub extends SubsystemBase {
   }
 
   private void updateOdometryRight(SwerveDriveState swerveDriveState) {
-    updateOdemetry(swerveDriveState, LEFT);
+    //updateOdemetry(swerveDriveState, LEFT);
     updateOdemetry(swerveDriveState, RIGHT);
   }
 
   private void updateOdometryLeft(SwerveDriveState swerveDriveState) {
-    updateOdemetry(swerveDriveState, RIGHT);
+    //updateOdemetry(swerveDriveState, RIGHT);
     updateOdemetry(swerveDriveState, LEFT);
   }
 
@@ -195,7 +203,7 @@ public class VisionSub extends SubsystemBase {
 
     if(timestamp > m_previousTimestamp) {
       m_previousTimestamp = timestamp;
-      double standardDeviation = 0.01; // 0.7 is a good starting value according to limelight docs.
+      double standardDeviation = 0.0; // 0.7 is a good starting value according to limelight docs.
 
       if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than
                                                                             // 360 degrees per second, ignore vision
@@ -216,6 +224,12 @@ public class VisionSub extends SubsystemBase {
           // filter to ignore our calculated heading.
           com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp),
           VecBuilder.fill(standardDeviation, standardDeviation, 9999999));
+      //Logging limelight pose
+      if(camera == LEFT) {
+        m_fieldLLLeft.setRobotPose(mt2.pose);
+      } else {
+        m_fieldLLRight.setRobotPose(mt2.pose);
+      }
 
     }
 
