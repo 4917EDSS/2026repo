@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeDeployCmd;
 import frc.robot.subsystems.IntakeSub;
@@ -96,6 +97,8 @@ public class RobotContainer {
 
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
 
+
+    m_driverController.leftBumper().onTrue(new ClimbCmd(m_climbSub));
   }
 
   public Command getAutonomousCommand() {

@@ -103,5 +103,10 @@ public final class Constants {
 
   public static class Climb {
     public static final double kEncoderPositionConversionFactor = 1; // needs real value
+    public static final double kDeployDistance = 1.0;
+    public static final double kDeployPower = 1.0;
+    public static final double kRotationAngle = 180.0;
+    public static final double kRotationPower = 1.0;
+    public static final double kRotationTolerance = 2.0;
   }
 }
