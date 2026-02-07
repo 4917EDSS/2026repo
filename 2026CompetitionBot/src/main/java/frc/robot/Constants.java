@@ -89,14 +89,15 @@ public final class Constants {
   }
 
   public static class Intake {
-    public static final double kRotationToDegrees = 270.0 / 3;
+    public static final double kRotationToDegrees = 1.0;
     public static final double kBeltPower = 0.25;
     public static final double kDeployMaxPower = 0.25;
     public static final double kDeployedAngle = 10.0;
     public static final double kInAngle = 0.0;
 
     public static class DioIds {
-      public static final int kIntakeEncoderResetSwitch = 2;
+      public static final int kDeployInLimit = 2;
+      public static final int kDeployOutLimit = 4;
     }
   }
 
