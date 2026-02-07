@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,15 +35,18 @@ public class IntakeSub extends SubsystemBase {
 
   private final SparkMax m_deployMotorL = new SparkMax(Constants.CanIds.kDeployMotorL, MotorType.kBrushless);
   private final SparkMax m_deployMotorR = new SparkMax(Constants.CanIds.kDeployMotorR, MotorType.kBrushless); // Run in tandem
+  private final DigitalInput m_encoderResetSwitch = new DigitalInput(Constants.Intake.DioIds.kIntakeEncoderResetSwitch);
 
   private double m_armPower = 0.0;
   private boolean m_runPositonControl = false;
-  private double m_targetAngle = 0.0;
+  private double m_targetDeployAngle = 0.0;
   private double m_deployKP = 0.022;
   private double m_deployKI = 0.0;
   private double m_deployKD = 0.0;
   private final PIDController m_deployPid = new PIDController(m_deployKP, m_deployKI, m_deployKD);
   // Not the final conversion values
+
+  private boolean m_isIntakeEncoderSet = false;
 
 
   /** Creates a new IntakeSub. */
@@ -81,11 +85,26 @@ public class IntakeSub extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("intake status", m_isIntakeOn);
 
+    runIntake(true);
+
+    if(!m_isIntakeEncoderSet) {
+      // Adds a counter to the encoder reset switch so that we don't reset position by
+      // accident
+      if(encoderResetSwitchHit()) {
+        m_isIntakeEncoderSet = true;
+        setAngle(Constants.Intake.kInAngle);
+      }
+    }
   }
 
-  public void runIntake() {
-    m_logger.info("intake");
-    m_isIntakeOn = true;
+  public boolean encoderResetSwitchHit() {
+    return !m_encoderResetSwitch.get();
+  }
+
+  public void setTargetDeployAngle(double angle) {
+    // Not doing anything yet
+    m_targetDeployAngle = angle;
+    runIntake(true);
   }
 
   public void setBeltPower(double power) {
@@ -126,11 +145,26 @@ public class IntakeSub extends SubsystemBase {
   }
 
   private void runAngleControl(boolean updatePower) {
-    double activeAngle = m_targetAngle;
+    double activeAngle = m_targetDeployAngle;
     // if holding set low power 
     double pidPower = m_deployPid.calculate(getCurrentAngle(), activeAngle);
     // setPower(PidPower)
     // to do
   }
 
+  public void runIntake(boolean runIntake) {
+    m_logger.info("intake");
+    m_isIntakeOn = true;
+    double currentAngle = getCurrentAngle();
+
+    double pidPower = m_deployPid.calculate(currentAngle, m_targetDeployAngle);
+
+    if(Math.abs(pidPower) > Constants.Intake.kDeployMaxPower) {
+      double sign = (pidPower >= 0.0) ? 1.0 : -1.0;
+      pidPower = Constants.Intake.kDeployMaxPower * sign;
+    }
+    if(runIntake) {
+      setDeployPower(pidPower);
+    }
+  }
 }

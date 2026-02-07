@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveToPoseCmd;
+import frc.robot.commands.IntakeDeployCmd;
 import frc.robot.subsystems.IntakeSub;
 import static edu.wpi.first.units.Units.*;
 
@@ -92,6 +93,8 @@ public class RobotContainer {
     m_driverController.x()
         .whileTrue(
             new DriveToPoseCmd(new Pose2d(new Translation2d(15.222, 5.04), new Rotation2d(-90.0)), m_drivetrainSub));
+
+    m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
 
   }
 
