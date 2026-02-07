@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.subsystems.IntakeSub;
@@ -91,7 +92,11 @@ public class RobotContainer {
 
     m_driverController.x()
         .whileTrue(
-            new DriveToPoseCmd(new Pose2d(new Translation2d(15.25, 5.16), new Rotation2d(-90.0)), m_drivetrainSub));
+            new DriveToPoseCmd(new Pose2d(new Translation2d(15.23, 5.26), new Rotation2d(Math.toRadians(90.0))),
+                m_drivetrainSub));
+
+    m_driverController.start()
+        .onTrue(new InstantCommand(() -> m_drivetrainSub.resetPose((m_visionSub.getEstimatedPose()))));
 
   }
 
@@ -106,4 +111,6 @@ public class RobotContainer {
 
 
   }
+
+
 }

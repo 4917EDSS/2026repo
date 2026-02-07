@@ -95,7 +95,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
           /* This is in radians per second, but SysId only supports "volts" */
           Volts.of(Math.PI),
           null, // Use default timeout (10 s)
-          // Log state with SignalLogger class
+          // Log state with SignalLogger classSmartDashboard.putNumber("x estimate", getEstimatedPose().getX());
           state -> SignalLogger.writeString("SysIdRotation_State", state.toString())),
       new SysIdRoutine.Mechanism(
           output -> {
@@ -237,7 +237,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
 
     SmartDashboard.putNumber("current x", getState().Pose.getX());
     SmartDashboard.putNumber("current y", getState().Pose.getY());
-    SmartDashboard.putNumber("current rot", getPigeonGyro().getYaw().getValueAsDouble());
+    SmartDashboard.putNumber("current rot", getState().Pose.getRotation().getDegrees());
     m_field.setRobotPose(getState().Pose);
     //m_field.allianceColor = 
   }
