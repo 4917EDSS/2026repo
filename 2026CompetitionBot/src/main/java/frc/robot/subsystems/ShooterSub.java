@@ -160,7 +160,7 @@ public class ShooterSub extends SubsystemBase {
     return m_pitchMotor.getReverseLimitSwitch().isPressed();
   }
 
-  public void setFlywheelPower(double power) {
+  public void setFlywheelVolage(double power) {
     m_shooterMotor1.set(power);
   }
 
@@ -225,23 +225,23 @@ public class ShooterSub extends SubsystemBase {
     return getPitchEncoder() * 360; //Is this value correct?
   }
 
-  private void setYawVoltage(Double voltage) {
-    m_yawMotor.setVoltage(voltage);
+  private void setYawPower(Double power) {
+    m_yawMotor.set(power);
   }
 
-  private void setPitchVoltage(Double voltage) {
-    m_pitchMotor.setVoltage(voltage);
+  private void setPitchPower(Double power) {
+    m_pitchMotor.set(power);
   }
 
-  private void setFlywheelVoltage(double voltage) {
-    m_shooterMotor1.setVoltage(voltage);
+  private void setFlywheelPower(double power) {
+    m_shooterMotor1.set(power);
   }
 
   //set current power based on target for yaw
-  private void runYawControl(boolean updateYawControl) {
-    double activeAngle = m_targetYawAngle;
+  private void runYawControl(boolean runYawControl) {
+    double currentAngle = getYawAngle();
 
-    double pidPower = m_yawPidController.calculate(activeAngle, m_targetYawAngle);
+    double pidPower = m_yawPidController.calculate(currentAngle, m_targetYawAngle);
     //TO DO create constant for this
     if(Math.abs(pidPower) > Constants.Shooter.kYawMaxPower) {
       double sign = (pidPower >= 0.0) ? 1.0 : -1.0;
@@ -249,7 +249,7 @@ public class ShooterSub extends SubsystemBase {
     }
 
 
-    setYawVoltage(pidPower);
+    setYawPower(pidPower);
   }
 
   //set current power based on target for pitch
@@ -264,7 +264,7 @@ public class ShooterSub extends SubsystemBase {
     }
 
 
-    setPitchVoltage(pidPower);
+    setPitchPower(pidPower);
   }
 
   public void enableFlyhweelVelocityControl(boolean run) {
@@ -279,9 +279,9 @@ public class ShooterSub extends SubsystemBase {
       // So far, we don't need the PID control.  Feedforward is doing well on its own
       double pidVoltage = m_flyWheelPID.calculate(getFlywheelVelocity(), m_targetFlywheelVelocity);
 
-      setFlywheelVoltage(feedForwardVoltage + pidVoltage);
+      setFlywheelPower(feedForwardVoltage + pidVoltage);
     } else {
-      setFlywheelVoltage(0.0);
+      setFlywheelPower(0.0);
     }
   }
 
