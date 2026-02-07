@@ -49,12 +49,12 @@ void loop() {
     // Get the intager range value in mm
     distance = range_sensor.readRange();
 
-    /*
+    
     Serial.print(0); // To freeze the lower limit
     Serial.print(" ");
     Serial.print(9000); // To freeze the upper limit
     Serial.print(" ");
-    */
+    
 
     // Debug serial print 
     sprintf (buffer, "Distance:%dmm\n",distance);
