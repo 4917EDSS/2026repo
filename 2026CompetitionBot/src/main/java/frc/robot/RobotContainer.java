@@ -103,6 +103,11 @@ public class RobotContainer {
     m_driverController.rightTrigger()
         .whileTrue(new SpinSingulatorCmd(m_hopperSub));
     m_driverController.leftBumper().onTrue(new ClimbCmd(m_climbSub));
+
+    m_operatorContoller.y().whileTrue(new InstantCommand(() -> m_intakeSub.setBeltPower(Constants.Intake.kBeltPower * -1))); // Runs Intake Belt Backwards
+    m_operatorContoller.x().whileTrue(new InstantCommand(() -> m_intakeSub.setBeltPower(Constants.Intake.kBeltPower))); // Runs Intake Belt Forward
+    m_operatorContoller.b().onTrue(new InstantCommand(()-> m_intakeSub.setTargetDeployAngle(Constants.Intake.kInAngle))); // Retracts Intake
+    m_operatorContoller.a().onTrue(new InstantCommand(()-> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployedAngle))); // Deploys Intake
   }
 
   public Command getAutonomousCommand() {
