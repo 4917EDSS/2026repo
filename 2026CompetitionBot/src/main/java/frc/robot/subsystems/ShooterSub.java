@@ -160,7 +160,7 @@ public class ShooterSub extends SubsystemBase {
     return m_pitchMotor.getReverseLimitSwitch().isPressed();
   }
 
-  public void setFlywheelVolage(double power) {
+  public void setFlywheelVoltage(double power) {
     m_shooterMotor1.set(power);
   }
 
@@ -225,11 +225,11 @@ public class ShooterSub extends SubsystemBase {
     return getPitchEncoder() * 360; //Is this value correct?
   }
 
-  private void setYawPower(Double power) {
+  public void setYawPower(Double power) {
     m_yawMotor.set(power);
   }
 
-  private void setPitchPower(Double power) {
+  public void setPitchPower(Double power) {
     m_pitchMotor.set(power);
   }
 

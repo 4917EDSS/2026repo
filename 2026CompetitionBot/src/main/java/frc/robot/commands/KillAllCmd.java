@@ -5,17 +5,28 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import java.util.logging.Logger;
+import frc.robot.subsystems.CanSub;
+import frc.robot.subsystems.ClimbSub;
+import frc.robot.subsystems.DrivetrainSub;
+import frc.robot.subsystems.HopperSub;
+import frc.robot.subsystems.IntakeSub;
+import frc.robot.subsystems.ShooterSub;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class KillAllCmd extends Command {
+  private static Logger m_logger = Logger.getLogger(KillAllCmd.class.getName());
   /** Creates a new KillAllCmd. */
-  public KillAllCmd() {
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
+  public KillAllCmd(CanSub canSub, ClimbSub climbSub, DrivetrainSub drivetrainSub, HopperSub hopperSub, IntakeSub intakeSub, ShooterSub shooterSub) {
+    
+    addRequirements(canSub, climbSub, drivetrainSub, hopperSub, intakeSub, shooterSub);
+  } 
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    m_logger.fine("KillAllCmd - Init");
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -23,7 +34,9 @@ public class KillAllCmd extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_logger.fine("KillAllCmd - End" + (interrupted ? " (interrupted)" : ""));
+  }
 
   // Returns true when the command should end.
   @Override

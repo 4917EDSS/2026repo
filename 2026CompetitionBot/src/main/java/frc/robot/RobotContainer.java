@@ -15,10 +15,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeDeployCmd;
+import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.SpinSingulatorCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
@@ -63,6 +65,12 @@ public class RobotContainer {
     configureBindings();
     registerNameCommand();
     autoChooserSetup();
+
+   m_shooterSub.setDefaultCommand(new RunCommand(
+    () -> m_shooterSub.setYawPower(-m_operatorContoller.getLeftX()), m_shooterSub));
+
+    m_shooterSub.setDefaultCommand(new RunCommand(
+    () -> m_shooterSub.setPitchPower(-m_operatorContoller.getRightX()), m_shooterSub));
   }
 
 
@@ -106,6 +114,10 @@ public class RobotContainer {
 
     m_operatorContoller.rightTrigger()
         .onTrue(new InstantCommand(()->m_shooterSub.enableFlyhweelVelocityControl(true))).onFalse(new InstantCommand(()->m_shooterSub.enableFlyhweelVelocityControl(false)));
+
+    m_operatorContoller.leftStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+
+    m_operatorContoller.rightStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
   }
 
   public Command getAutonomousCommand() {
