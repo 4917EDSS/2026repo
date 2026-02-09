@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -29,7 +30,7 @@ public class IntakeSub extends SubsystemBase {
 
   private final SparkMax m_beltMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
   private final SparkMax m_deployMotorL = new SparkMax(Constants.CanIds.kDeployMotorL, MotorType.kBrushless);
-  private final SparkMax m_deployMotorR = new SparkMax(Constants.CanIds.kDeployMotorR, MotorType.kBrushless); // Run in tandem
+  private final SparkFlex m_deployMotorR = new SparkFlex(Constants.CanIds.kDeployMotorR, MotorType.kBrushless); // Run in tandem
   private final DigitalInput m_deployInLimit = new DigitalInput(Constants.Intake.DioIds.kDeployInLimit);
   private final DigitalInput m_deployOutLimit = new DigitalInput(Constants.Intake.DioIds.kDeployOutLimit);
 
