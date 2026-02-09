@@ -137,5 +137,11 @@ public class IntakeSub extends SubsystemBase {
     if((currentAngle == Constants.Intake.kDeployedAngle) && (m_targetDeployAngle == Constants.Intake.kDeployedAngle)) {
       setDeployPower(0.001);
     }
+    if(isAtInLimit() && pidPower < 0.0) {
+      pidPower = 0.0;
+
+    } else if (isAtOutLimit() && pidPower > 0.001) {
+      pidPower = 0.001;
+    }
   }
 }
