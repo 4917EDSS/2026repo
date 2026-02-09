@@ -108,6 +108,10 @@ public class RobotContainer {
     m_operatorContoller.x().whileTrue(new InstantCommand(() -> m_intakeSub.setBeltPower(Constants.Intake.kBeltPower))); // Runs Intake Belt Forward
     m_operatorContoller.b().onTrue(new InstantCommand(()-> m_intakeSub.setTargetDeployAngle(Constants.Intake.kInAngle))); // Retracts Intake
     m_operatorContoller.a().onTrue(new InstantCommand(()-> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployedAngle))); // Deploys Intake
+
+    m_operatorContoller.leftBumper().whileTrue(new InstantCommand(()-> m_hopperSub.setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity * - 1))); // Run Singulator Backwards
+    m_operatorContoller.rightBumper().whileTrue(new InstantCommand(()-> m_hopperSub.setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity))); // Run Singulator Forwards
+      m_operatorContoller.leftTrigger().whileTrue(new InstantCommand(()-> m_hopperSub.setEscalatorVelocity(Constants.Hopper.kEscalatorVelocity))); // Run Escalator Forwardsb
   }
 
   public Command getAutonomousCommand() {
