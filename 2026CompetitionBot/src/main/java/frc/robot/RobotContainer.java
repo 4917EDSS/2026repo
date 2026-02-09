@@ -103,6 +103,9 @@ public class RobotContainer {
     m_driverController.rightTrigger()
         .whileTrue(new SpinSingulatorCmd(m_hopperSub));
     m_driverController.leftBumper().onTrue(new ClimbCmd(m_climbSub));
+
+    m_operatorContoller.rightTrigger()
+        .onTrue(new InstantCommand(()->m_shooterSub.enableFlyhweelVelocityControl(true))).onFalse(new InstantCommand(()->m_shooterSub.enableFlyhweelVelocityControl(false)));
   }
 
   public Command getAutonomousCommand() {
