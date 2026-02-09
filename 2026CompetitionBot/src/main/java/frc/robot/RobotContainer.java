@@ -67,10 +67,10 @@ public class RobotContainer {
     autoChooserSetup();
 
    m_shooterSub.setDefaultCommand(new RunCommand(
-    () -> m_shooterSub.setYawPower(-m_operatorContoller.getLeftX()), m_shooterSub));
+    () -> m_shooterSub.setYawPower(-m_operatorContoller.getLeftX() *0.15), m_shooterSub));
 
     m_shooterSub.setDefaultCommand(new RunCommand(
-    () -> m_shooterSub.setPitchPower(-m_operatorContoller.getRightX()), m_shooterSub));
+    () -> m_shooterSub.setPitchPower(-m_operatorContoller.getRightX() *0.15), m_shooterSub));
   }
 
 
@@ -113,7 +113,7 @@ public class RobotContainer {
     m_driverController.leftBumper().onTrue(new ClimbCmd(m_climbSub));
 
     m_operatorContoller.rightTrigger()
-        .onTrue(new InstantCommand(()->m_shooterSub.enableFlyhweelVelocityControl(true))).onFalse(new InstantCommand(()->m_shooterSub.enableFlyhweelVelocityControl(false)));
+        .onTrue(new InstantCommand(()->m_shooterSub.setFlywheelPower(0.1))).onFalse(new InstantCommand(()->m_shooterSub.setFlywheelPower(0.0)));
 
     m_operatorContoller.leftStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
 

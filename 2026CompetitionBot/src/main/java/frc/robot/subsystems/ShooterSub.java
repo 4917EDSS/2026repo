@@ -233,7 +233,7 @@ public class ShooterSub extends SubsystemBase {
     m_pitchMotor.set(power);
   }
 
-  private void setFlywheelPower(double power) {
+  public void setFlywheelPower(double power) {
     m_shooterMotor1.set(power);
   }
 
