@@ -104,14 +104,14 @@ public class RobotContainer {
         .whileTrue(new SpinSingulatorCmd(m_hopperSub));
     m_driverController.leftBumper().onTrue(new ClimbCmd(m_climbSub));
 
-    m_operatorContoller.y().whileTrue(new InstantCommand(() -> m_intakeSub.setBeltPower(Constants.Intake.kBeltPower * -1))); // Runs Intake Belt Backwards
-    m_operatorContoller.x().whileTrue(new InstantCommand(() -> m_intakeSub.setBeltPower(Constants.Intake.kBeltPower))); // Runs Intake Belt Forward
-    m_operatorContoller.b().onTrue(new InstantCommand(()-> m_intakeSub.setTargetDeployAngle(Constants.Intake.kInAngle))); // Retracts Intake
-    m_operatorContoller.a().onTrue(new InstantCommand(()-> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployedAngle))); // Deploys Intake
+    m_operatorContoller.y().whileTrue(new InstantCommand(() -> m_intakeSub.setBeltPower(Constants.Intake.kBeltPower * -0.1))); // Runs Intake Belt Backwards
+    m_operatorContoller.x().whileTrue(new InstantCommand(() -> m_intakeSub.setBeltPower(Constants.Intake.kBeltPower * 0.1))); // Runs Intake Belt Forward
+    m_operatorContoller.b().onTrue(new InstantCommand(()-> m_intakeSub.setDeployPower(Constants.Intake.kDeployMaxPower * -0.1))); // Runs Intake Deploy Motors At 10% Power Backwards
+    m_operatorContoller.a().onTrue(new InstantCommand(()-> m_intakeSub.setDeployPower(Constants.Intake.kDeployMaxPower * 0.1))); // Runs Intake Deploy Motors At 10% Power Forwards
 
-    m_operatorContoller.leftBumper().whileTrue(new InstantCommand(()-> m_hopperSub.setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity * - 1))); // Run Singulator Backwards
-    m_operatorContoller.rightBumper().whileTrue(new InstantCommand(()-> m_hopperSub.setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity))); // Run Singulator Forwards
-      m_operatorContoller.leftTrigger().whileTrue(new InstantCommand(()-> m_hopperSub.setEscalatorVelocity(Constants.Hopper.kEscalatorVelocity))); // Run Escalator Forwardsb
+    m_operatorContoller.leftBumper().whileTrue(new InstantCommand(()-> m_hopperSub.setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity * - 0.1))); // Run Singulator Backwards At 10% Power
+    m_operatorContoller.rightBumper().whileTrue(new InstantCommand(()-> m_hopperSub.setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity * 0.1))); // Run Singulator Forwards At 10% Power
+      m_operatorContoller.leftTrigger().whileTrue(new InstantCommand(()-> m_hopperSub.setEscalatorVelocity(Constants.Hopper.kEscalatorVelocity * 0.1))); // Run Escalator Forwards At 10% Power
   }
 
   public Command getAutonomousCommand() {
