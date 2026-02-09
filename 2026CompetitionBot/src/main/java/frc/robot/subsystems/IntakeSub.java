@@ -28,7 +28,7 @@ import frc.robot.Constants;
 public class IntakeSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
 
-  private final SparkMax m_beltMotor = new SparkMax(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
+  private final SparkFlex m_beltMotor = new SparkFlex(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
   private final SparkMax m_deployMotorL = new SparkMax(Constants.CanIds.kDeployMotorL, MotorType.kBrushless);
   private final SparkFlex m_deployMotorR = new SparkFlex(Constants.CanIds.kDeployMotorR, MotorType.kBrushless); // Run in tandem
   private final DigitalInput m_deployInLimit = new DigitalInput(Constants.Intake.DioIds.kDeployInLimit);

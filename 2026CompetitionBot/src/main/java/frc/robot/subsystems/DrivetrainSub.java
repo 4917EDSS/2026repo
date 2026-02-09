@@ -95,7 +95,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
           /* This is in radians per second, but SysId only supports "volts" */
           Volts.of(Math.PI),
           null, // Use default timeout (10 s)
-          // Log state with SignalLogger class
+          // Log state with SignalLogger classSmartDashboard.putNumber("x estimate", getEstimatedPose().getX());
           state -> SignalLogger.writeString("SysIdRotation_State", state.toString())),
       new SysIdRoutine.Mechanism(
           output -> {

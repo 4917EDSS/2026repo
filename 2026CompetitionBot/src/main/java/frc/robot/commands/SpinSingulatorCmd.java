@@ -8,23 +8,25 @@ import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.HopperSub;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SpinSinglatorCmd extends Command {
+/*
+ * You should consider using the more terse Command factories API instead
+ * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
+ */
+public class SpinSingulatorCmd extends Command {
   HopperSub m_hopperSub;
   double m_velocity;
+
   /** Creates a new SpinSinglator. */
-  public SpinSinglatorCmd(HopperSub hopperSub, double velocity) {
+  public SpinSingulatorCmd(HopperSub hopperSub) {
     m_hopperSub = hopperSub;
-    m_velocity = velocity;
-    addRequirements(m_hopperSub);
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(m_hopperSub);
   }
 
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_hopperSub.setSingulatorVelocity(m_velocity);
     m_hopperSub.enableSingulator();
   }
 

@@ -28,6 +28,11 @@ public class ClimbSub extends SubsystemBase {
   private final SparkLimitSwitch m_inboardLimit = m_deployMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_outboardLimit = m_deployMotor.getReverseLimitSwitch();
 
+
+  private final double m_TargetRotationAngle;
+
+  private boolean m_ActivateClimb = false;
+
   /** Creates a new ClimbSub. */
   public ClimbSub() {
     TalonFXConfigurator talonFXConfigurator = m_rotateMotor.getConfigurator();
@@ -48,6 +53,9 @@ public class ClimbSub extends SubsystemBase {
     limitConfigs.StatorCurrentLimitEnable = true;
     talonFXConfigurator.apply(limitConfigs);
 
+    m_TargetRotationAngle = Constants.Climb.kRotationAngle;
+
+
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
@@ -67,6 +75,17 @@ public class ClimbSub extends SubsystemBase {
     //stop if the climb is at the in limit OR shoots below limit AND it is still moving
     else if((isAtInLimit() || getRotationAngle() <= 0.0) && (getRotatePower() > 0)) {
       setRotatePower(0);
+    }
+
+    if(m_ActivateClimb) {
+      if(!isAtOutLimit()) {
+
+        setDeployPower(Constants.Climb.kDeployPower);
+      } else if(getRotationAngle() - m_TargetRotationAngle < Constants.Climb.kRotationTolerance) {
+        setRotatePower(Constants.Climb.kRotationPower);
+      }
+
+
     }
   }
 
@@ -94,13 +113,13 @@ public class ClimbSub extends SubsystemBase {
   }
 
   public void setTargetAngle(double angle, double power) { // placeholder, needs kraken motion magic
-    while (getRotationAngle() < angle) {
+    while(getRotationAngle() < angle) {
       setRotatePower(power);
     }
   }
-  
+
   public void setTargetDeployDistance(double distance, double power) { // same, maybe fixed power
-    while (getDeployDistance() < distance) { 
+    while(getDeployDistance() < distance) {
       m_deployMotor.set(power);
     }
   }
@@ -159,5 +178,13 @@ public class ClimbSub extends SubsystemBase {
   public double getElectricalCurrent() {
     return m_rotateMotor.getStatorCurrent().getValueAsDouble();
 
+  }
+
+  public void climb() {
+    m_ActivateClimb = true;
+  }
+
+  public void StopClimb() {
+    m_ActivateClimb = false;
   }
 }
