@@ -14,6 +14,8 @@ import frc.robot.Constants;
 /** Add your docs here. */
 public class CalculateShooterAiming {
 
+  private boolean m_isLobbing = false;
+
   public double getYawAngle(Pose3d robot) {
     Alliance alliance = GameData.getAlliance();
 
@@ -104,6 +106,14 @@ public class CalculateShooterAiming {
 
   private static Pose3d robotToField(Pose3d robotRelativePose, Pose3d robotPose) {
     return robotRelativePose.relativeTo(robotPose);
+  }
+
+  public void setLobbingMode (boolean lobbingMode) {
+    m_isLobbing = lobbingMode;
+  }
+
+  public boolean getLobbingMode () {
+    return m_isLobbing;
   }
 
 }

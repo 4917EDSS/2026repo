@@ -87,7 +87,6 @@ public class IntakeSub extends SubsystemBase {
 
 
   public void setTargetDeployAngle(double angle) {
-    // Not doing anything yet
     m_targetDeployAngle = angle;
     m_isIntakeOn = true;
     runDeployAngleControl(true);
@@ -128,8 +127,21 @@ public class IntakeSub extends SubsystemBase {
       double sign = (pidPower >= 0.0) ? 1.0 : -1.0;
       pidPower = Constants.Intake.kDeployMaxPower * sign;
     }
+
     if(runDeployAngleControl) {
       setDeployPower(pidPower);
+    }
+
+    // If we are at the out limit, set our kP to a very small value so that it will retract if it gets hit
+    // TODO: Choose an accurate value for this
+    if((currentAngle == Constants.Intake.kDeployedAngle) && (m_targetDeployAngle == Constants.Intake.kDeployedAngle)) {
+      setDeployPower(0.001);
+    }
+    if(isAtInLimit() && pidPower < 0.0) {
+      pidPower = 0.0;
+
+    } else if (isAtOutLimit() && pidPower > 0.001) {
+      pidPower = 0.001;
     }
   }
 }

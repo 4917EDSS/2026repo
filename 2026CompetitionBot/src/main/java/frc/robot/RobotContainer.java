@@ -14,12 +14,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.ClimbDownCmd;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeDeployCmd;
+import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.SpinSingulatorCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
@@ -30,6 +33,7 @@ import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.utils.CalculateShooterAiming;
 
 public class RobotContainer {
 
@@ -56,6 +60,7 @@ public class RobotContainer {
   public final ShooterSub m_shooterSub = new ShooterSub();
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
   public final FeedbackSub m_FeedbackSub = new FeedbackSub(m_driverController);
+  public final CalculateShooterAiming m_calculateShooterAiming = new CalculateShooterAiming();
 
   public static boolean disableShuffleboardPrint = false;
   private SendableChooser<Command> m_Chooser = new SendableChooser<>();
@@ -64,6 +69,12 @@ public class RobotContainer {
     configureBindings();
     registerNameCommand();
     autoChooserSetup();
+
+    m_shooterSub.setDefaultCommand(new RunCommand(
+        () -> m_shooterSub.setYawPower(-m_operatorContoller.getLeftX() * 0.15), m_shooterSub));
+
+    m_shooterSub.setDefaultCommand(new RunCommand(
+        () -> m_shooterSub.setPitchPower(-m_operatorContoller.getRightX() * 0.15), m_shooterSub));
   }
 
 
@@ -97,17 +108,43 @@ public class RobotContainer {
             new DriveToPoseCmd(new Pose2d(new Translation2d(15.23, 5.26), new Rotation2d(Math.toRadians(90.0))),
                 m_drivetrainSub));
 
+    //A
+    m_driverController.a().onTrue(new ConditionalCommand(new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)), new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), null));
+
     m_driverController.start()
         .onTrue(new InstantCommand(() -> m_drivetrainSub.resetPose((m_visionSub.getEstimatedPose()))));
 
+    //Left Trigger
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
+    
+    //Right Trigger
     m_driverController.rightTrigger()
         .whileTrue(new SpinSingulatorCmd(m_hopperSub));
+
+    //Right Bumper  
+    m_driverController.rightBumper().onTrue(new ClimbCmd(m_climbSub));
+   
+    //Back
+    m_driverController.back().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric()));
+    //L4
+    m_driverController.leftStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+    //R4
+    m_driverController.rightStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+    //R2
+    m_operatorContoller.rightTrigger()
+        .onTrue(new InstantCommand(()->m_shooterSub.setFlywheelPower(0.1))).onFalse(new InstantCommand(()->m_shooterSub.setFlywheelPower(0.0)));
+
+    //Left Stick In
+    m_operatorContoller.leftStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+    //Right Stick In
+    m_operatorContoller.rightStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+    // Climb
+    // Pov up and down
     m_operatorContoller.povUp().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, 0.1)));
     m_operatorContoller.povDown().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, -0.1)));
+    // Start and back
     m_operatorContoller.start().whileTrue(new InstantCommand(() -> m_climbSub.setTargetAngle(1, 0.1)));
     m_operatorContoller.back().whileTrue(new InstantCommand(() -> m_climbSub.setTargetAngle(1, -0.1)));
-
   }
 
   public Command getAutonomousCommand() {
