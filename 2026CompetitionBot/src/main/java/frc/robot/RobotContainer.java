@@ -108,7 +108,10 @@ public class RobotContainer {
                 m_drivetrainSub));
 
     //A
-    m_driverController.a().onTrue(new ConditionalCommand(new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)), new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), null));
+    m_driverController.a()
+        .onTrue(new ConditionalCommand(
+            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)), 
+            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), null));
 
     m_driverController.start()
         .onTrue(new InstantCommand(() -> m_drivetrainSub.resetPose((m_visionSub.getEstimatedPose()))));
