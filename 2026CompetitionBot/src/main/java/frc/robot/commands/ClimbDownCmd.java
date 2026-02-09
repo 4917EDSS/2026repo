@@ -12,30 +12,20 @@ import frc.robot.subsystems.ClimbSub;
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class ClimbCmd extends Command {
+public class ClimbDownCmd extends Command {
   private final ClimbSub m_climbSub;
 
-  /**
-   * Creates a new ClimbCmd.
-   * 
-   * @param d
-   */
-  public ClimbCmd(ClimbSub climbSub) {
+  /** Creates a new ClimbDownCmd. */
+  public ClimbDownCmd(ClimbSub climbSub) {
     m_climbSub = climbSub;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(climbSub);
   }
 
-
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployDistance, Constants.Climb.kDeployPower);
-    // while(!m_climbSub.isAtTargetDistance(Constants.Climb.kDeployDistance)) {
-
-    // }
-    // m_climbSub.setTargetAngle(Constants.Climb.kRotationAngle, Constants.Climb.kRotationPower);
-    m_climbSub.climb();
+    m_climbSub.climbdown();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,9 +44,9 @@ public class ClimbCmd extends Command {
   @Override
   public boolean isFinished() {
     if(Math.abs(Constants.Climb.kRotationAngle - m_climbSub.getRotationAngle()) < Constants.Climb.kRotationTolerance) {
-      return true;
-    } else {
       return false;
+    } else {
+      return true;
     }
   }
 }

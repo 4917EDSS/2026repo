@@ -32,6 +32,7 @@ public class ClimbSub extends SubsystemBase {
   private final double m_TargetRotationAngle;
 
   private boolean m_ActivateClimb = false;
+  private boolean m_climbdown = false;
 
   /** Creates a new ClimbSub. */
   public ClimbSub() {
@@ -83,6 +84,12 @@ public class ClimbSub extends SubsystemBase {
         setDeployPower(Constants.Climb.kDeployPower);
       } else if(getRotationAngle() - m_TargetRotationAngle < Constants.Climb.kRotationTolerance) {
         setRotatePower(Constants.Climb.kRotationPower);
+      } else if(m_climbdown) {
+        if(!(getRotationAngle() < Constants.Climb.kRotationTolerance)) {
+          setRotatePower(-Constants.Climb.kRotationPower);
+        } else if(isAtInLimit()) {
+          setDeployPower(-Constants.Climb.kDeployPower);
+        }
       }
 
 
@@ -182,9 +189,16 @@ public class ClimbSub extends SubsystemBase {
 
   public void climb() {
     m_ActivateClimb = true;
+    m_climbdown = false;
+  }
+
+  public void climbdown() {
+    m_ActivateClimb = true;
+    m_climbdown = true;
   }
 
   public void StopClimb() {
     m_ActivateClimb = false;
+    m_climbdown = false;
   }
 }

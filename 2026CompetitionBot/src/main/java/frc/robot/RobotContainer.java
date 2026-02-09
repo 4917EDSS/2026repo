@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCmd;
+import frc.robot.commands.ClimbDownCmd;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeDeployCmd;
 import frc.robot.commands.SpinSingulatorCmd;
@@ -102,7 +103,11 @@ public class RobotContainer {
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
     m_driverController.rightTrigger()
         .whileTrue(new SpinSingulatorCmd(m_hopperSub));
-    m_driverController.leftBumper().onTrue(new ClimbCmd(m_climbSub));
+    m_operatorContoller.povUp().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, 0.1)));
+    m_operatorContoller.povDown().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, -0.1)));
+    m_operatorContoller.start().whileTrue(new InstantCommand(() -> m_climbSub.setTargetAngle(1, 0.1)));
+    m_operatorContoller.back().whileTrue(new InstantCommand(() -> m_climbSub.setTargetAngle(1, -0.1)));
+
   }
 
   public Command getAutonomousCommand() {
