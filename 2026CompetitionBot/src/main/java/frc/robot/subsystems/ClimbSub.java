@@ -97,10 +97,10 @@ public class ClimbSub extends SubsystemBase {
       if(!isAtOutLimit()) {
 
         setDeployPower(Constants.Climb.kDeployMaxPower);
-      } else if(getRotationAngle() - m_TargetRotationAngle < Constants.Climb.kRotationTolerance) {
+      } else if(getRotationAngle() - m_TargetRotationAngle < Constants.Climb.kRotationToleranceDeg) {
         setRotatePower(Constants.Climb.kRotationMaxPower);
       } else if(m_climbdown) {
-        if(!(getRotationAngle() < Constants.Climb.kRotationTolerance)) {
+        if(!(getRotationAngle() < Constants.Climb.kRotationToleranceDeg)) {
           setRotatePower(-Constants.Climb.kRotationMaxPower);
         } else if(isAtInLimit()) {
           setDeployPower(-Constants.Climb.kDeployMaxPower);

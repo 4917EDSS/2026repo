@@ -60,44 +60,69 @@ public final class Constants {
     public static final double kDeployEncoderToMmConversionFactor = 1.0;
     public static final double kDeployInDistanceMm = 0.0;
     public static final double kDeployOutDistanceMm = 10.0;
+    public static final double kDeployToleranceMm = 2.0;
     public static final double kDeployMaxPower = 1.0;
-    public static final double kDeployTolerance = 2.0;
 
     public static final double kRotationEncoderToDegConversionFactor = 1.0;
     public static final double kRotationInitialAngleDeg = 0.0;
     public static final double kRotationFinalAngleDeg = 180.0;
+    public static final double kRotationToleranceDeg = 2.0;
     public static final double kRotationMaxPower = 1.0;
-    public static final double kRotationTolerance = 2.0;
   }
 
   public static class Hopper {
-    public static final double kSingulatorVelocityTolerance = 4.0;
-    public static final double kMaxSingulatorVelocity = 111.1;
-    public static final double kSingulatorVelocity = 11.1; //singulator velocity needs to be lower than Escalator velocity so we don't get fuel building up in certain areas
-    public static final double kSingulatorTicksToDegrees = 1.0;
+    // TODO:  Set all the values correctly
+    public static final double kSingulatorEncoderToRpsConversionFactor = 1.0; // Rotations per second
+    public static final double kSingulatorMaxVelocityRps = 1.0; // Throughput must be slower than Escalator to avoid jams
+    public static final double kSingulatorVelocityToleranceRps = 0.1;
 
-    public static final double kEscalatorVelocityTolerance = 4.0;
-    public static final double kMaxEscalatorVelocity = 111.1;
-    public static final double kEscalatorVelocity = 420.1; //Escalator velocity needs to be higher than singulator velocity so we don't get fuel building up in certain areas
-    public static final double kEscalatorTicksInMeter = 6967.1;
+    public static final double kEscalatorEncoderToRpsConversionFactor = 1.0; // Rotations per second
+    public static final double kEscalatorMaxVelocityRps = 4.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
+    public static final double kEscalatorVelocityToleranceRps = 0.1;
   }
 
   public static class Intake {
-    public static final double kRotationToDegrees = 1.0;
-    public static final double kBeltPower = 0.25;
+    // TODO:  Set all the values correctly
+    public static final double kDeployEncoderToDegConversionFactor = 1.0;
+    public static final double kDeployInAngleDeg = 0.0;
+    public static final double kDeployOutAngleDeg = 10.0;
+    public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxPower = 0.25;
-    public static final double kDeployedAngle = 10.0;
-    public static final double kInAngle = 0.0;
+
+    public static final double kBeltPower = 0.25;
   }
 
   public static class Shooter {
-    public static final double kShooterYawKS = 0.25;
-    public static final double kShooterYawKV = 0.12;
-    public static final double kShooterYawKP = 0.1;
-    public static final double kShooterYawKI = 0.0;
-    public static final double kShooterYawKD = 0.05;
-    public static final double kPitchMaxPower = 10;
+    // TODO:  Set all the values correctly
+    public static final double kYawEncoderToDegConversionFactor = 1.0;
+    public static final double kYawMinAngleDeg = 0.0;
+    public static final double kYawMaxAngleDeg = 180.0;
     public static final double kYawMaxPower = 10;
+    public static final double kYawKS = 0.25;
+    public static final double kYawKV = 0.12;
+    public static final double kYawKP = 0.1;
+    public static final double kYawKI = 0.0;
+    public static final double kYawKD = 0.05;
+
+    public static final double kPitchEncoderToDegConversionFactor = 1.0;
+    public static final double kPitchMinAngleDeg = 0.0;
+    public static final double kPitchMaxAngleDeg = 45.0;
+    public static final double kPitchMaxPower = 10;
+    public static final double kPitchKS = 0.25;
+    public static final double kPitchKV = 0.12;
+    public static final double kPitchKP = 0.1;
+    public static final double kPitchKI = 0.0;
+    public static final double kPitchKD = 0.0;
+
+    public static final double kFlywheelEncoderToRpsConversionFactor = 1.0;
+    public static final double kFlywheelMaxVelocityRps = 25.0;
+    public static final double kFlywheelVelocityToleranceRps = 1.0;
+    public static final double kFlywheelKS = 0.25;
+    public static final double kFlywheelKV = 0.12;
+    public static final double kFlywheelKP = 0.1;
+    public static final double kFlywheelKI = 0.0;
+    public static final double kFlywheelKD = 0.0;
+
     public static final double kGravity = 9.80665;
   }
 

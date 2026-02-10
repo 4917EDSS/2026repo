@@ -50,7 +50,7 @@ public class HopperSub extends SubsystemBase {
 
     // Set encoder conversion factor
     FeedbackConfigs singulatorFeedbackConfigs = new FeedbackConfigs();
-    singulatorFeedbackConfigs.SensorToMechanismRatio = Constants.Hopper.kSingulatorTicksToDegrees;
+    singulatorFeedbackConfigs.SensorToMechanismRatio = Constants.Hopper.kSingulatorEncoderToRpsConversionFactor;
     talonFXSingulatorConfigurator.apply(singulatorFeedbackConfigs);
 
     //current limits configurations for singulator
@@ -101,12 +101,12 @@ public class HopperSub extends SubsystemBase {
     SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.get());
 
     if(m_singulatorEnabled) {
-      setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity);
+      setSingulatorVelocity(Constants.Hopper.kSingulatorMaxVelocityRps);
     }
 
     // TODO: For Spark max, need to run algorithm here
     if(m_escalatorEnabled) {
-      setEscalatorVelocity(Constants.Hopper.kEscalatorVelocity);
+      setEscalatorVelocity(Constants.Hopper.kEscalatorMaxVelocityRps);
     }
   }
 
@@ -141,7 +141,8 @@ public class HopperSub extends SubsystemBase {
   }
 
   public boolean isSingulatorAtTargetVelocity() {
-    if(Constants.Hopper.kSingulatorVelocityTolerance > Math.abs(m_targetSingulatorVelocity - getSingulatorVelocity())) {
+    if(Constants.Hopper.kSingulatorVelocityToleranceRps > Math
+        .abs(m_targetSingulatorVelocity - getSingulatorVelocity())) {
       return true;
     }
     return false;
@@ -179,7 +180,7 @@ public class HopperSub extends SubsystemBase {
 
 
   public boolean isEscalatorAtTargetVelocity() {
-    if(Constants.Hopper.kEscalatorVelocityTolerance > Math.abs(m_targetEscalatorVelocity - getEscalatorVelocity())) {
+    if(Constants.Hopper.kEscalatorVelocityToleranceRps > Math.abs(m_targetEscalatorVelocity - getEscalatorVelocity())) {
       return true;
     }
     return false;

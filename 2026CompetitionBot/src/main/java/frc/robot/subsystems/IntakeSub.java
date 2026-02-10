@@ -48,7 +48,7 @@ public class IntakeSub extends SubsystemBase {
         .inverted(false) // Set to true to invert the forward motor direction
         .smartCurrentLimit(100) // Current limit in amps
         .idleMode(IdleMode.kCoast).encoder
-            .positionConversionFactor(Constants.Intake.kRotationToDegrees)
+            .positionConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor)
             .velocityConversionFactor(1.0);
 
     // Save the configuration to the motor
@@ -80,7 +80,7 @@ public class IntakeSub extends SubsystemBase {
       // Reset encoder if we're at the in limit and we've never set the encoder
       if(isAtInLimit()) {
         m_isIntakeEncoderSet = true;
-        resetDeployEncoder(Constants.Intake.kInAngle);
+        resetDeployEncoder(Constants.Intake.kDeployInAngleDeg);
       }
     }
   }
