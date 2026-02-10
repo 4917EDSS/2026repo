@@ -26,12 +26,8 @@ import frc.robot.Constants;
 public class HopperSub extends SubsystemBase {
   private final CanSub m_canSub;
 
-
-  //IMPORTANT: The term singulator refers to the mechanism in the hopper which aligns the balls. The escalator forces the balls into the shooter.
-  //kraken x60 motor for singulator rotation (done)
-  //2 ir sensors for hopper full and hopper empty (1 each)
-  //internal encoder for singulator velocity
-
+  //IMPORTANT: The term singulator refers to the mechanism in the hopper which aligns the balls. 
+  //The escalator forces the balls into the shooter.
 
   //request objects for velocity PID control
   final VelocityVoltage m_singulatorVelocityRequest = new VelocityVoltage(0).withSlot(0);
@@ -52,18 +48,19 @@ public class HopperSub extends SubsystemBase {
     // configuration is untested
     TalonFXConfigurator talonFXSingulatorConfigurator = m_singulatorMotor.getConfigurator();
 
+    // Set encoder conversion factor
     FeedbackConfigs singulatorFeedbackConfigs = new FeedbackConfigs();
-    singulatorFeedbackConfigs.SensorToMechanismRatio = Constants.Hopper.kSingulatorTicksInMeter;
+    singulatorFeedbackConfigs.SensorToMechanismRatio = Constants.Hopper.kSingulatorTicksToDegrees;
     talonFXSingulatorConfigurator.apply(singulatorFeedbackConfigs);
 
     //current limits configurations for singulator
     CurrentLimitsConfigs limitSingulatorConfigs = new CurrentLimitsConfigs();
-    limitSingulatorConfigs.StatorCurrentLimit = 60; //this might be too high idk
+    limitSingulatorConfigs.StatorCurrentLimit = 100; //this might be too high idk
     limitSingulatorConfigs.StatorCurrentLimitEnable = true;
     talonFXSingulatorConfigurator.apply(limitSingulatorConfigs);
 
     // PID configurations for singulator
-    var slot0SingulatorConfigs = new Slot0Configs();
+    Slot0Configs slot0SingulatorConfigs = new Slot0Configs();
     slot0SingulatorConfigs.kS = 0.1; // Add 0.1 V output to overcome static friction
     slot0SingulatorConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
     slot0SingulatorConfigs.kP = 0.11; // An error of 1 rps results in 0.11 V output
@@ -74,7 +71,7 @@ public class HopperSub extends SubsystemBase {
     //motor configurations for singulator
     MotorOutputConfigs outputSingulatorConfigs = new MotorOutputConfigs();
     outputSingulatorConfigs.Inverted = InvertedValue.Clockwise_Positive;
-    outputSingulatorConfigs.NeutralMode = NeutralModeValue.Brake;
+    outputSingulatorConfigs.NeutralMode = NeutralModeValue.Coast;
     talonFXSingulatorConfigurator.apply(outputSingulatorConfigs);
 
 
@@ -83,7 +80,7 @@ public class HopperSub extends SubsystemBase {
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(false) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(60) // Current limit in amps
+        .smartCurrentLimit(100) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(1.0)
             .velocityConversionFactor(1.0);
@@ -93,6 +90,24 @@ public class HopperSub extends SubsystemBase {
     // operation can be slow
     m_escalatorMotor.configure(motorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Singulating", m_singulatorEnabled);
+    SmartDashboard.putNumber("Singulator Velocity", m_singulatorMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putBoolean("Escalating", m_escalatorEnabled);
+    SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.get());
+
+    if(m_singulatorEnabled) {
+      setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity);
+    }
+
+    // TODO: For Spark max, need to run algorithm here
+    if(m_escalatorEnabled) {
+      setEscalatorVelocity(Constants.Hopper.kEscalatorVelocity);
+    }
   }
 
   // TODO potentienly activate singulator and escalator at the same time
@@ -126,8 +141,7 @@ public class HopperSub extends SubsystemBase {
   }
 
   public boolean isSingulatorAtTargetVelocity() {
-    if(Constants.Hopper.kSingulatorVelocityTolerance > Math
-        .abs(m_targetSingulatorVelocity - getSingulatorVelocity())) {
+    if(Constants.Hopper.kSingulatorVelocityTolerance > Math.abs(m_targetSingulatorVelocity - getSingulatorVelocity())) {
       return true;
     }
     return false;
@@ -156,17 +170,16 @@ public class HopperSub extends SubsystemBase {
   public void setEscalatorVelocity(double velocity) {
     m_targetEscalatorVelocity = velocity;
     //use pid control to set velocity
-    m_escalatorMotor.set(velocity);
+    m_escalatorMotor.set(velocity); // TODO: Needs to be an algorithm that runs from Periodic
   }
 
   public double getEscalatorVelocity() {
-    return m_escalatorMotor.get();
+    return m_escalatorMotor.get(); // TODO: Get velocity from internal encoder
   }
 
 
   public boolean isEscalatorAtTargetVelocity() {
-    if(Constants.Hopper.kEscalatorVelocityTolerance > Math
-        .abs(m_targetEscalatorVelocity - getEscalatorVelocity())) {
+    if(Constants.Hopper.kEscalatorVelocityTolerance > Math.abs(m_targetEscalatorVelocity - getEscalatorVelocity())) {
       return true;
     }
     return false;
@@ -184,20 +197,4 @@ public class HopperSub extends SubsystemBase {
     return m_canSub.isHopperEmpty(); // need sensor from cansub
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Singulating", m_singulatorEnabled);
-    SmartDashboard.putNumber("Singulator Velocity", m_singulatorMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putBoolean("Escalating", m_escalatorEnabled);
-    SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.get());
-
-    if(m_singulatorEnabled) {
-      setSingulatorVelocity(Constants.Hopper.kSingulatorVelocity);
-    }
-
-    if(m_escalatorEnabled) {
-      setEscalatorVelocity(Constants.Hopper.kEscalatorVelocity);
-    }
-  }
 }

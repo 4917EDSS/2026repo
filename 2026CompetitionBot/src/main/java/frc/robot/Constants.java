@@ -66,7 +66,7 @@ public final class Constants {
     public static final double kSingulatorVelocityTolerance = 4.0;
     public static final double kMaxSingulatorVelocity = 111.1;
     public static final double kSingulatorVelocity = 11.1; //singulator velocity needs to be lower than Escalator velocity so we don't get fuel building up in certain areas
-    public static final double kSingulatorTicksInMeter = 6767.1;
+    public static final double kSingulatorTicksToDegrees = 1.0;
 
     public static final double kEscalatorVelocityTolerance = 4.0;
     public static final double kMaxEscalatorVelocity = 111.1;
@@ -102,10 +102,11 @@ public final class Constants {
   }
 
   public static class Climb {
-    public static final double kEncoderPositionConversionFactor = 1; // needs real value
+    public static final double kDeployEncoderConversionFactor = 1; // needs real value
     public static final double kDeployDistance = 1.0;
     public static final double kDeployPower = 1.0;
-    public static final double kRotationAngle = 180.0;
+    public static final double kInitialRotationAngle = 0.0;
+    public static final double kFinalRotationAngle = 180.0;
     public static final double kRotationPower = 1.0;
     public static final double kRotationTolerance = 2.0;
   }
