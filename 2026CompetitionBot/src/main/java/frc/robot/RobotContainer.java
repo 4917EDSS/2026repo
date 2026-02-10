@@ -159,10 +159,10 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return m_Chooser.getSelected();
   }
+
   /*
    * Create a list of auto period action choices+
    */
-
   void autoChooserSetup() {
 
 

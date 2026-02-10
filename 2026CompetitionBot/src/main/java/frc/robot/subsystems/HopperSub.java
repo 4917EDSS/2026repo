@@ -33,8 +33,8 @@ public class HopperSub extends SubsystemBase {
   final VelocityVoltage m_singulatorVelocityRequest = new VelocityVoltage(0).withSlot(0);
   final VelocityVoltage m_escalatorVelocityRequest = new VelocityVoltage(0).withSlot(0);
 
-  private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kSingulatorMotor);
-  private final SparkMax m_escalatorMotor = new SparkMax(Constants.CanIds.kEscalatorMotor, MotorType.kBrushless);
+  private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kHopperSingulatorMotor);
+  private final SparkMax m_escalatorMotor = new SparkMax(Constants.CanIds.kHopperEscalatorMotor, MotorType.kBrushless);
 
   private boolean m_singulatorEnabled = false;
   private boolean m_escalatorEnabled = false;

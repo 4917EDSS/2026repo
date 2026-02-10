@@ -14,52 +14,60 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
-    public static final int kOperatorControllerPort = 1;
-  }
-
+  //////////////////// These are the hardware mapping constants ////////////////////
   public static class CanIds {
     // These are the roboRIO CAN bus IDs
     // CTRE Swerve drivetrain uses CAN IDs 1-13 on CANivore bus
     // This does not conflict with the roboRIO bus which can also use these IDs
-    public static final int kYawMotor = 1;
-    public static final int kShooterMotor1 = 2;
-    public static final int kShooterMotor2 = 12;
-    public static final int kPitchMotor = 3;
-    public static final int kRotateMotor = 4;
-    public static final int kSingulatorMotor = 5;
-    public static final int kIntakeMotor = 6;
-    public static final int kDeployMotorL = 7;
-    public static final int kDeployMotorR = 8;
-    public static final int kFeederMotor = 9;
-    public static final int kClimbDeployMotor = 10;
-    public static final int kEscalatorMotor = 11;
+    public static final int kClimbDeployMotor = 1;
+    public static final int kClimbRotateMotor = 2;
+    public static final int kHopperEscalatorMotor = 3;
+    public static final int kHopperSingulatorMotor = 4;
+    public static final int kIntakeBeltMotor = 5;
+    public static final int kIntakeDeployMotorL = 6;
+    public static final int kIntakeDeployMotorR = 7;
+    public static final int kShooterFlywheelMotor1 = 8;
+    public static final int kShooterFlywheelMotor2 = 9;
+    public static final int kShooterPitchMotor = 10;
+    public static final int kShooterYawMotor = 11;
+  }
 
+  public static class CustomBoardCanIds {
+    public static final int kHopperEmptyDetection = 1;
+    public static final int kHopperFullDetection = 2;
+    public static final int kHopperEscalatorFuelPresent = 3;
+    public static final int kShooterFuelPresent = 4;
   }
 
   public static class DioIds {
     public static final int kClimbInLimitSwitch = 1;
     public static final int kClimbOutLimitSwitch = 2;
-    public static final int kIntakeInLimitSwitch = 3;
-    public static final int kIntakeOutLimitSwitch = 4;
-    public static final int kIntakeAbsoluteEncoder1 = 5;
-    public static final int kIntakeAbsoluteEncoder2 = 6;
-    public static final int kShooterYawAbsoluteEncoder1 = 7;
-    public static final int kShooterYawAbsoluteEncoder2 = 8;
-    public static final int kShooterPitchAbsoluteEncoder1 = 9;
-    public static final int kShooterPitchAbsoluteEncoder2 = 10;
-    public static final int kShooterIsAtYawCWLimit = 11;
-    public static final int kShooterIsAtYawCCWLimit = 12;
-    public static final int kShooterIsAtPitchLowerLimit = 13;
-    public static final int kShooterIsAtPitchUpperLimit = 14;
+    public static final int kClimbCCWLimitSwitch = 3;
+    public static final int kClimbCWLimitSwitch = 4;
+    public static final int kIntakeDeployInLimit = 5;
+    public static final int kIntakeDeployOutLimit = 6;
   }
 
-  public static class FieldElements {
-    public static final double kRedHubX = 4.675; // coordinates of the hub on the field
-    public static final double kRedHubY = 4.035;
-    public static final double kBlueHubX = 11.856;
-    public static final double kBlueHubY = 4.035;
+  public static class OperatorConstants {
+    public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
+  }
+
+
+  //////////////////// These are the subsystem constants ////////////////////
+  public static class Climb {
+    // TODO:  Set all the values correctly
+    public static final double kDeployEncoderToMmConversionFactor = 1.0;
+    public static final double kDeployInDistanceMm = 0.0;
+    public static final double kDeployOutDistanceMm = 10.0;
+    public static final double kDeployMaxPower = 1.0;
+    public static final double kDeployTolerance = 2.0;
+
+    public static final double kRotationEncoderToDegConversionFactor = 1.0;
+    public static final double kRotationInitialAngleDeg = 0.0;
+    public static final double kRotationFinalAngleDeg = 180.0;
+    public static final double kRotationMaxPower = 1.0;
+    public static final double kRotationTolerance = 2.0;
   }
 
   public static class Hopper {
@@ -73,8 +81,13 @@ public final class Constants {
     public static final double kEscalatorVelocity = 420.1; //Escalator velocity needs to be higher than singulator velocity so we don't get fuel building up in certain areas
     public static final double kEscalatorTicksInMeter = 6967.1;
   }
-  public static class Vision {
-    public static final double kDistanceTooCloseToDrive = 0.5;
+
+  public static class Intake {
+    public static final double kRotationToDegrees = 1.0;
+    public static final double kBeltPower = 0.25;
+    public static final double kDeployMaxPower = 0.25;
+    public static final double kDeployedAngle = 10.0;
+    public static final double kInAngle = 0.0;
   }
 
   public static class Shooter {
@@ -88,26 +101,15 @@ public final class Constants {
     public static final double kGravity = 9.80665;
   }
 
-  public static class Intake {
-    public static final double kRotationToDegrees = 1.0;
-    public static final double kBeltPower = 0.25;
-    public static final double kDeployMaxPower = 0.25;
-    public static final double kDeployedAngle = 10.0;
-    public static final double kInAngle = 0.0;
-
-    public static class DioIds {
-      public static final int kDeployInLimit = 2;
-      public static final int kDeployOutLimit = 4;
-    }
+  public static class Vision {
+    public static final double kDistanceTooCloseToDrive = 0.5;
   }
 
-  public static class Climb {
-    public static final double kDeployEncoderConversionFactor = 1; // needs real value
-    public static final double kDeployDistance = 1.0;
-    public static final double kDeployPower = 1.0;
-    public static final double kInitialRotationAngle = 0.0;
-    public static final double kFinalRotationAngle = 180.0;
-    public static final double kRotationPower = 1.0;
-    public static final double kRotationTolerance = 2.0;
+  //////////////////// These are the other constants ////////////////////
+  public static class FieldElements {
+    public static final double kRedHubX = 4.675; // coordinates of the hub on the field
+    public static final double kRedHubY = 4.035;
+    public static final double kBlueHubX = 11.856;
+    public static final double kBlueHubY = 4.035;
   }
 }

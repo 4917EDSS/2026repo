@@ -26,12 +26,12 @@ import frc.robot.Constants;
 
 public class ClimbSub extends SubsystemBase {
 
-  private final TalonFX m_rotateMotor = new TalonFX(Constants.CanIds.kRotateMotor);
+  private final TalonFX m_rotateMotor = new TalonFX(Constants.CanIds.kClimbRotateMotor);
   private final SparkMax m_deployMotor = new SparkMax(Constants.CanIds.kClimbDeployMotor, MotorType.kBrushless);
   private final SparkLimitSwitch m_inboardLimit = m_deployMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_outboardLimit = m_deployMotor.getReverseLimitSwitch();
-  private final DigitalInput m_rotateCCWLimit = new DigitalInput(Constants.Intake.DioIds.kDeployInLimit);
-  private final DigitalInput m_rotateCWLimit = new DigitalInput(Constants.Intake.DioIds.kDeployOutLimit);
+  private final DigitalInput m_rotateCCWLimit = new DigitalInput(Constants.DioIds.kClimbCCWLimitSwitch);
+  private final DigitalInput m_rotateCWLimit = new DigitalInput(Constants.DioIds.kClimbCWLimitSwitch);
 
 
   private final double m_TargetRotationAngle;
@@ -47,7 +47,7 @@ public class ClimbSub extends SubsystemBase {
         .inverted(false)
         .smartCurrentLimit(100)
         .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(Constants.Climb.kDeployEncoderConversionFactor);
+            .positionConversionFactor(Constants.Climb.kDeployEncoderToMmConversionFactor);
 
     m_deployMotor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -58,7 +58,7 @@ public class ClimbSub extends SubsystemBase {
     limitConfigs.StatorCurrentLimitEnable = true;
     talonFXConfigurator.apply(limitConfigs);
 
-    m_TargetRotationAngle = Constants.Climb.kInitialRotationAngle; //If this breaks anything switch to kFinalRotationAngle
+    m_TargetRotationAngle = Constants.Climb.kRotationInitialAngleDeg; //If this breaks anything switch to kFinalRotationAngle
 
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
@@ -96,14 +96,14 @@ public class ClimbSub extends SubsystemBase {
     if(m_ActivateClimb) {
       if(!isAtOutLimit()) {
 
-        setDeployPower(Constants.Climb.kDeployPower);
+        setDeployPower(Constants.Climb.kDeployMaxPower);
       } else if(getRotationAngle() - m_TargetRotationAngle < Constants.Climb.kRotationTolerance) {
-        setRotatePower(Constants.Climb.kRotationPower);
+        setRotatePower(Constants.Climb.kRotationMaxPower);
       } else if(m_climbdown) {
         if(!(getRotationAngle() < Constants.Climb.kRotationTolerance)) {
-          setRotatePower(-Constants.Climb.kRotationPower);
+          setRotatePower(-Constants.Climb.kRotationMaxPower);
         } else if(isAtInLimit()) {
-          setDeployPower(-Constants.Climb.kDeployPower);
+          setDeployPower(-Constants.Climb.kDeployMaxPower);
         }
       }
 

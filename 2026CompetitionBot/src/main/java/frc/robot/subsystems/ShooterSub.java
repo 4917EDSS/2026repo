@@ -44,11 +44,11 @@ public class ShooterSub extends SubsystemBase {
 
   /** Creates a new ShooterSub. */
 
-  private final SparkMax m_yawMotor = new SparkMax(Constants.CanIds.kYawMotor, MotorType.kBrushless);
-  private final SparkMax m_pitchMotor = new SparkMax(Constants.CanIds.kPitchMotor, MotorType.kBrushless);
+  private final SparkMax m_yawMotor = new SparkMax(Constants.CanIds.kShooterYawMotor, MotorType.kBrushless);
+  private final SparkMax m_pitchMotor = new SparkMax(Constants.CanIds.kShooterPitchMotor, MotorType.kBrushless);
 
-  private final TalonFX m_shooterMotor1 = new TalonFX(Constants.CanIds.kShooterMotor1);
-  private final TalonFX m_shooterMotor2 = new TalonFX(Constants.CanIds.kShooterMotor2);
+  private final TalonFX m_shooterMotor1 = new TalonFX(Constants.CanIds.kShooterFlywheelMotor1);
+  private final TalonFX m_shooterMotor2 = new TalonFX(Constants.CanIds.kShooterFlywheelMotor2);
   private StatusSignal<AngularVelocity> m_shooterVelocitySignal;
 
   // private final Encoder m_yawAbsoluteEncoder =
@@ -142,7 +142,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Target Yaw", m_targetYawAngle);
     SmartDashboard.putNumber("Shooter Target Pitch", m_targetPitchAngle);
     SmartDashboard.putNumber("Shooter Target Velocity", m_targetFlywheelVelocity);
-    
+
 
     // This method will be called once per scheduler run
 
