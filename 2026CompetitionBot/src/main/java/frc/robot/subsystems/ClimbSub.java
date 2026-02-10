@@ -23,39 +23,31 @@ import frc.robot.Constants;
 
 public class ClimbSub extends SubsystemBase {
 
-  private final TalonFX m_rotateMotor = new TalonFX(Constants.CanIds.kRotateMotor);
   private final SparkMax m_deployMotor = new SparkMax(Constants.CanIds.kClimbDeployMotor, MotorType.kBrushless);
+  private final TalonFX m_rotateMotor = new TalonFX(Constants.CanIds.kRotateMotor);
   private final SparkLimitSwitch m_inboardLimit = m_deployMotor.getForwardLimitSwitch();
   private final SparkLimitSwitch m_outboardLimit = m_deployMotor.getReverseLimitSwitch();
 
-
-  private final double m_TargetRotationAngle;
-
-  private boolean m_ActivateClimb = false;
-  private boolean m_climbdown = false;
+  private boolean m_activateClimb = false;
+  private boolean m_climbDown = false;
+  private double m_targetRotationAngle = Constants.Climb.kInitialRotationAngle;
 
   /** Creates a new ClimbSub. */
   public ClimbSub() {
-    TalonFXConfigurator talonFXConfigurator = m_rotateMotor.getConfigurator();
     SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
-
     sparkMaxConfig
         .inverted(false)
-        .smartCurrentLimit(100)
+        .smartCurrentLimit(100) // TODO: determine reasonable limit
         .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(Constants.Climb.kEncoderPositionConversionFactor);
+            .positionConversionFactor(Constants.Climb.kDeployEncoderConversionFactor);
 
     m_deployMotor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    //This is how you set a current limit inside the motor (vs on the input power supply)
-    //subject to change
+    TalonFXConfigurator talonFXConfigurator = m_rotateMotor.getConfigurator();
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-    limitConfigs.StatorCurrentLimit = 60; //limit in amps /TODO: determine reasonable limit
+    limitConfigs.StatorCurrentLimit = 100; //limit in amps //TODO: determine reasonable limit
     limitConfigs.StatorCurrentLimitEnable = true;
     talonFXConfigurator.apply(limitConfigs);
-
-    m_TargetRotationAngle = Constants.Climb.kRotationAngle;
-
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
@@ -70,25 +62,31 @@ public class ClimbSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    //stop if the climb is moving and at the out limit
-    if(isAtOutLimit() && getRotatePower() > 0) {
-      m_rotateMotor.set(0.0);
-    }
+    // TODO: Enable if using Kraken and monitoring limits manually
+    // Make sure to also fix which power and limits we're looking at
+    // Stop if the climb deploy is moving and at the out limit
+    // if(isAtDeployOutLimit() && getDeployPower() > 0) {  
+    //   m_rotateMotor.set(0.0);
+    // }
     //stop if the climb is at the in limit OR shoots below limit AND it is still moving
-    else if((isAtInLimit() || getRotationAngle() <= 0.0) && (getRotatePower() > 0)) {
-      setRotatePower(0);
-    }
+    // else if((isAtInLimit() || getRotationAngle() <= 0.0) && (getRotatePower() > 0)) {
+    //   setRotatePower(0);
+    // }
 
-    if(m_ActivateClimb) {
-      if(!isAtOutLimit()) {
-
+    // TODO:  Implement the following independently
+    // - PID control of deploy (in here, because SparkMax)
+    // - PID control of rotation (in TalonFX controller - Motion Magic)
+    // - Monitoring any limit switches to turn off power (non-SparkMax-connected ones)
+    // - Resetting of both encoders when hitting lower limit the first time
+    if(m_activateClimb) {
+      if(!isAtDeployOutLimit()) {
         setDeployPower(Constants.Climb.kDeployPower);
-      } else if(getRotationAngle() - m_TargetRotationAngle < Constants.Climb.kRotationTolerance) {
+      } else if(getRotationAngle() - m_targetRotationAngle < Constants.Climb.kRotationTolerance) {
         setRotatePower(Constants.Climb.kRotationPower);
-      } else if(m_climbdown) {
+      } else if(m_climbDown) {
         if(!(getRotationAngle() < Constants.Climb.kRotationTolerance)) {
           setRotatePower(-Constants.Climb.kRotationPower);
-        } else if(isAtInLimit()) {
+        } else if(isAtDeployInLimit()) {
           setDeployPower(-Constants.Climb.kDeployPower);
         }
       }
@@ -98,11 +96,11 @@ public class ClimbSub extends SubsystemBase {
   }
 
   //returns if climb is at limit
-  public boolean isAtInLimit() {
+  public boolean isAtDeployInLimit() {
     return m_inboardLimit.isPressed();
   }
 
-  public boolean isAtOutLimit() {
+  public boolean isAtDeployOutLimit() {
     return m_outboardLimit.isPressed();
   }
 
@@ -113,7 +111,6 @@ public class ClimbSub extends SubsystemBase {
    */
   public void setRotatePower(double power) {
     m_rotateMotor.set(power);
-
   }
 
   public void setDeployPower(double power) {
@@ -121,29 +118,33 @@ public class ClimbSub extends SubsystemBase {
   }
 
   public void setTargetAngle(double angle, double power) { // placeholder, needs kraken motion magic
-    while(getRotationAngle() < angle) {
-      setRotatePower(power);
-    }
+    // TODO:  Set angle only and let Periodic handle the algorithm
+    // Also, don't specify power
   }
 
   public void setTargetDeployDistance(double distance, double power) { // same, maybe fixed power
-    while(getDeployDistance() < distance) {
-      m_deployMotor.set(power);
-    }
+    // TODO:  Set distance only and let Periodic handle the algorithm
+    // Also, don't specify power
   }
 
   /**
    * Sets the current angle as the zero angle
    */
-  public void resetPosition() {
+  public void resetRotatePosition() {
     m_rotateMotor.setPosition(0);
   }
 
   public boolean isAtTargetDistance(double distance) {
-    return (getDeployDistance() > distance); // maybe put in between +-error value
+    // TODO:  Just check the target distance minus the current distance (absolute) and compare
+    // to a tolerance in Constants
+    return (getDeployDistance() > distance); // TODO: Put in between +-error value
   }
 
-  public boolean isEncoderResetSwitchHit() {
+  public boolean isAtRotateCCWLimit() {
+    return false; // get cansub rotation limit switch
+  }
+
+  public boolean isAtRotateCWLimit() {
     return false; // get cansub rotation limit switch
   }
 
@@ -153,7 +154,7 @@ public class ClimbSub extends SubsystemBase {
    * @return position in degrees
    */
   public double getRotationAngle() {
-    return m_rotateMotor.getPosition().getValueAsDouble() * 360;
+    return m_rotateMotor.getPosition().getValueAsDouble() * 360; // TODO: Check if we have already converted to degrees
   }
 
   /**
@@ -189,17 +190,17 @@ public class ClimbSub extends SubsystemBase {
   }
 
   public void climb() {
-    m_ActivateClimb = true;
-    m_climbdown = false;
+    m_activateClimb = true;
+    m_climbDown = false;
   }
 
   public void climbdown() {
-    m_ActivateClimb = true;
-    m_climbdown = true;
+    m_activateClimb = true;
+    m_climbDown = true;
   }
 
   public void StopClimb() {
-    m_ActivateClimb = false;
-    m_climbdown = false;
+    m_activateClimb = false;
+    m_climbDown = false;
   }
 }

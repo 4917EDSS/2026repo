@@ -7,17 +7,15 @@ package frc.robot.subsystems;
 import java.util.logging.Logger;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.controller.PIDController;
 import frc.robot.Constants;
 
 // 2 Neo 550s for deployment
@@ -30,26 +28,25 @@ public class IntakeSub extends SubsystemBase {
 
   private final SparkFlex m_beltMotor = new SparkFlex(Constants.CanIds.kIntakeMotor, MotorType.kBrushless);
   private final SparkMax m_deployMotorL = new SparkMax(Constants.CanIds.kDeployMotorL, MotorType.kBrushless);
-  private final SparkFlex m_deployMotorR = new SparkFlex(Constants.CanIds.kDeployMotorR, MotorType.kBrushless); // Run in tandem
+  private final SparkMax m_deployMotorR = new SparkMax(Constants.CanIds.kDeployMotorR, MotorType.kBrushless); // Run in tandem
   private final DigitalInput m_deployInLimit = new DigitalInput(Constants.Intake.DioIds.kDeployInLimit);
   private final DigitalInput m_deployOutLimit = new DigitalInput(Constants.Intake.DioIds.kDeployOutLimit);
 
+  private boolean m_isIntakeOn = false;
+  private boolean m_isIntakeEncoderSet = false;
   private double m_targetDeployAngle = 0.0;
   private double m_deployKP = 0.022;
   private double m_deployKI = 0.0;
   private double m_deployKD = 0.0;
+
   private final PIDController m_deployPid = new PIDController(m_deployKP, m_deployKI, m_deployKD);
-
-  private boolean m_isIntakeOn = false;
-  private boolean m_isIntakeEncoderSet = false;
-
 
   /** Creates a new IntakeSub. */
   public IntakeSub() { // Motor Configs need to be tested
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(false) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(60) // Current limit in amps
+        .smartCurrentLimit(100) // Current limit in amps
         .idleMode(IdleMode.kCoast).encoder
             .positionConversionFactor(Constants.Intake.kRotationToDegrees)
             .velocityConversionFactor(1.0);
@@ -76,8 +73,7 @@ public class IntakeSub extends SubsystemBase {
     runDeployAngleControl(true);
 
     if(!m_isIntakeEncoderSet) {
-      // Adds a counter to the encoder reset switch so that we don't reset position by
-      // accident
+      // Reset encoder if we're at the in limit and we've never set the encoder
       if(isAtInLimit()) {
         m_isIntakeEncoderSet = true;
         resetDeployEncoder(Constants.Intake.kInAngle);
@@ -85,11 +81,14 @@ public class IntakeSub extends SubsystemBase {
     }
   }
 
-
   public void setTargetDeployAngle(double angle) {
     m_targetDeployAngle = angle;
     m_isIntakeOn = true;
     runDeployAngleControl(true);
+  }
+
+  public boolean isAtTargetDeployAngle() {
+    return getDeployAngle() == m_targetDeployAngle;
   }
 
   public void setBeltPower(double power) {
@@ -128,20 +127,20 @@ public class IntakeSub extends SubsystemBase {
       pidPower = Constants.Intake.kDeployMaxPower * sign;
     }
 
-    if(runDeployAngleControl) {
-      setDeployPower(pidPower);
-    }
-
     // If we are at the out limit, set our kP to a very small value so that it will retract if it gets hit
     // TODO: Choose an accurate value for this
-    if((currentAngle == Constants.Intake.kDeployedAngle) && (m_targetDeployAngle == Constants.Intake.kDeployedAngle)) {
-      setDeployPower(0.001);
+    if(isAtTargetDeployAngle()) {
+      pidPower = 0.001;
     }
     if(isAtInLimit() && pidPower < 0.0) {
       pidPower = 0.0;
 
-    } else if (isAtOutLimit() && pidPower > 0.001) {
+    } else if(isAtOutLimit() && pidPower > 0.001) { // TODO: Make value a constant
       pidPower = 0.001;
+    }
+
+    if(runDeployAngleControl) {
+      setDeployPower(pidPower);
     }
   }
 }
