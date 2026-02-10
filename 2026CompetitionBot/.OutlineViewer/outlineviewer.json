@@ -1,12 +1,16 @@
 {
-  "Clients": {
-    "open": true
-  },
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
     "serverTeam": "4917"
   },
-  "limelight-left@5": {
-    "open": true
+  "Server": {
+    "Subscribers": {
+      "open": true
+    }
+  },
+  "transitory": {
+    "limelight-left": {
+      "open": true
+    }
   }
 }
