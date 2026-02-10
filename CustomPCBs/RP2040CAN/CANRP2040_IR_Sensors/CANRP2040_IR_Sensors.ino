@@ -113,6 +113,9 @@ void setup() {
   // Give the OLED time to boot
   delay(1000);
 
+  // Intialize the SPI port
+  mcp2515.test_init();
+
   // Begin serial
   Serial.begin(115200);
 
@@ -169,14 +172,7 @@ void setup() {
 }
 
 void loop() {
-  
-  digitalWrite(redLed, HIGH);
-  delay(500);
-  digitalWrite(redLed, LOW);
-  delay(500);
-  
-
-  /*
+  // Display shenanigans 
   display.clearDisplay();
 
   display.setTextSize(1);      // Normal 1:1 pixel scale
@@ -195,9 +191,8 @@ void loop() {
 
   display.write(output);
 
-
   display.display();
-  */
+  
 
   int16_t distance;
   int16_t ir0;
