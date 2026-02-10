@@ -52,10 +52,11 @@ public class RobotContainer {
       new CommandXboxController(Constants.OperatorConstants.kDriverControllerPort);
   private final CommandXboxController m_operatorContoller =
       new CommandXboxController(Constants.OperatorConstants.kOperatorControllerPort);
+
   public final ClimbSub m_climbSub = new ClimbSub();
-  public final CanSub m_CanSub = new CanSub();
+  public final CanSub m_canSub = new CanSub();
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
-  public final HopperSub m_hopperSub = new HopperSub(m_CanSub);
+  public final HopperSub m_hopperSub = new HopperSub(m_canSub);
   public final IntakeSub m_intakeSub = new IntakeSub();
   public final ShooterSub m_shooterSub = new ShooterSub();
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
@@ -111,7 +112,7 @@ public class RobotContainer {
     //A
     m_driverController.a()
         .onTrue(new ConditionalCommand(
-            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)), 
+            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
             new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), null));
 
     m_driverController.start()
@@ -119,28 +120,33 @@ public class RobotContainer {
 
     //Left Trigger
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
-    
+
     //Right Trigger
     m_driverController.rightTrigger()
         .whileTrue(new SpinSingulatorCmd(m_hopperSub));
 
     //Right Bumper  
     m_driverController.rightBumper().onTrue(new ClimbCmd(m_climbSub));
-   
+
     //Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric()));
     //L4
-    m_driverController.leftStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+    m_driverController.leftStick()
+        .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
     //R4
-    m_driverController.rightStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+    m_driverController.rightStick()
+        .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
     //R2
     m_operatorContoller.rightTrigger()
-        .onTrue(new InstantCommand(()->m_shooterSub.setFlywheelPower(0.1))).onFalse(new InstantCommand(()->m_shooterSub.setFlywheelPower(0.0)));
+        .onTrue(new InstantCommand(() -> m_shooterSub.setFlywheelPower(0.1)))
+        .onFalse(new InstantCommand(() -> m_shooterSub.setFlywheelPower(0.0)));
 
     //Left Stick In
-    m_operatorContoller.leftStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+    m_operatorContoller.leftStick()
+        .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
     //Right Stick In
-    m_operatorContoller.rightStick().onTrue(new KillAllCmd(m_CanSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+    m_operatorContoller.rightStick()
+        .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
     // Climb
     // Pov up and down
     m_operatorContoller.povUp().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, 0.1)));

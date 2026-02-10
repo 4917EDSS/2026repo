@@ -43,7 +43,8 @@ public class ClimbDownCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(Math.abs(Constants.Climb.kRotationAngle - m_climbSub.getRotationAngle()) < Constants.Climb.kRotationTolerance) {
+    if(Math.abs(
+        Constants.Climb.kFinalRotationAngle - m_climbSub.getRotationAngle()) < Constants.Climb.kRotationTolerance) {
       return false;
     } else {
       return true;
