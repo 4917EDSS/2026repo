@@ -54,7 +54,7 @@ public class RobotContainer {
       new CommandXboxController(Constants.OperatorConstants.kOperatorControllerPort);
 
   public final ClimbSub m_climbSub = new ClimbSub();
-  public final CanSub m_canSub = new CanSub();
+  public final CanSub m_canSub = new CanSub(1);
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   public final HopperSub m_hopperSub = new HopperSub(m_canSub);
   public final IntakeSub m_intakeSub = new IntakeSub();
@@ -106,14 +106,14 @@ public class RobotContainer {
 
     m_driverController.x()
         .whileTrue(
-            new DriveToPoseCmd(new Pose2d(new Translation2d(15.23, 5.26), new Rotation2d(Math.toRadians(90.0))),
+            new DriveToPoseCmd(new Pose2d(new Translation2d(15.23, 5.26), new Rotation2d(Math.toRadians(-90.0))),
                 m_drivetrainSub));
 
-    //A
-    m_driverController.a()
-        .onTrue(new ConditionalCommand(
-            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
-            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), null));
+    //A SYNTAX IS INCORRECT AND CAUSIN ERRORS IN THE CODE PLEASE FIX
+    // m_driverController.a()
+    //     .onTrue(new ConditionalCommand(
+    //         new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)), 
+    //         new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), null));
 
     m_driverController.start()
         .onTrue(new InstantCommand(() -> m_drivetrainSub.resetPose((m_visionSub.getEstimatedPose()))));
