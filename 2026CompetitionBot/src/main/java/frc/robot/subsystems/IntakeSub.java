@@ -69,6 +69,10 @@ public class IntakeSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("intake status", m_isIntakeOn);
+    SmartDashboard.putBoolean("Intake In Limit", isAtInLimit());
+    SmartDashboard.putBoolean("Intake Out Limit", isAtOutLimit());
+    SmartDashboard.putBoolean("Intake Encoder Set", m_isIntakeEncoderSet);
+    SmartDashboard.putNumber("Target Intake Angle", m_targetDeployAngle);
 
     runDeployAngleControl(true);
 

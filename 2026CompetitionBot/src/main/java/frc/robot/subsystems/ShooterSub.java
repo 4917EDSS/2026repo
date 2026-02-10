@@ -20,8 +20,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
-
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -133,6 +132,12 @@ public class ShooterSub extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    SmartDashboard.putNumber("Shooter Target Yaw", m_targetYawAngle);
+    SmartDashboard.putNumber("Shooter Target Pitch", m_targetPitchAngle);
+    SmartDashboard.putNumber("Shooter Target Velocity", m_targetFlywheelVelocity);
+    
+    
     // This method will be called once per scheduler run
 
     runYawControl(m_runYawControl);

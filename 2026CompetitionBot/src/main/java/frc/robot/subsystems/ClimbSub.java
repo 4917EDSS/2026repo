@@ -17,6 +17,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -60,6 +62,10 @@ public class ClimbSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    SmartDashboard.putBoolean("Climb In Limit",isAtDeployInLimit());
+    SmartDashboard.putBoolean("Climb Out Limit",isAtDeployOutLimit());
+    SmartDashboard.putNumber("Climb Target Rotation", m_targetRotationAngle);
 
     // TODO: Enable if using Kraken and monitoring limits manually
     // Make sure to also fix which power and limits we're looking at
