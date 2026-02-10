@@ -51,7 +51,8 @@ public class ClimbSub extends SubsystemBase {
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
-    outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
+    outputConfigs.DutyCycleNeutralDeadband = 0.02;
+    // Ignore values below 2%
     outputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Invert = Clockwise
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFXConfigurator.apply(outputConfigs);
