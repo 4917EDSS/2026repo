@@ -5,9 +5,11 @@
 package frc.robot.commands;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import org.opencv.core.RotatedRect;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,13 +24,18 @@ public class DriveToPoseCmd extends Command {
   private DrivetrainSub m_drivetrainSub;
   private Pose2d m_targetPose;
   private Pose2d m_currentPose;
+  private Pose2d m_previousPose;
+  private Transform2d m_poseDifference;
+
   private Transform2d m_error;
 
   private final SwerveRequest.FieldCentric m_autoDrive = new SwerveRequest.FieldCentric()
       .withDriveRequestType(DriveRequestType.Velocity).withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
   private final double m_driveP = 1.0;
-  private final double m_rotP = 0.05;
+  private final double m_driveD = 0.0;
+  private final double m_rotP = 0.03;
+  private final double m_rotD = 0.0;
 
   private final double m_feedforward = 0.1;
   private final double m_rotationalFeedForward = 0.0;
@@ -55,42 +62,46 @@ public class DriveToPoseCmd extends Command {
   @Override
   public void initialize() {
     m_error = new Transform2d();
-
+    m_currentPose = m_drivetrainSub.getState().Pose;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    m_previousPose = m_currentPose;
+
     m_currentPose = m_drivetrainSub.getState().Pose;
+
+    m_poseDifference = m_previousPose.minus(m_currentPose);
 
     m_error = new Transform2d(m_targetPose.getX() - m_currentPose.getX(), m_targetPose.getY() - m_currentPose.getY(),
         m_targetPose.getRotation().minus(m_currentPose.getRotation()));
 
-    Translation2d outputDrivePower = m_error.getTranslation().times(m_driveP);
+    Translation2d outputDrivePower = m_error.getTranslation();
 
-    double outputRotPower = m_error.getRotation().getDegrees() * m_rotP;
+    double outputRotPower = m_error.getRotation().getDegrees();
 
     if(Math.abs(m_error.getX()) > xThreshold) {
-      xPower = outputDrivePower.getX() + Math.signum(outputDrivePower.getX()) * m_feedforward;
+      xPower = (outputDrivePower.getX() + Math.signum(outputDrivePower.getX()) * m_feedforward) * m_driveP;
     } else {
       xPower = 0.0;
     }
 
     if(Math.abs(m_error.getY()) > yThreshold) {
-      yPower = outputDrivePower.getY() + Math.signum(outputDrivePower.getY()) * m_feedforward;
+      yPower = (outputDrivePower.getY() + Math.signum(outputDrivePower.getY()) * m_feedforward) * m_driveP;
     } else {
       yPower = 0.0;
     }
 
     if(Math.abs(m_error.getRotation().getDegrees()) > rotThreshold) {
-      rotPower = outputRotPower + m_rotationalFeedForward;
+      rotPower = (outputRotPower + Math.signum(outputRotPower) * m_rotationalFeedForward) * m_rotP;
     } else {
       rotPower = 0.0;
     }
 
     System.out.println(m_error.getRotation().getDegrees());
 
-    m_drivetrainSub.setControl(m_autoDrive.withVelocityX(xPower).withVelocityY(yPower).withRotationalRate(rotPower));
+    m_drivetrainSub.setControl(m_autoDrive.withVelocityX(-xPower).withVelocityY(-yPower).withRotationalRate(rotPower));
   }
 
   // Called once the command ends or is interrupted.

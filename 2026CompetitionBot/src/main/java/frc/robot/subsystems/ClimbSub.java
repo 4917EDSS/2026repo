@@ -18,6 +18,8 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -61,7 +63,8 @@ public class ClimbSub extends SubsystemBase {
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
-    outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
+    outputConfigs.DutyCycleNeutralDeadband = 0.02;
+    // Ignore values below 2%
     outputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Invert = Clockwise
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFXConfigurator.apply(outputConfigs);
@@ -70,11 +73,21 @@ public class ClimbSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
+    SmartDashboard.putBoolean("Climb In Limit", isAtInLimit());
+    SmartDashboard.putBoolean("Climb Out Limit", isAtOutLimit());
+    SmartDashboard.putNumber("Climb Target Rotation", m_TargetRotationAngle);
     //stop if the climb is moving and at the out limit
     if(isAtOutLimit() && getRotatePower() > 0) {
       m_rotateMotor.set(0.0);
     }
+
+
+    // TODO: Enable if using Kraken and monitoring limits manually
+    // Make sure to also fix which power and limits we're looking at
+    // Stop if the climb deploy is moving and at the out limit
+    // if(isAtDeployOutLimit() && getDeployPower() > 0) {  
+    //   m_rotateMotor.set(0.0);
+    // }
     //stop if the climb is at the in limit OR shoots below limit AND it is still moving
     else if((isAtInLimit() || getRotationAngle() <= 0.0) && (getRotatePower() > 0)) {
       setRotatePower(0);

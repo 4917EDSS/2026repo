@@ -7,25 +7,23 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
-
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
-
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
-
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 // Neo 550(yaw)
 // Neo 550(pitch)
@@ -112,12 +110,14 @@ public class ShooterSub extends SubsystemBase {
 
 
     TalonFXConfigurator talonFXConfigurator = m_shooterMotor1.getConfigurator();
+    TalonFXConfigurator talonFXConfigurator2 = m_shooterMotor2.getConfigurator();
     //This is how you set a current limit inside the motor (vs on the input power supply)
     //subject to change
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-    limitConfigs.StatorCurrentLimit = 60; //limit in amps /TODO: determine reasonable limit
+    limitConfigs.StatorCurrentLimit = 100; //limit in amps /TODO: determine reasonable limit
     limitConfigs.StatorCurrentLimitEnable = true;
     talonFXConfigurator.apply(limitConfigs);
+    talonFXConfigurator2.apply(limitConfigs);
 
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
@@ -127,12 +127,23 @@ public class ShooterSub extends SubsystemBase {
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFXConfigurator.apply(outputConfigs);
 
+    outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+    talonFXConfigurator2.apply(outputConfigs);
+
+    m_shooterMotor2.setControl(new Follower(m_shooterMotor1.getDeviceID(), MotorAlignmentValue.Opposed));
+
     //setting up internal encoder for TalonFX
     m_shooterVelocitySignal = m_shooterMotor1.getVelocity();
   }
 
   @Override
   public void periodic() {
+
+    SmartDashboard.putNumber("Shooter Target Yaw", m_targetYawAngle);
+    SmartDashboard.putNumber("Shooter Target Pitch", m_targetPitchAngle);
+    SmartDashboard.putNumber("Shooter Target Velocity", m_targetFlywheelVelocity);
+    
+
     // This method will be called once per scheduler run
 
     runYawControl(m_runYawControl);

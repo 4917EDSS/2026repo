@@ -69,6 +69,10 @@ public class IntakeSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("intake status", m_isIntakeOn);
+    SmartDashboard.putBoolean("Intake In Limit", isAtInLimit());
+    SmartDashboard.putBoolean("Intake Out Limit", isAtOutLimit());
+    SmartDashboard.putBoolean("Intake Encoder Set", m_isIntakeEncoderSet);
+    SmartDashboard.putNumber("Target Intake Angle", m_targetDeployAngle);
 
     runDeployAngleControl(true);
 
@@ -85,6 +89,10 @@ public class IntakeSub extends SubsystemBase {
     m_targetDeployAngle = angle;
     m_isIntakeOn = true;
     runDeployAngleControl(true);
+  }
+
+  public boolean isAtTargetDeployAngle() {
+    return getDeployAngle() == m_targetDeployAngle;
   }
 
   public void setBeltPower(double power) {
@@ -125,8 +133,7 @@ public class IntakeSub extends SubsystemBase {
 
     // If we are at the out limit, set our kP to a very small value so that it will retract if it gets hit
     // TODO: Choose an accurate value for this
-    // TODO: Replace the first IF statement with "isAtTargetAngle"
-    if((currentAngle >= Constants.Intake.kDeployedAngle) && (m_targetDeployAngle == Constants.Intake.kDeployedAngle)) {
+    if(isAtTargetDeployAngle()) {
       pidPower = 0.001;
     }
     if(isAtInLimit() && pidPower < 0.0) {
