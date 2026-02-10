@@ -84,7 +84,7 @@ public class CanSub extends SubsystemBase {
           }
 
           m_sensor1 = (msb << 8) + lsb;
-          System.out.println(m_sensor1);
+          //System.out.println(m_sensor1);
 
           if(m_data_buffer.length >= 4) {
 
@@ -99,7 +99,7 @@ public class CanSub extends SubsystemBase {
             }
 
             m_sensor2 = (msb1 << 8) + lsb1;
-            System.out.println(m_sensor2);
+            //System.out.println(m_sensor2);
           }
 
         }
