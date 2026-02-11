@@ -88,6 +88,9 @@ public final class Constants {
     public static final double kDeployOutAngleDeg = 10.0;
     public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxPower = 0.25;
+    public static final double kDeployKP = 0.1;
+    public static final double kDeployKI = 0.0;
+    public static final double kDeployKD = 0.0;
 
     public static final double kBeltPower = 0.25;
   }

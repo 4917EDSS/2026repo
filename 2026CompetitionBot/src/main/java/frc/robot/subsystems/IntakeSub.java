@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import java.util.logging.Logger;
+// import java.util.logging.Logger;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
@@ -18,13 +18,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-// 2 Neo 550s for deployment
-// 1 Vortex (sparkmax) for belts
-// 2 limit switches (in and out)
-// 1 position encoder
 
 public class IntakeSub extends SubsystemBase {
-  private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
+  //private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
 
   private final SparkFlex m_beltMotor = new SparkFlex(Constants.CanIds.kIntakeBeltMotor, MotorType.kBrushless);
   private final SparkMax m_deployMotorL = new SparkMax(Constants.CanIds.kIntakeDeployMotorL, MotorType.kBrushless);
@@ -32,14 +28,13 @@ public class IntakeSub extends SubsystemBase {
   private final DigitalInput m_deployInLimit = new DigitalInput(Constants.DioIds.kIntakeDeployInLimit);
   private final DigitalInput m_deployOutLimit = new DigitalInput(Constants.DioIds.kIntakeDeployOutLimit);
 
-  private boolean m_isIntakeOn = false;
-  private boolean m_isIntakeEncoderSet = false;
-  private double m_targetDeployAngle = 0.0;
-  private double m_deployKP = 0.022;
-  private double m_deployKI = 0.0;
-  private double m_deployKD = 0.0;
+  private final PIDController m_deployPid =
+      new PIDController(Constants.Intake.kDeployKP, Constants.Intake.kDeployKI, Constants.Intake.kDeployKD);
 
-  private final PIDController m_deployPid = new PIDController(m_deployKP, m_deployKI, m_deployKD);
+  private boolean m_deployAutomationEnabled = false;
+  private boolean m_isIntakeEncoderSet = false;
+  private double m_targetDeployAngleDeg = 0.0;
+
 
   /** Creates a new IntakeSub. */
   public IntakeSub() { // Motor Configs need to be tested
@@ -54,28 +49,23 @@ public class IntakeSub extends SubsystemBase {
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this
     // operation can be slow
-    m_deployMotorL.configure(motorConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-    m_deployMotorR.configure(motorConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+    m_deployMotorL.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_deployMotorR.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    motorConfig.encoder.positionConversionFactor(1.0);
-    m_beltMotor.configure(motorConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
-
+    motorConfig.encoder.positionConversionFactor(1.0); // Don't care about the belt position
+    m_beltMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("intake status", m_isIntakeOn);
+    SmartDashboard.putBoolean("Intake Auto", m_deployAutomationEnabled);
     SmartDashboard.putBoolean("Intake In Limit", isAtInLimit());
     SmartDashboard.putBoolean("Intake Out Limit", isAtOutLimit());
-    SmartDashboard.putBoolean("Intake Encoder Set", m_isIntakeEncoderSet);
-    SmartDashboard.putNumber("Target Intake Angle", m_targetDeployAngle);
+    SmartDashboard.putBoolean("Intake Enc Set", m_isIntakeEncoderSet);
+    SmartDashboard.putNumber("Intake Target Angle", m_targetDeployAngleDeg);
 
-    runDeployAngleControl(true);
-
+    // Check if the relative encoder has been zeroed yet or not
     if(!m_isIntakeEncoderSet) {
       // Reset encoder if we're at the in limit and we've never set the encoder
       if(isAtInLimit()) {
@@ -83,16 +73,9 @@ public class IntakeSub extends SubsystemBase {
         resetDeployEncoder(Constants.Intake.kDeployInAngleDeg);
       }
     }
-  }
 
-  public void setTargetDeployAngle(double angle) {
-    m_targetDeployAngle = angle;
-    m_isIntakeOn = true;
-    runDeployAngleControl(true);
-  }
-
-  public boolean isAtTargetDeployAngle() {
-    return getDeployAngle() == m_targetDeployAngle;
+    // Run the deploy-angle PID but only set the motor power if automation is currently enabled
+    runDeployAngleControl(m_deployAutomationEnabled);
   }
 
   public void setBeltPower(double power) {
@@ -103,6 +86,14 @@ public class IntakeSub extends SubsystemBase {
     m_deployMotorL.set(power);
   }
 
+  public double getDeployAngleDeg() {
+    return m_deployMotorL.getEncoder().getPosition();
+  }
+
+  public void resetDeployEncoder(double resetAngleDeg) {
+    m_deployMotorL.getEncoder().setPosition(resetAngleDeg);
+  }
+
   public boolean isAtInLimit() {
     return m_deployInLimit.get();
   }
@@ -111,21 +102,26 @@ public class IntakeSub extends SubsystemBase {
     return m_deployOutLimit.get();
   }
 
-  public void resetDeployEncoder(double resetAngle) {
-    m_deployMotorL.getEncoder().setPosition(resetAngle);
+  public void disableDeployAutomation() {
+    m_deployAutomationEnabled = false;
   }
 
-  public double getDeployAngle() {
-    return m_deployMotorL.getEncoder().getPosition();
+  public void setTargetDeployAngle(double angleDeg) {
+    m_targetDeployAngleDeg = angleDeg;
+    m_deployAutomationEnabled = true;
+    runDeployAngleControl(m_deployAutomationEnabled);
   }
 
+  public boolean isAtTargetDeployAngle() {
+    return getDeployAngleDeg() == m_targetDeployAngleDeg;
+  }
 
-  public void runDeployAngleControl(boolean runDeployAngleControl) {
+  public void runDeployAngleControl(boolean setPower) {
     // m_logger.info("intake");
-    double currentAngle = getDeployAngle();
+    double currentAngle = getDeployAngleDeg();
+    double pidPower = m_deployPid.calculate(currentAngle, m_targetDeployAngleDeg);
 
-    double pidPower = m_deployPid.calculate(currentAngle, m_targetDeployAngle);
-
+    // Make sure we don't exceed our maxiumum allowed power
     if(Math.abs(pidPower) > Constants.Intake.kDeployMaxPower) {
       double sign = (pidPower >= 0.0) ? 1.0 : -1.0;
       pidPower = Constants.Intake.kDeployMaxPower * sign;
@@ -133,6 +129,7 @@ public class IntakeSub extends SubsystemBase {
 
     // If we are at the out limit, set our kP to a very small value so that it will retract if it gets hit
     // TODO: Choose an accurate value for this
+    // Note: If we end up having to hold an angle that's not against a hard stop, we'll need to use a weak PID instead of a fixed power
     if(isAtTargetDeployAngle()) {
       pidPower = 0.001;
     }
@@ -143,7 +140,7 @@ public class IntakeSub extends SubsystemBase {
       pidPower = 0.001;
     }
 
-    if(runDeployAngleControl) {
+    if(setPower) {
       setDeployPower(pidPower);
     }
   }
