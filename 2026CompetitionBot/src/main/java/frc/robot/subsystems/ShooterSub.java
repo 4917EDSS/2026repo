@@ -148,7 +148,7 @@ public class ShooterSub extends SubsystemBase {
 
     runYawControl(m_runYawControl);
     runPitchControl(m_runPitchControl);
-    runFlyhweelVelocityControl(m_runVelocityControl);
+    //runFlyhweelVelocityControl(m_runVelocityControl);
     // runFlywheelBangBang(m_runVelocityControl);
   }
 

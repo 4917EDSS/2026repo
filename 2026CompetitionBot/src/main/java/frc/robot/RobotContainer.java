@@ -55,7 +55,7 @@ public class RobotContainer {
   public final HopperSub m_hopperSub = new HopperSub(m_canSub);
   public final IntakeSub m_intakeSub = new IntakeSub();
   public final ShooterSub m_shooterSub = new ShooterSub();
-  public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
+  //public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
   public final FeedbackSub m_FeedbackSub = new FeedbackSub(m_driverController);
 
   public final CalculateShooterAiming m_calculateShooterAiming = new CalculateShooterAiming();
@@ -93,6 +93,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Driver A
+    m_driverController.a().onTrue(new InstantCommand(() -> m_shooterSub.setFlywheelPower(0.0)));
     // m_driverController.a()
     //  .whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
 
@@ -111,6 +112,7 @@ public class RobotContainer {
                 m_drivetrainSub));
 
     // Driver Y
+    m_driverController.y().onTrue(new InstantCommand(() -> m_shooterSub.setFlywheelPower(0.32)));
 
     // Driver Left Bumper
 
@@ -128,8 +130,8 @@ public class RobotContainer {
     //m_driverController.back().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric())); 
 
     // Driver Start
-    m_driverController.start()
-        .onTrue(new InstantCommand(() -> m_drivetrainSub.resetPose((m_visionSub.getEstimatedPose()))));
+    //m_driverController.start()
+    //    .onTrue(new InstantCommand(() -> m_drivetrainSub.resetPose((m_visionSub.getEstimatedPose()))));
 
     // Driver POV Up
 
