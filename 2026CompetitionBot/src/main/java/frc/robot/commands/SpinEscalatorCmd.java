@@ -27,7 +27,7 @@ public class SpinEscalatorCmd extends Command {
   @Override
   public void initialize() {
     m_hopperSub.setEscalatorVelocity(m_velocity);
-    m_hopperSub.enableEscalator();
+    m_hopperSub.enableEscalatorAutomation();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
