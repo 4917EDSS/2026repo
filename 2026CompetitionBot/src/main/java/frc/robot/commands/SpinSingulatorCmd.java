@@ -27,7 +27,7 @@ public class SpinSingulatorCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_hopperSub.enableSingulator();
+    m_hopperSub.enableSingulatorAutomation();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

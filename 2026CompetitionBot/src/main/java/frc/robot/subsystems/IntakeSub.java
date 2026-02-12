@@ -44,7 +44,7 @@ public class IntakeSub extends SubsystemBase {
         .smartCurrentLimit(100) // Current limit in amps
         .idleMode(IdleMode.kCoast).encoder
             .positionConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor)
-            .velocityConversionFactor(1.0);
+            .velocityConversionFactor(1.0); // Should not be reading deploy velocity (outside of possible kD)
 
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this
@@ -102,17 +102,23 @@ public class IntakeSub extends SubsystemBase {
     return m_deployOutLimit.get();
   }
 
+  public void enableDeployAutomation() {
+    m_deployAutomationEnabled = true;
+  }
+
   public void disableDeployAutomation() {
     m_deployAutomationEnabled = false;
   }
 
   public void setTargetDeployAngle(double angleDeg) {
     m_targetDeployAngleDeg = angleDeg;
-    m_deployAutomationEnabled = true;
-    runDeployAngleControl(m_deployAutomationEnabled);
+    runDeployAngleControl(true);
+    enableDeployAutomation();
   }
 
   public boolean isAtTargetDeployAngle() {
+    // TODO:  Need to find the difference between the current and target angles and see if that is
+    // smaller than the tolerance
     return getDeployAngleDeg() == m_targetDeployAngleDeg;
   }
 
