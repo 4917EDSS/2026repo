@@ -72,18 +72,18 @@ public final class Constants {
 
   public static class Hopper {
     // TODO:  Set all the values correctly
-    public static final double kSingulatorEncoderToRpsConversionFactor = 1.0; // Rotations per second
+    public static final double kSingulatorEncoderToRpsConversionFactor = 1.0; // Gearing TBD
     public static final double kSingulatorMaxVelocityRps = 1.0; // Throughput must be slower than Escalator to avoid jams
     public static final double kSingulatorVelocityToleranceRps = 0.1;
 
-    public static final double kEscalatorEncoderToRpsConversionFactor = 1.0; // Rotations per second
+    public static final double kEscalatorEncoderToRpsConversionFactor = 1.0; // Gearing TBD
     public static final double kEscalatorMaxVelocityRps = 4.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
     public static final double kEscalatorVelocityToleranceRps = 0.1;
   }
 
   public static class Intake {
     // TODO:  Set all the values correctly
-    public static final double kDeployEncoderToDegConversionFactor = 1.0;
+    public static final double kDeployEncoderToDegConversionFactor = 1.0; // Gearing is 0.014368 (approx 1:69.5)
     public static final double kDeployInAngleDeg = 0.0;
     public static final double kDeployOutAngleDeg = 10.0;
     public static final double kDeployToleranceDeg = 1.0;
@@ -97,7 +97,7 @@ public final class Constants {
 
   public static class Shooter {
     // TODO:  Set all the values correctly
-    public static final double kYawEncoderToDegConversionFactor = 1.0;
+    public static final double kYawEncoderToDegConversionFactor = 1.0; // Gearing is 0.22 (approx 1:4.5)
     public static final double kYawMinAngleDeg = 0.0;
     public static final double kYawMaxAngleDeg = 180.0;
     public static final double kYawMaxPower = 10;
@@ -107,7 +107,7 @@ public final class Constants {
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.05;
 
-    public static final double kPitchEncoderToDegConversionFactor = 1.0;
+    public static final double kPitchEncoderToDegConversionFactor = 1.0; // Gearing is 0.0616 (approx 1:16.2)
     public static final double kPitchMinAngleDeg = 0.0;
     public static final double kPitchMaxAngleDeg = 45.0;
     public static final double kPitchMaxPower = 10;
@@ -117,7 +117,7 @@ public final class Constants {
     public static final double kPitchKI = 0.0;
     public static final double kPitchKD = 0.0;
 
-    public static final double kFlywheelEncoderToRpsConversionFactor = 1.0;
+    public static final double kFlywheelEncoderToRpsConversionFactor = 1.0; // Gearing is 3.41 (overdriven 3.41:1)
     public static final double kFlywheelMaxVelocityRps = 25.0;
     public static final double kFlywheelVelocityToleranceRps = 1.0;
     public static final double kFlywheelKS = 0.25;

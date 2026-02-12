@@ -149,36 +149,48 @@ public class RobotContainer {
 
 
     // Operator A
+    // TODO: Run deploy motor with low positive power while held
 
     // Operator B
+    // TODO: Run deploy motor with low negative power while held
 
     // Operator X
+    // TODO: Run belt motor with low positive power while held
 
     // Operator Y
+    // TODO: Run belt motor with low negative power while held
 
     // Operator Left Bumper
+    // TODO: Run singulator motor with low negative power while held
 
     // Operator Right Bumper
+    // TODO: Run singulator motor with low positive power while held
 
     // Operator Left Trigger
+    // TODO: Run elevator motor with low positive power while held
 
     // Operator Right Trigger
+    // TODO: Convert this to a StartEndCommand instead of two InstantCommands
     m_operatorContoller.rightTrigger()
         .onTrue(new InstantCommand(() -> m_shooterSub.setFlywheelPower(0.1)))
         .onFalse(new InstantCommand(() -> m_shooterSub.setFlywheelPower(0.0)));
 
     // Operator Back
+    // TODO: Modify this to simply set a low negative power while held (i.e. don't use the alogorithm)
     m_operatorContoller.back().whileTrue(new InstantCommand(() -> m_climbSub.setTargetAngle(1, -0.1)));
 
     // Operator Start
+    // TODO: Modify this to simply set a low positive power while held (i.e. don't use the alogorithm)
     m_operatorContoller.start().whileTrue(new InstantCommand(() -> m_climbSub.setTargetAngle(1, 0.1)));
 
     // Operator POV Up
+    // TODO: Modify this to simply set a low positive power while held (i.e. don't use the alogorithm)
     m_operatorContoller.povUp().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, 0.1)));
 
     // Operator POV Right
 
     // Operator POV Down
+    // TODO: Modify this to simply set a low negative power while held (i.e. don't use the alogorithm)
     m_operatorContoller.povDown().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, -0.1)));
 
     // Operator POV Left
