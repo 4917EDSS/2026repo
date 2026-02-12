@@ -21,7 +21,6 @@ import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeDeployCmd;
 import frc.robot.commands.KillAllCmd;
-import frc.robot.commands.SpinSingulatorCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
@@ -121,7 +120,8 @@ public class RobotContainer {
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
 
     // Driver Right Trigger
-    m_driverController.rightTrigger().whileTrue(new SpinSingulatorCmd(m_hopperSub));
+    // TODO: To spin the Singulator, call m_hopperSub.setSingulatorTargetVelocity()    
+    //m_driverController.rightTrigger().whileTrue(new SpinSingulatorCmd(m_hopperSub));
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading
@@ -177,21 +177,21 @@ public class RobotContainer {
 
     // Operator Back
     // TODO: Modify this to simply set a low negative power while held (i.e. don't use the alogorithm)
-    m_operatorContoller.back().whileTrue(new InstantCommand(() -> m_climbSub.setTargetAngle(1, -0.1)));
+    //m_operatorContoller.back().whileTrue(new InstantCommand(() -> m_climbSub.setTargetRotateAngle(1, -0.1)));
 
     // Operator Start
     // TODO: Modify this to simply set a low positive power while held (i.e. don't use the alogorithm)
-    m_operatorContoller.start().whileTrue(new InstantCommand(() -> m_climbSub.setTargetAngle(1, 0.1)));
+    //m_operatorContoller.start().whileTrue(new InstantCommand(() -> m_climbSub.setTargetRotateAngle(1, 0.1)));
 
     // Operator POV Up
     // TODO: Modify this to simply set a low positive power while held (i.e. don't use the alogorithm)
-    m_operatorContoller.povUp().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, 0.1)));
+    //m_operatorContoller.povUp().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, 0.1)));
 
     // Operator POV Right
 
     // Operator POV Down
     // TODO: Modify this to simply set a low negative power while held (i.e. don't use the alogorithm)
-    m_operatorContoller.povDown().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, -0.1)));
+    //m_operatorContoller.povDown().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, -0.1)));
 
     // Operator POV Left
 

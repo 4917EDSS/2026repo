@@ -64,6 +64,7 @@ public class IntakeSub extends SubsystemBase {
     SmartDashboard.putBoolean("Intake Out Limit", isAtOutLimit());
     SmartDashboard.putBoolean("Intake Enc Set", m_isIntakeEncoderSet);
     SmartDashboard.putNumber("Intake Target Angle", m_targetDeployAngleDeg);
+    SmartDashboard.putNumber("Intake Deploy Power", m_deployMotorL.get());
 
     // Check if the relative encoder has been zeroed yet or not
     if(!m_isIntakeEncoderSet) {
@@ -102,17 +103,19 @@ public class IntakeSub extends SubsystemBase {
     return m_deployOutLimit.get();
   }
 
+  ////////////////////////////// Deploy automation //////////////////////////////
   public void enableDeployAutomation() {
     m_deployAutomationEnabled = true;
+    runDeployAngleControl(true);
   }
 
   public void disableDeployAutomation() {
     m_deployAutomationEnabled = false;
+    setDeployPower(0.0);
   }
 
   public void setTargetDeployAngle(double angleDeg) {
     m_targetDeployAngleDeg = angleDeg;
-    runDeployAngleControl(true);
     enableDeployAutomation();
   }
 
@@ -122,7 +125,7 @@ public class IntakeSub extends SubsystemBase {
     return getDeployAngleDeg() == m_targetDeployAngleDeg;
   }
 
-  public void runDeployAngleControl(boolean setPower) {
+  private void runDeployAngleControl(boolean setPower) {
     // m_logger.info("intake");
     double currentAngle = getDeployAngleDeg();
     double pidPower = m_deployPid.calculate(currentAngle, m_targetDeployAngleDeg);

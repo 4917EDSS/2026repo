@@ -95,19 +95,20 @@ public class HopperSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Singulator Auto", m_singulatorAutomationEnabled);
+    SmartDashboard.putNumber("Singulator Target", m_targetSingulatorVelocityRps);
     SmartDashboard.putNumber("Singulator Velocity", m_singulatorMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Singulator Power", m_singulatorMotor.get());
     SmartDashboard.putBoolean("Escalator Auto", m_escalatorAutomationEnabled);
-    SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.get());
+    SmartDashboard.putNumber("Escalator Target", m_targetEscalatorVelocityRps);
+    SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Escalator Power", m_escalatorMotor.get());
 
     // TODO: Remove this.  The algorithm is running on the TalonFX.  No need to update it here.
     if(m_singulatorAutomationEnabled) {
       setSingulatorTargetVelocity(Constants.Hopper.kSingulatorMaxVelocityRps);
     }
 
-    // TODO: For Spark max, need to run algorithm here
-    if(m_escalatorAutomationEnabled) {
-      setEscalatorVelocity(Constants.Hopper.kEscalatorMaxVelocityRps);
-    }
+    runEscalatorVelocityControl(m_escalatorAutomationEnabled);
   }
 
   public void setSingulatorPower(double power) {
@@ -140,6 +141,7 @@ public class HopperSub extends SubsystemBase {
     return m_canSub.isFuelInEscalator();
   }
 
+  ////////////////////////////// Singulator automation //////////////////////////////
   public void enableSingulatorAutomation() {
     m_singulatorAutomationEnabled = true;
     // Use TalonFX's PID control to set velocity
@@ -166,19 +168,21 @@ public class HopperSub extends SubsystemBase {
     return false;
   }
 
+  ////////////////////////////// Escalator automation //////////////////////////////
   public void enableEscalatorAutomation() {
     m_escalatorAutomationEnabled = true;
+    runEscalatorVelocityControl(true);
   }
 
   public void disableEscalatorAutomation() {
     m_escalatorAutomationEnabled = false;
+    setEscalatorPower(0.0);
   }
 
   // Set Escalator velocity with PID in RPS
   public void setEscalatorVelocity(double velocityRps) {
     m_targetEscalatorVelocityRps = velocityRps;
-    //use pid control to set velocity
-    m_escalatorMotor.set(velocityRps); // TODO: Needs to be an algorithm that runs from Periodic
+    // Use pid control to set velocity
   }
 
   public boolean isEscalatorAtTargetVelocity() {
@@ -187,6 +191,10 @@ public class HopperSub extends SubsystemBase {
       return true;
     }
     return false;
+  }
+
+  private void runEscalatorVelocityControl(boolean setPower) {
+    // TODO: Implement velocity control
   }
 
 }

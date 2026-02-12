@@ -26,6 +26,7 @@ public class ClimbCmd extends Command {
     addRequirements(climbSub);
   }
 
+  //TODO: This command needs to be reworked.  It should not access power directly.  It should use the control algorithms (setTarget...).
 
   // Called when the command is initially scheduled.
   @Override
@@ -35,7 +36,7 @@ public class ClimbCmd extends Command {
 
     // }
     // m_climbSub.setTargetAngle(Constants.Climb.kRotationAngle, Constants.Climb.kRotationPower);
-    m_climbSub.climb();
+    //m_climbSub.climb();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -47,7 +48,7 @@ public class ClimbCmd extends Command {
   public void end(boolean interrupted) {
     m_climbSub.setRotatePower(0);
     m_climbSub.setDeployPower(0);
-    m_climbSub.StopClimb();
+    //m_climbSub.StopClimb();
   }
 
   // Returns true when the command should end.
@@ -55,7 +56,7 @@ public class ClimbCmd extends Command {
   public boolean isFinished() {
     if(Math.abs(
         Constants.Climb.kRotationFinalAngleDeg
-            - m_climbSub.getRotationAngle()) < Constants.Climb.kRotationToleranceDeg) {
+            - m_climbSub.getRotationAngleDeg()) < Constants.Climb.kRotationToleranceDeg) {
       return true;
     } else {
       return false;

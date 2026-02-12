@@ -25,7 +25,8 @@ public class ClimbDownCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_climbSub.climbdown();
+    // TODO:  This command needs to be reworked to use the control algorithms (setTarget...)
+    //m_climbSub.climbdown();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,17 +36,19 @@ public class ClimbDownCmd extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_climbSub.setRotatePower(0);
-    m_climbSub.setDeployPower(0);
-    m_climbSub.StopClimb();
+    // The algoritms should decide when it's time to disable the motors, or maybe apply hold power
+    //m_climbSub.setRotatePower(0);
+    //m_climbSub.setDeployPower(0);
+    //m_climbSub.StopClimb();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    // TODO:  Use isAtTarget... command to figure out if we're there.  Don't duplicate here.
     if(Math.abs(
         Constants.Climb.kRotationFinalAngleDeg
-            - m_climbSub.getRotationAngle()) < Constants.Climb.kRotationToleranceDeg) {
+            - m_climbSub.getRotationAngleDeg()) < Constants.Climb.kRotationToleranceDeg) {
       return false;
     } else {
       return true;

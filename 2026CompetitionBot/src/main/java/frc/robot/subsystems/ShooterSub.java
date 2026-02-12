@@ -15,18 +15,15 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 
-/** Creates a new ShooterSub. */
 public class ShooterSub extends SubsystemBase {
   private final SparkMax m_yawMotor = new SparkMax(Constants.CanIds.kShooterYawMotor, MotorType.kBrushless);
   private final SparkMax m_pitchMotor = new SparkMax(Constants.CanIds.kShooterPitchMotor, MotorType.kBrushless);
@@ -39,11 +36,6 @@ public class ShooterSub extends SubsystemBase {
       new PIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD);
   private final PIDController m_pitchPidController =
       new PIDController(Constants.Shooter.kPitchKP, Constants.Shooter.kPitchKI, Constants.Shooter.kPitchKD);
-  // TODO:  Run flywheel velocity control on the TalonFX
-  private final SimpleMotorFeedforward m_flyWheelFeedforward =
-      new SimpleMotorFeedforward(Constants.Shooter.kFlywheelKS, Constants.Shooter.kFlywheelKV);
-  private final PIDController m_flyWheelPID =
-      new PIDController(Constants.Shooter.kFlywheelKP, Constants.Shooter.kFlywheelKI, Constants.Shooter.kFlywheelKD);
 
   private boolean m_flywheelAutomationEnabled = false;
   private boolean m_yawAutomationEnabled = false;
@@ -54,154 +46,78 @@ public class ShooterSub extends SubsystemBase {
 
   private StatusSignal<AngularVelocity> m_shooterVelocitySignal;
 
-
+  /** Creates a new ShooterSub. */
   public ShooterSub() { // Motor Configs need to be tested
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(false) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(Constants.Shooter.ky) // Current limit in amps
+        .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(0.0)
-            .velocityConversionFactor(0.0);
-
-    AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
-    encoderConfig.zeroOffset(0.0);
-    motorConfig.apply(encoderConfig);
+            .positionConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor)
+            .velocityConversionFactor(1.0);
     m_yawMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
+
+    motorConfig
+        .inverted(false) // Set to true to invert the forward motor direction
+        .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
+        .idleMode(IdleMode.kBrake).encoder
+            .positionConversionFactor(Constants.Shooter.kPitchEncoderToDegConversionFactor)
+            .velocityConversionFactor(1.0);
     m_pitchMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
 
-
-    m_pitchMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
-        com.revrobotics.PersistMode.kPersistParameters);
-
-
-    TalonFXConfigurator talonFXConfigurator = m_flywheelMotor1.getConfigurator();
+    TalonFXConfigurator talonFXConfigurator1 = m_flywheelMotor1.getConfigurator();
     TalonFXConfigurator talonFXConfigurator2 = m_flywheelMotor2.getConfigurator();
     //This is how you set a current limit inside the motor (vs on the input power supply)
     //subject to change
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-    limitConfigs.StatorCurrentLimit = 100; //limit in amps /TODO: determine reasonable limit
+    limitConfigs.StatorCurrentLimit = Constants.Shooter.kFlywheelMaxCurrent;
     limitConfigs.StatorCurrentLimitEnable = true;
-    talonFXConfigurator.apply(limitConfigs);
+    talonFXConfigurator1.apply(limitConfigs);
     talonFXConfigurator2.apply(limitConfigs);
-
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
     outputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Invert = Clockwise
-    outputConfigs.NeutralMode = NeutralModeValue.Brake;
-    talonFXConfigurator.apply(outputConfigs);
+    outputConfigs.NeutralMode = NeutralModeValue.Coast;
+    talonFXConfigurator1.apply(outputConfigs);
 
     outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
     talonFXConfigurator2.apply(outputConfigs);
-
     m_flywheelMotor2.setControl(new Follower(m_flywheelMotor1.getDeviceID(), MotorAlignmentValue.Opposed));
 
-    //setting up internal encoder for TalonFX
+    // Setting up internal encoder for TalonFX
     m_shooterVelocitySignal = m_flywheelMotor1.getVelocity();
   }
 
   @Override
   public void periodic() {
-
-    SmartDashboard.putNumber("Shooter Target Yaw", m_targetYawAngleDeg);
-    SmartDashboard.putNumber("Shooter Target Pitch", m_targetPitchAngleDeg);
-    SmartDashboard.putNumber("Shooter Target Velocity", m_targetFlywheelVelocityRps);
-
-
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Sht Yaw Auto", m_yawAutomationEnabled);
+    SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
+    SmartDashboard.putNumber("Sht Yaw Angle", getYawAngleDeg());
+    SmartDashboard.putNumber("Sht Yaw Power", m_yawMotor.get());
+
+    SmartDashboard.putBoolean("Sht Pitch Auto", m_pitchAutomationEnabled);
+    SmartDashboard.putNumber("Sht Pitch Target", m_targetPitchAngleDeg);
+    SmartDashboard.putNumber("Sht Pitch Angle", getPitchAngleDeg());
+    SmartDashboard.putNumber("Sht Pitch Power", m_pitchMotor.get());
+
+    SmartDashboard.putNumber("Sht Target Flywheel", m_targetFlywheelVelocityRps);
+    SmartDashboard.putBoolean("Sht Fly Auto", m_flywheelAutomationEnabled);
+    SmartDashboard.putNumber("Sht Fly Target", m_targetFlywheelVelocityRps);
+    SmartDashboard.putNumber("Sht Fly Velocity", getFlywheelVelocityRps());
+    SmartDashboard.putNumber("Sht Fly Power", m_flywheelMotor1.get());
+
+    // TODO: Add code to zero the yaw encoder the first time it hits the CCW limit
+    // TODO: Add code to zero the pitch encoder the first time it hits the lower limit
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
-    runFlyhweelVelocityControl(m_flywheelAutomationEnabled);
-    // runFlywheelBangBang(m_runVelocityControl);
-  }
-
-  public boolean isAtYawAtCWLimit() {
-    return m_yawMotor.getForwardLimitSwitch().isPressed();
-  }
-
-
-  public boolean isAtYawAtCCWLimit() {
-    return m_yawMotor.getReverseLimitSwitch().isPressed();
-  }
-
-
-  public boolean isAtPitchLowerLimit() {
-    return m_pitchMotor.getForwardLimitSwitch().isPressed();
-  }
-
-
-  public boolean isAtPitchUpperLimit() {
-    return m_pitchMotor.getReverseLimitSwitch().isPressed();
-  }
-
-  public void setFlywheelVoltage(double power) {
-    m_flywheelMotor1.set(power);
-  }
-
-  public void setTargetYawAngle(double angle) {
-    // Not doing anything yet
-    m_targetYawAngleDeg = angle;
-
-  }
-
-  public void setTargetPitchAngle(double angle) {
-    // Not doing anything yet
-    m_targetPitchAngleDeg = angle;
-
-  }
-
-  public void setTargetFlywheelVelocity(double velocity) {
-    // Not doing anything yet
-    m_targetFlywheelVelocityRps = velocity;
-  }
-
-  public void resetYawEncoder() {
-    m_yawMotor.getEncoder().setPosition(0);
-  }
-
-  public double getYawEncoder() {
-    return m_yawMotor.getEncoder().getPosition();
-  }
-
-  public void resetPitchEncoder() {
-    m_pitchMotor.getEncoder().setPosition(0);
-  }
-
-  public double getPitchEncoder() {
-    return m_pitchMotor.getEncoder().getPosition();
-  }
-
-
-  public double getFlywheelVelocity() {
-    //returning in RPM
-    return m_shooterVelocitySignal.getValueAsDouble() / 60;
-  }
-
-  public boolean isAtTargetFlywheelVelocity() {
-    return getFlywheelVelocity() == m_targetFlywheelVelocityRps;
-  }
-
-  public boolean isAtTargetPitchAngle() {
-    //TO DO, need to convert encoders position to angle
-    return getPitchAngle() == m_targetPitchAngleDeg;
-  }
-
-  public boolean isAtTargetYawAngle() {
-    //TO DO, need to convert encoders position to angle
-    return getYawAngle() == m_targetYawAngleDeg;
-  }
-
-  public double getYawAngle() {
-    return getYawEncoder() * 360; //Is this value correct?
-  }
-
-  public double getPitchAngle() {
-    return getPitchEncoder() * 360; //Is this value correct?
+    // TODO: This should run on the TalonFX, not here
+    //runFlyhweelVelocityControl(m_flywheelAutomationEnabled);
   }
 
   public void setYawPower(Double power) {
@@ -214,70 +130,144 @@ public class ShooterSub extends SubsystemBase {
 
   public void setFlywheelPower(double power) {
     m_flywheelMotor1.set(power);
+    // Motor 2 should follow motor 1
   }
 
-  //set current power based on target for yaw
-  private void runYawControl(boolean runYawControl) {
-    double currentAngle = getYawAngle();
+  public double getYawAngleDeg() {
+    return m_yawMotor.getEncoder().getPosition();
+  }
+
+  public double getPitchAngleDeg() {
+    return m_pitchMotor.getEncoder().getPosition();
+  }
+
+  public double getFlywheelVelocityRps() {
+    // TODO: Might need to refresh the velocity signal before using: m_shooterVelocitySignal = m_flywheelMotor1.getVelocity();
+    // or simply m_flywheelMotor1.getVelocity().getValueAsDouble()    
+    return m_shooterVelocitySignal.getValueAsDouble();
+  }
+
+  public void resetYawEncoder() {
+    m_yawMotor.getEncoder().setPosition(0);
+  }
+
+  public void resetPitchEncoder() {
+    m_pitchMotor.getEncoder().setPosition(0);
+  }
+
+  public boolean isAtYawAtCCWLimit() {
+    return m_yawMotor.getReverseLimitSwitch().isPressed();
+  }
+
+  public boolean isAtYawAtCWLimit() {
+    return m_yawMotor.getForwardLimitSwitch().isPressed();
+  }
+
+  public boolean isAtPitchLowerLimit() {
+    return m_pitchMotor.getReverseLimitSwitch().isPressed();
+  }
+
+  public boolean isAtPitchUpperLimit() {
+    return m_pitchMotor.getForwardLimitSwitch().isPressed();
+  }
+
+  ////////////////////////////// Yaw automation //////////////////////////////
+  public void enableYawAutomation() {
+    m_yawAutomationEnabled = true;
+  }
+
+  public void disableYawAutomation() {
+    m_yawAutomationEnabled = false;
+    setYawPower(0.0);
+  }
+
+  public void setTargetYawAngle(double angleDeg) {
+    m_targetYawAngleDeg = angleDeg;
+    runYawControl(true);
+    enableYawAutomation();
+  }
+
+  public boolean isAtTargetYawAngle() {
+    // TODO:  Need to find the difference between the current and target angles and see if that is
+    // smaller than the tolerance
+    return getYawAngleDeg() == m_targetYawAngleDeg;
+  }
+
+  // Set power based on difference between target and current yaw
+  private void runYawControl(boolean setPower) {
+    double currentAngle = getYawAngleDeg();
 
     double pidPower = m_yawPidController.calculate(currentAngle, m_targetYawAngleDeg);
-    //TO DO create constant for this
+
+    // Make sure we don't exceed our maxiumum allowed power
     if(Math.abs(pidPower) > Constants.Shooter.kYawMaxPower) {
       double sign = (pidPower >= 0.0) ? 1.0 : -1.0;
       pidPower = Constants.Shooter.kYawMaxPower * sign;
     }
 
-
-    setYawPower(pidPower);
+    if(setPower) {
+      setYawPower(pidPower);
+    }
   }
 
-  //set current power based on target for pitch
-  private void runPitchControl(boolean runPitchControl) {
-    Double currentAngle = getPitchAngle();
+  ////////////////////////////// Pitch automation //////////////////////////////
+  public void enablePitchAutomation() {
+    m_pitchAutomationEnabled = true;
+  }
+
+  public void disablePitchAutomation() {
+    m_pitchAutomationEnabled = false;
+    setPitchPower(0.0);
+  }
+
+  public void setTargetPitchAngle(double angleDeg) {
+    m_targetPitchAngleDeg = angleDeg;
+    runPitchControl(true);
+    enablePitchAutomation();
+  }
+
+  public boolean isAtTargetPitchAngle() {
+    // TODO:  Need to find the difference between the current and target angles and see if that is
+    // smaller than the tolerance
+    return getPitchAngleDeg() == m_targetPitchAngleDeg;
+  }
+
+  // Set power based on difference between target and current pitch
+  private void runPitchControl(boolean setPower) {
+    double currentAngle = getPitchAngleDeg();
 
     double pidPower = m_pitchPidController.calculate(currentAngle, m_targetPitchAngleDeg);
-    //TO DO create constant for this
+
+    // Make sure we don't exceed our maxiumum allowed power
     if(Math.abs(pidPower) > Constants.Shooter.kPitchMaxPower) {
       double sign = (pidPower >= 0.0) ? 1.0 : -1.0;
       pidPower = Constants.Shooter.kPitchMaxPower * sign;
     }
 
-
-    setPitchPower(pidPower);
-  }
-
-  public void enableFlyhweelVelocityControl(boolean run) {
-    m_flywheelAutomationEnabled = run;
-  }
-
-  //set current power based on target for flywheel velocity
-  private void runFlyhweelVelocityControl(boolean run) {
-    // Flywheel needs to spin at set velocity prior to m_pivotSub.spinBothFeeders being executed. 
-    if(m_flywheelAutomationEnabled) {
-      double feedForwardVoltage = m_flyWheelFeedforward.calculate(m_targetFlywheelVelocityRps, 0.0);
-      // So far, we don't need the PID control.  Feedforward is doing well on its own
-      double pidVoltage = m_flyWheelPID.calculate(getFlywheelVelocity(), m_targetFlywheelVelocityRps);
-
-      setFlywheelPower(feedForwardVoltage + pidVoltage);
-    } else {
-      setFlywheelPower(0.0);
+    if(setPower) {
+      setPitchPower(pidPower);
     }
   }
 
-  private void runFlywheelBangBang(boolean run) {
-    // if the current flywheel velocity is less than the target flywheel velocity, speed it up proportionally, if its greater, slow it down
-    if(m_flywheelAutomationEnabled) {
-      if(getFlywheelVelocity() < m_targetFlywheelVelocityRps) {
-        setFlywheelPower(Math
-            .min(m_targetPower + ((m_targetFlywheelVelocityRps - getFlywheelVelocity()) / m_targetFlywheelVelocityRps),
-                1.0));
-      } else if(getFlywheelVelocity() > m_targetFlywheelVelocityRps) {
-        setFlywheelPower(
-            Math.max(((getFlywheelVelocity() - m_targetFlywheelVelocityRps) / getFlywheelVelocity()), 0.0));
-      } else {
-        setFlywheelPower(m_targetFlywheelVelocityRps);
-      }
-    }
+  ////////////////////////////// Flywheel automation //////////////////////////////
+  public void enableFlyhweelAutomation() {
+    m_flywheelAutomationEnabled = true;
   }
 
+  public void disableFlyhweelAutomation() {
+    m_flywheelAutomationEnabled = false;
+    // TODO: Disable TalonFX velocity control (e.g. m_flywheelMotor1.setControl(new DutyCycleOut(0.0)))
+  }
+
+  public void setTargetFlywheelVelocity(double velocityRps) {
+    m_targetFlywheelVelocityRps = velocityRps;
+    // TODO: Start TalonFX control
+    enableFlyhweelAutomation();
+  }
+
+  public boolean isAtTargetFlywheelVelocity() {
+    // TODO:  Need to find the difference between the current and target angles and see if that is
+    // smaller than the tolerance
+    return getFlywheelVelocityRps() == m_targetFlywheelVelocityRps;
+  }
 }
