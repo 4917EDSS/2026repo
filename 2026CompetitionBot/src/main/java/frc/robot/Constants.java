@@ -100,7 +100,7 @@ public final class Constants {
     public static final double kYawEncoderToDegConversionFactor = 1.0;
     public static final double kYawMinAngleDeg = 0.0;
     public static final double kYawMaxAngleDeg = 180.0;
-    public static final double kYawMaxPower = 10;
+    public static final double kYawMaxPower = 0.1;
     public static final double kYawKS = 0.25;
     public static final double kYawKV = 0.12;
     public static final double kYawKP = 0.1;
@@ -110,7 +110,7 @@ public final class Constants {
     public static final double kPitchEncoderToDegConversionFactor = 1.0;
     public static final double kPitchMinAngleDeg = 0.0;
     public static final double kPitchMaxAngleDeg = 45.0;
-    public static final double kPitchMaxPower = 10;
+    public static final double kPitchMaxPower = 0.05;
     public static final double kPitchKS = 0.25;
     public static final double kPitchKV = 0.12;
     public static final double kPitchKP = 0.1;

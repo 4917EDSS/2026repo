@@ -51,15 +51,19 @@ public class ShooterSub extends SubsystemBase {
   private final TalonFX m_shooterMotor2 = new TalonFX(Constants.CanIds.kShooterFlywheelMotor2);
   private StatusSignal<AngularVelocity> m_shooterVelocitySignal;
 
+  private double m_lastYawPidPower;
+  private double m_lastPitchPidPower;
+
+  private double m_TESTINGflywheelPower;
   // private final Encoder m_yawAbsoluteEncoder =
   //     new Encoder(Constants.DioIds.kShooterYawAbsoluteEncoder1, Constants.DioIds.kShooterYawAbsoluteEncoder2);
 
   // private final Encoder m_pitchAbsoluteEncoder =
   //     new Encoder(Constants.DioIds.kShooterPitchAbsoluteEncoder1, Constants.DioIds.kShooterPitchAbsoluteEncoder2);
 
-  private double m_targetYawAngle = 0;
-  private double m_targetPitchAngle = 0;
-  private double m_targetFlywheelVelocity = 0;
+  private double m_targetYawAngle = 0.0;
+  private double m_targetPitchAngle = 0.0;
+  private double m_targetFlywheelVelocity = 0.0;
 
   private boolean m_runVelocityControl = false;
   private boolean m_runYawControl = false;
@@ -67,11 +71,11 @@ public class ShooterSub extends SubsystemBase {
   private double m_targetPower = 0.7; // set default feed forward power, probably want to set this proportional 
 
   //Pid Controls
-  private double m_pitchKp = 0.02;
+  private double m_pitchKp = 0.001;
   private double m_pitchKi = 0.0;
   private double m_pitchKd = 0.0;
 
-  private double m_yawKp = 0.02;
+  private double m_yawKp = 0.005;
   private double m_yawKi = 0.0;
   private double m_yawKd = 0.0;
 
@@ -93,18 +97,21 @@ public class ShooterSub extends SubsystemBase {
         .inverted(true) // Set to true to invert the forward motor direction
         .smartCurrentLimit(60) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(0.0)
-            .velocityConversionFactor(0.0);
+            .positionConversionFactor(0.0185) //1 / 4 / 3 * (10 / 45)
+            .velocityConversionFactor(1.0);
 
     AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
     encoderConfig.zeroOffset(0.0);
     motorConfig.apply(encoderConfig);
     m_yawMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
-    m_pitchMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
-        com.revrobotics.PersistMode.kPersistParameters);
 
-
+    motorConfig
+        .inverted(true) // Set to true to invert the forward motor direction
+        .smartCurrentLimit(60) // Current limit in amps
+        .idleMode(IdleMode.kBrake).encoder
+            .positionConversionFactor(0.0616 / 12)
+            .velocityConversionFactor(1.0);
     m_pitchMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
 
@@ -142,6 +149,17 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Target Yaw", m_targetYawAngle);
     SmartDashboard.putNumber("Shooter Target Pitch", m_targetPitchAngle);
     SmartDashboard.putNumber("Shooter Target Velocity", m_targetFlywheelVelocity);
+    SmartDashboard.putNumber("flywheel set power", m_TESTINGflywheelPower);
+    SmartDashboard.putBoolean("ccw limit tripped", isAtYawAtCCWLimit());
+    SmartDashboard.putBoolean("cw limit tripped", isAtYawAtCWLimit());
+    SmartDashboard.putBoolean("up limit tripped", isAtPitchUpperLimit());
+    SmartDashboard.putBoolean("down limit tripped", isAtPitchLowerLimit());
+
+    SmartDashboard.putNumber("current yaw", getYawAngle());
+    SmartDashboard.putNumber("current pitch", getPitchAngle());
+    SmartDashboard.putNumber("current velo", getFlywheelVelocity());
+
+    SmartDashboard.putNumber("yawPidPower", m_lastYawPidPower);
 
 
     // This method will be called once per scheduler run
@@ -163,15 +181,16 @@ public class ShooterSub extends SubsystemBase {
 
 
   public boolean isAtPitchLowerLimit() {
-    return m_pitchMotor.getForwardLimitSwitch().isPressed();
+    return m_pitchMotor.getReverseLimitSwitch().isPressed();
   }
 
 
   public boolean isAtPitchUpperLimit() {
-    return m_pitchMotor.getReverseLimitSwitch().isPressed();
+    return m_pitchMotor.getForwardLimitSwitch().isPressed();
   }
 
   public void setFlywheelVoltage(double power) {
+    m_TESTINGflywheelPower = power;
     m_shooterMotor1.set(power);
   }
 
@@ -232,6 +251,10 @@ public class ShooterSub extends SubsystemBase {
     return getYawEncoder() * 360; //Is this value correct?
   }
 
+  public void updateFlywheelPower(double power) {
+    m_TESTINGflywheelPower = power;
+  }
+
   public double getPitchAngle() {
     return getPitchEncoder() * 360; //Is this value correct?
   }
@@ -248,6 +271,11 @@ public class ShooterSub extends SubsystemBase {
     m_shooterMotor1.set(power);
   }
 
+  public void setTargetPowers(double yawPower, double pitchPower) {
+    setTargetYawAngle(yawPower);
+    setTargetPitchAngle(pitchPower);
+  }
+
   //set current power based on target for yaw
   private void runYawControl(boolean runYawControl) {
     double currentAngle = getYawAngle();
@@ -259,8 +287,10 @@ public class ShooterSub extends SubsystemBase {
       pidPower = Constants.Shooter.kYawMaxPower * sign;
     }
 
-
-    setYawPower(pidPower);
+    if(!(pidPower <= 0.0 && isAtYawAtCCWLimit()) || !(pidPower >= 0.0 && isAtYawAtCWLimit())) {
+      m_lastYawPidPower = pidPower;
+      setYawPower(pidPower);
+    }
   }
 
   //set current power based on target for pitch
@@ -274,8 +304,10 @@ public class ShooterSub extends SubsystemBase {
       pidPower = Constants.Shooter.kPitchMaxPower * sign;
     }
 
-
-    setPitchPower(pidPower);
+    if((pidPower <= 0.0 && !isAtPitchLowerLimit()) || (pidPower >= 0.0 && !isAtPitchUpperLimit())) {
+      m_lastPitchPidPower = pidPower;
+      setPitchPower(pidPower);
+    }
   }
 
   public void enableFlyhweelVelocityControl(boolean run) {

@@ -4,10 +4,10 @@
 
 package frc.robot.utils;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
 
@@ -16,13 +16,13 @@ public class CalculateShooterAiming {
 
   private boolean m_isLobbing = false;
 
-  public double getYawAngle(Pose3d robot) {
+  public double getYawAngle(Pose2d robot) {
     Alliance alliance = GameData.getAlliance();
 
-    Pose3d shooterPoseinfield = new Pose3d();
-    Transform3d shooterToRobot = new Transform3d(
-        new Translation3d(0.3, 0.0, 0.3),
-        new Rotation3d(0.0, 0.0, 0.0));
+    Pose2d shooterPoseinfield = new Pose2d();
+    Transform2d shooterToRobot = new Transform2d(
+        new Translation2d(0.3, 0.3),
+        new Rotation2d(0.0, 0.0));
     shooterPoseinfield = componentToField(shooterPoseinfield, robot, shooterToRobot);
 
     double distX = 1; // default values
@@ -40,7 +40,7 @@ public class CalculateShooterAiming {
     double angle = Math.toDegrees(Math.atan2(distY, distX));
 
     // get the robot's yaw
-    double heading = shooterPoseinfield.toPose2d().getRotation().getDegrees();
+    double heading = shooterPoseinfield.getRotation().getDegrees();
 
     // subtract the robot heading from the shooter angle
     angle -= heading;
@@ -75,7 +75,7 @@ public class CalculateShooterAiming {
 
   }
 
-  public double calculateAngleatTarget(double range, double elevation, double launchVelocity, Double launchAngle) {
+  public double calculateAngleAtTarget(double range, double elevation, double launchVelocity, Double launchAngle) {
 
 
     double timeOfFlight = getTimeOfFlight(range, elevation, launchVelocity, launchAngle);
@@ -94,25 +94,25 @@ public class CalculateShooterAiming {
   }
 
 
-  private static Pose3d componentToField(Pose3d componentRelativePose, Pose3d robotPose,
-      Transform3d componentToRobotTransform) {
-    Pose3d robotRelative = componentToRobot(componentRelativePose, componentToRobotTransform);
+  private static Pose2d componentToField(Pose2d componentRelativePose, Pose2d robotPose,
+      Transform2d componentToRobotTransform) {
+    Pose2d robotRelative = componentToRobot(componentRelativePose, componentToRobotTransform);
     return robotToField(robotRelative, robotPose);
   }
 
-  private static Pose3d componentToRobot(Pose3d componentRelativePose, Transform3d componentToRobotTransform) {
+  private static Pose2d componentToRobot(Pose2d componentRelativePose, Transform2d componentToRobotTransform) {
     return componentRelativePose.plus(componentToRobotTransform);
   }
 
-  private static Pose3d robotToField(Pose3d robotRelativePose, Pose3d robotPose) {
+  private static Pose2d robotToField(Pose2d robotRelativePose, Pose2d robotPose) {
     return robotRelativePose.relativeTo(robotPose);
   }
 
-  public void setLobbingMode (boolean lobbingMode) {
+  public void setLobbingMode(boolean lobbingMode) {
     m_isLobbing = lobbingMode;
   }
 
-  public boolean getLobbingMode () {
+  public boolean getLobbingMode() {
     return m_isLobbing;
   }
 
