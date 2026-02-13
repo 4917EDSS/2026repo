@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.DriveToPoseCmd;
@@ -153,6 +154,8 @@ public class RobotContainer {
 
     // Operator B
     // TODO: Run deploy motor with low negative power while held
+    m_operatorContoller.b().whileTrue(new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1),
+        () -> m_intakeSub.setDeployPower(0.0), m_intakeSub));
 
     // Operator X
     // TODO: Run belt motor with low positive power while held
