@@ -7,6 +7,9 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,8 +17,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.ClimbCmd;
@@ -94,14 +99,10 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Driver A
-    // m_driverController.a()
-    //  .whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
-
-    //A SYNTAX IS INCORRECT AND CAUSIN ERRORS IN THE CODE PLEASE FIX
-    // m_driverController.a()
-    //     .onTrue(new ConditionalCommand(
-    //         new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)), 
-    //         new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), null));
+    m_driverController.a()
+        .onTrue(new ConditionalCommand(
+            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)), 
+            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), m_calculateShooterAiming.getLobbingMode()));
 
     // Driver B
 
@@ -153,17 +154,26 @@ public class RobotContainer {
     // Operator A
     // TODO: Run deploy motor with low positive power while held
 
+    m_operatorContoller.a().whileTrue(
+        new StartEndCommand(() -> m_intakeSub.setDeployPower(0.1), () -> m_intakeSub.setDeployPower(0.0), m_intakeSub));
+
     // Operator B
     // TODO: Run deploy motor with low negative power while held
+    m_operatorContoller.b().whileTrue(new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1),
+        () -> m_intakeSub.setDeployPower(0.0), m_intakeSub));
 
     // Operator X
-    // TODO: Run belt motor with low positive power while held
+    m_operatorContoller.x().whileTrue(
+        new StartEndCommand(() -> m_intakeSub.setBeltPower(0.10), () -> m_intakeSub.setBeltPower(0.0), m_intakeSub));
 
     // Operator Y
     // TODO: Run belt motor with low negative power while held
+    m_operatorContoller.y()
+        .whileTrue(new StartEndCommand(() -> m_intakeSub.setBeltPower(-0.1), () -> m_intakeSub.setBeltPower(0.0),
+            m_intakeSub));
 
     // Operator Left Bumper
-    // TODO: Run singulator motor with low negative power while held
+    m_operatorContoller.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(-0.1), () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub));
 
     // Operator Right Bumper
     // TODO: Run singulator motor with low positive power while held
@@ -177,8 +187,8 @@ public class RobotContainer {
     // Operator Right Trigger
     // TODO: Convert this to a StartEndCommand instead of two InstantCommands
     m_operatorContoller.rightTrigger()
-        .onTrue(new InstantCommand(() -> m_shooterSub.setFlywheelPower(0.1)))
-        .onFalse(new InstantCommand(() -> m_shooterSub.setFlywheelPower(0.0)));
+        .whileTrue(new StartEndCommand(() -> m_shooterSub.setFlywheelPower(0.1),
+            () -> m_shooterSub.setFlywheelPower(0.0), m_shooterSub));
 
     // Operator Back
     // TODO: Modify this to simply set a low negative power while held (i.e. don't use the alogorithm)
