@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeDeployCmd;
@@ -31,6 +32,7 @@ import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
 import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.CalculateShooterAiming;
+
 
 public class RobotContainer {
   private double maxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -165,6 +167,9 @@ public class RobotContainer {
 
     // Operator Right Bumper
     // TODO: Run singulator motor with low positive power while held
+    m_operatorContoller.rightBumper()
+        .whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(0.1),
+            () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub));
 
     // Operator Left Trigger
     // TODO: Run elevator motor with low positive power while held
