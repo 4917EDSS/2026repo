@@ -51,7 +51,7 @@ public class RobotContainer {
   // Controllers
   private final CommandXboxController m_driverController =
       new CommandXboxController(Constants.OperatorConstants.kDriverControllerPort);
-  private final CommandXboxController m_operatorContoller =
+  private final CommandXboxController m_operatorController =
       new CommandXboxController(Constants.OperatorConstants.kOperatorControllerPort);
 
   // The robot's subsystems and commands are defined here
@@ -83,10 +83,10 @@ public class RobotContainer {
         ));
 
     m_shooterSub.setDefaultCommand(new RunCommand(
-        () -> m_shooterSub.setYawPower(m_operatorContoller.getLeftX() * 0.15), m_shooterSub));
+        () -> m_shooterSub.setYawPower(m_operatorController.getLeftX() * 0.15), m_shooterSub));
 
     m_shooterSub.setDefaultCommand(new RunCommand(
-        () -> m_shooterSub.setPitchPower(-m_operatorContoller.getRightY() * 0.15), m_shooterSub));
+        () -> m_shooterSub.setPitchPower(-m_operatorController.getRightY() * 0.15), m_shooterSub));
   }
 
 
@@ -101,8 +101,9 @@ public class RobotContainer {
     // Driver A
     m_driverController.a()
         .onTrue(new ConditionalCommand(
-            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)), 
-            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), m_calculateShooterAiming.getLobbingMode()));
+            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
+            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)),
+            m_calculateShooterAiming.getLobbingMode()));
 
     // Driver B
 
@@ -152,51 +153,43 @@ public class RobotContainer {
 
 
     // Operator A
-    // TODO: Run deploy motor with low positive power while held
-
-    m_operatorContoller.a().whileTrue(
+    m_operatorController.a().whileTrue(
         new StartEndCommand(() -> m_intakeSub.setDeployPower(0.1), () -> m_intakeSub.setDeployPower(0.0), m_intakeSub));
 
     // Operator B
-    // TODO: Run deploy motor with low negative power while held
-    m_operatorContoller.b().whileTrue(new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1),
+    m_operatorController.b().whileTrue(new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1),
         () -> m_intakeSub.setDeployPower(0.0), m_intakeSub));
 
     // Operator X
-    m_operatorContoller.x().whileTrue(
+    m_operatorController.x().whileTrue(
         new StartEndCommand(() -> m_intakeSub.setBeltPower(0.10), () -> m_intakeSub.setBeltPower(0.0), m_intakeSub));
 
     // Operator Y
-    // TODO: Run belt motor with low negative power while held
-    m_operatorContoller.y()
+    m_operatorController.y()
         .whileTrue(new StartEndCommand(() -> m_intakeSub.setBeltPower(-0.1), () -> m_intakeSub.setBeltPower(0.0),
             m_intakeSub));
 
     // Operator Left Bumper
-    m_operatorContoller.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(-0.1), () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub));
+    m_operatorController.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(-0.1),
+        () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub));
 
     // Operator Right Bumper
-    // TODO: Run singulator motor with low positive power while held
-    m_operatorContoller.rightBumper()
+    m_operatorController.rightBumper()
         .whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(0.1),
             () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub));
 
     // Operator Left Trigger
-    // TODO: Run elevator motor with low positive power while held
-    m_operatorContoller.leftTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setEscalatorPower(0.10),
+    m_operatorController.leftTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setEscalatorPower(0.10),
         () -> m_hopperSub.setEscalatorPower(0.0), m_hopperSub));
 
     // Operator Right Trigger
-    // TODO: Convert this to a StartEndCommand instead of two InstantCommands
-    m_operatorContoller.rightTrigger()
+    m_operatorController.rightTrigger()
         .whileTrue(new StartEndCommand(() -> m_shooterSub.setFlywheelPower(0.1),
             () -> m_shooterSub.setFlywheelPower(0.0), m_shooterSub));
 
     // Operator Back
-    // TODO: Modify this to simply set a low negative power while held (i.e. don't use the alogorithm)
-    m_operatorContoller.back().whileTrue(
+    m_operatorController.back().whileTrue(
         new StartEndCommand(() -> m_climbSub.setRotatePower(0.1), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
-    //m_operatorContoller.back().whileTrue(new InstantCommand(() -> m_climbSub.setTargetRotateAngle(1, -0.1)));
 
     // Operator Start
     // TODO: Modify this to simply set a low positive power while held (i.e. don't use the alogorithm)
@@ -215,11 +208,11 @@ public class RobotContainer {
     // Operator POV Left
 
     // Operator Left Stick
-    m_operatorContoller.leftStick()
+    m_operatorController.leftStick()
         .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
 
     // Operator Right Stick
-    m_operatorContoller.rightStick()
+    m_operatorController.rightStick()
         .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
 
   }
