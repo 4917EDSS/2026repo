@@ -158,7 +158,8 @@ public class RobotContainer {
         () -> m_intakeSub.setDeployPower(0.0), m_intakeSub));
 
     // Operator X
-    // TODO: Run belt motor with low positive power while held
+    m_operatorContoller.x().whileTrue(
+        new StartEndCommand(() -> m_intakeSub.setBeltPower(0.10), () -> m_intakeSub.setBeltPower(0.0), m_intakeSub));
 
     // Operator Y
     // TODO: Run belt motor with low negative power while held
