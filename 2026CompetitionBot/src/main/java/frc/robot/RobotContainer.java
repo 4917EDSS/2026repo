@@ -157,6 +157,8 @@ public class RobotContainer {
 
     // Operator B
     // TODO: Run deploy motor with low negative power while held
+    m_operatorContoller.b().whileTrue(new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1),
+        () -> m_intakeSub.setDeployPower(0.0), m_intakeSub));
 
     // Operator X
     m_operatorContoller.x().whileTrue(
