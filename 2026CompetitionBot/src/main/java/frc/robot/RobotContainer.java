@@ -7,6 +7,9 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -93,14 +97,10 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Driver A
-    // m_driverController.a()
-    //  .whileTrue(new StartEndCommand(() -> m_intakeSub.setIntakePower(1.0), () -> m_intakeSub.setIntakePower(0.0)));
-
-    //A SYNTAX IS INCORRECT AND CAUSIN ERRORS IN THE CODE PLEASE FIX
-    // m_driverController.a()
-    //     .onTrue(new ConditionalCommand(
-    //         new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)), 
-    //         new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), null));
+    m_driverController.a()
+        .onTrue(new ConditionalCommand(
+            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)), 
+            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)), m_calculateShooterAiming.getLobbingMode()));
 
     // Driver B
 
@@ -159,13 +159,14 @@ public class RobotContainer {
     // TODO: Run deploy motor with low negative power while held
 
     // Operator X
-    // TODO: Run belt motor with low positive power while held
+    m_operatorContoller.x().whileTrue(
+        new StartEndCommand(() -> m_intakeSub.setBeltPower(0.10), () -> m_intakeSub.setBeltPower(0.0), m_intakeSub));
 
     // Operator Y
     // TODO: Run belt motor with low negative power while held
 
     // Operator Left Bumper
-    // TODO: Run singulator motor with low negative power while held
+    m_operatorContoller.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(-0.1), () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub));
 
     // Operator Right Bumper
     // TODO: Run singulator motor with low positive power while held
