@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.DriveToPoseCmd;
@@ -159,6 +160,9 @@ public class RobotContainer {
 
     // Operator Y
     // TODO: Run belt motor with low negative power while held
+    m_operatorContoller.y()
+        .whileTrue(new StartEndCommand(() -> m_intakeSub.setBeltPower(-0.1), () -> m_intakeSub.setBeltPower(0.0),
+            m_intakeSub));
 
     // Operator Left Bumper
     // TODO: Run singulator motor with low negative power while held
@@ -172,8 +176,8 @@ public class RobotContainer {
     // Operator Right Trigger
     // TODO: Convert this to a StartEndCommand instead of two InstantCommands
     m_operatorContoller.rightTrigger()
-        .onTrue(new InstantCommand(() -> m_shooterSub.setFlywheelPower(0.1)))
-        .onFalse(new InstantCommand(() -> m_shooterSub.setFlywheelPower(0.0)));
+        .whileTrue(new StartEndCommand(() -> m_shooterSub.setFlywheelPower(0.1),
+            () -> m_shooterSub.setFlywheelPower(0.0), m_shooterSub));
 
     // Operator Back
     // TODO: Modify this to simply set a low negative power while held (i.e. don't use the alogorithm)
