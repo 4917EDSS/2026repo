@@ -82,8 +82,9 @@ public class RobotContainer {
             .withRotationalRate(-m_driverController.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    m_shooterSub.setDefaultCommand(new RunCommand(
-        () -> m_shooterSub.setYawPower(m_operatorController.getLeftX() * 0.15), m_shooterSub));
+    // TODO: Create command to combine both yaw and pitch control
+    // m_shooterSub.setDefaultCommand(new RunCommand(
+    //     () -> m_shooterSub.setYawPower(m_operatorController.getLeftX() * 0.15), m_shooterSub));
 
     m_shooterSub.setDefaultCommand(new RunCommand(
         () -> m_shooterSub.setPitchPower(-m_operatorController.getRightY() * 0.15), m_shooterSub));

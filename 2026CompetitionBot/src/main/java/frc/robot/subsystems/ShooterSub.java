@@ -59,7 +59,7 @@ public class ShooterSub extends SubsystemBase {
         com.revrobotics.PersistMode.kPersistParameters);
 
     motorConfig
-        .inverted(false) // Set to true to invert the forward motor direction
+        .inverted(true) // Set to true to invert the forward motor direction
         .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Shooter.kPitchEncoderToDegConversionFactor)
