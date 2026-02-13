@@ -4,6 +4,8 @@
 
 package frc.robot.utils;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -112,8 +114,9 @@ public class CalculateShooterAiming {
     m_isLobbing = lobbingMode;
   }
 
-  public boolean getLobbingMode () {
-    return m_isLobbing;
+  public BooleanSupplier getLobbingMode () {
+    BooleanSupplier lobbingSupplier = () -> m_isLobbing;
+    return lobbingSupplier;
   }
 
 }
