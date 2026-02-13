@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.DriveToPoseCmd;
@@ -168,6 +169,8 @@ public class RobotContainer {
 
     // Operator Left Trigger
     // TODO: Run elevator motor with low positive power while held
+    m_operatorContoller.leftTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setEscalatorPower(0.10),
+        () -> m_hopperSub.setEscalatorPower(0.0), m_hopperSub));
 
     // Operator Right Trigger
     // TODO: Convert this to a StartEndCommand instead of two InstantCommands
@@ -177,6 +180,8 @@ public class RobotContainer {
 
     // Operator Back
     // TODO: Modify this to simply set a low negative power while held (i.e. don't use the alogorithm)
+    m_operatorContoller.back().whileTrue(
+        new StartEndCommand(() -> m_climbSub.setRotatePower(0.1), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
     //m_operatorContoller.back().whileTrue(new InstantCommand(() -> m_climbSub.setTargetRotateAngle(1, -0.1)));
 
     // Operator Start
