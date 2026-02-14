@@ -202,8 +202,6 @@ public class RobotContainer {
     m_operatorController.povUp().whileTrue(
         new StartEndCommand(() -> m_climbSub.setTargetDeployDistance(0.1),
             () -> m_climbSub.setTargetDeployDistance(0.0), m_climbSub));
-    // TODO: Modify this to simply set a low positive power while held (i.e. don't use the alogorithm)
-    //m_operatorContoller.povUp().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, 0.1)));
 
     // Operator POV Right
 
@@ -211,8 +209,6 @@ public class RobotContainer {
     m_operatorController.povDown().whileTrue(
         new StartEndCommand(() -> m_climbSub.setTargetDeployDistance(0.1),
             () -> m_climbSub.setTargetDeployDistance(0.0), m_climbSub));
-    // TODO: Modify this to simply set a low negative power while held (i.e. don't use the alogorithm)
-    //m_operatorContoller.povDown().whileTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(1, -0.1)));
 
     // Operator POV Left
 
