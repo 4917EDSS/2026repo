@@ -120,9 +120,10 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public boolean isAtTargetDeployAngle() {
-    // TODO:  Need to find the difference between the current and target angles and see if that is
-    // smaller than the tolerance
-    return getDeployAngleDeg() == m_targetDeployAngleDeg;
+    if(Math.abs(getDeployAngleDeg() - m_targetDeployAngleDeg) < Constants.Intake.kDeployToleranceDeg) {
+      return true;
+    }
+    return false;
   }
 
   private void runDeployAngleControl(boolean setPower) {

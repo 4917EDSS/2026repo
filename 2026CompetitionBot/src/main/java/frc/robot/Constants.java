@@ -111,6 +111,8 @@ public final class Constants {
 
     public static final double kBeltMaxCurrent = 120.0;
     public static final double kBeltPower = 0.25;
+
+
   }
 
   public static class Shooter {

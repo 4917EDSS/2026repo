@@ -44,6 +44,9 @@ public class ShooterSub extends SubsystemBase {
   private double m_targetPitchAngleDeg = 0;
   private double m_targetFlywheelVelocityRps = 0;
 
+  private boolean m_pitchHasBeenReset = false;
+  private boolean m_yawHasBeenReset = false;
+
   private StatusSignal<AngularVelocity> m_shooterVelocitySignal; // Do we need this?
 
   /** Creates a new ShooterSub. */
@@ -113,12 +116,14 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Fly Velocity", getFlywheelVelocityRps());
     SmartDashboard.putNumber("Shooter Fly Power", m_flywheelMotorL.get());
 
-    if(isAtPitchLowerLimit()) {
+    if(isAtPitchLowerLimit() && !m_pitchHasBeenReset) {
       resetPitchEncoder();
+      m_pitchHasBeenReset = true;
     }
 
-    if(isAtYawAtCWLimit()) {
+    if(isAtYawAtCWLimit() && !m_yawHasBeenReset) {
       resetYawEncoder();
+      m_yawHasBeenReset = true;
     }
 
     runYawControl(m_yawAutomationEnabled);
