@@ -7,61 +7,53 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.spark.SparkLimitSwitch;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 
 public class ClimbSub extends SubsystemBase {
-  private final SparkMax m_deployMotor = new SparkMax(Constants.CanIds.kClimbDeployMotor, MotorType.kBrushless);
+  private final TalonFX m_deployMotor = new TalonFX(Constants.CanIds.kClimbDeployMotor);
   private final TalonFX m_rotateMotor = new TalonFX(Constants.CanIds.kClimbRotateMotor);
-  private final SparkLimitSwitch m_inboardLimit = m_deployMotor.getForwardLimitSwitch();
-  private final SparkLimitSwitch m_outboardLimit = m_deployMotor.getReverseLimitSwitch();
+  private final DigitalInput m_inboardLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
+  private final DigitalInput m_outboardLimit = new DigitalInput(Constants.DioIds.kClimbOutLimitSwitch);
   private final DigitalInput m_rotateCCWLimit = new DigitalInput(Constants.DioIds.kClimbCCWLimitSwitch);
   private final DigitalInput m_rotateCWLimit = new DigitalInput(Constants.DioIds.kClimbCWLimitSwitch);
 
   private boolean m_enableDeployAutomation = false;
   private boolean m_enableRotationAutomation = false;
+  private boolean m_deployEncoderSet = false;
+  private boolean m_rotateEncoderSet = false;
   private double m_targetDeployDistanceMm = 0.0;
   private double m_targetRotationAngleDeg = Constants.Climb.kRotationInitialAngleDeg; // This could be different than the encoder-reset angle
 
 
   /** Creates a new ClimbSub. */
   public ClimbSub() {
-    SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
-    sparkMaxConfig
-        .inverted(false)
-        .smartCurrentLimit((int) Constants.Climb.kDeployMaxCurrent)
-        .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(Constants.Climb.kDeployEncoderToMmConversionFactor);
-    m_deployMotor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    TalonFXConfigurator talonFXConfigurator = m_rotateMotor.getConfigurator();
+    TalonFXConfigurator talonFXConfiguratorDeploy = m_deployMotor.getConfigurator();
+    TalonFXConfigurator talonFXConfiguratorRotate = m_rotateMotor.getConfigurator();
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
     limitConfigs.StatorCurrentLimit = Constants.Climb.kRotationMaxCurrent;
     limitConfigs.StatorCurrentLimitEnable = true;
-    talonFXConfigurator.apply(limitConfigs);
+    talonFXConfiguratorRotate.apply(limitConfigs);
+    limitConfigs.StatorCurrentLimit = Constants.Climb.kDeployMaxCurrent;
+    talonFXConfiguratorDeploy.apply(limitConfigs);
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
     outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Invert = Clockwise
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
-    talonFXConfigurator.apply(outputConfigs);
+    talonFXConfiguratorRotate.apply(outputConfigs);
+    talonFXConfiguratorDeploy.apply(outputConfigs);
   }
 
   @Override
@@ -81,11 +73,16 @@ public class ClimbSub extends SubsystemBase {
     SmartDashboard.putBoolean("Cl Rot CCW", isAtRotateCCWLimit());
     SmartDashboard.putBoolean("Cl Rot CW", isAtRotateCWLimit());
 
-    // TODO: Add code to zero the distance encoder the first time it hits the IN limit
-    // TODO: Add code to zero the rotate encoder the first time it hits the CCW limit
+    // Reset Deploy Encoder If We Have Not Already
+    if(!m_deployEncoderSet && isAtDeployInLimit()) {
+      resetDeployEncoder();
+      m_deployEncoderSet = true;
+    }
 
-    // TODO: If we use a NEO for deploy, need to add the PID control.  But it looks like it might be
-    // a Kraken so hold off on implementing this for now.
+    // Reset Rotate Encoder If We Have Not Already
+    if(!m_rotateEncoderSet && isAtRotateCCWLimit()) {
+      resetRotateEncoder();
+    }
   }
 
   public void setDeployPower(double power) {
@@ -103,7 +100,7 @@ public class ClimbSub extends SubsystemBase {
   }
 
   public double getDeployDistanceMm() {
-    return m_deployMotor.getEncoder().getPosition();
+    return m_deployMotor.get();
   }
 
   /**
@@ -119,15 +116,19 @@ public class ClimbSub extends SubsystemBase {
    * Sets the current angle as the zero angle
    */
   public void resetRotateEncoder() {
-    m_rotateMotor.setPosition(0);
+    m_rotateMotor.setPosition(0.0);
+  }
+
+  public void resetDeployEncoder() {
+    m_deployMotor.setPosition(Constants.Climb.kDeployInDistanceMm);
   }
 
   public boolean isAtDeployInLimit() {
-    return m_inboardLimit.isPressed();
+    return m_inboardLimit.get();
   }
 
   public boolean isAtDeployOutLimit() {
-    return m_outboardLimit.isPressed();
+    return m_outboardLimit.get();
   }
 
   public boolean isAtRotateCCWLimit() {
@@ -155,24 +156,28 @@ public class ClimbSub extends SubsystemBase {
   }
 
   public boolean isAtTargetDistance() {
-    // TODO:  Need to find the difference between the current and target angles and see if that is
-    // smaller than the tolerance
-    return (getDeployDistanceMm() > m_targetDeployDistanceMm); // maybe put in between +-error value
+    if((getDeployDistanceMm() - m_targetDeployDistanceMm) <= Constants.Climb.kDeployToleranceMm) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private void runDeployDistanceControl(boolean setPower) {
-    // TODO: If using SparkMax, run PID control here.  If TalonFX, run it on that controller
+    // TODO: Tune PID values on motor
+    m_deployMotor.setControl(new PositionDutyCycle(null).withSlot(0));
   }
 
   ////////////////////////////// Rotation automation //////////////////////////////
   public void enableRotateAutomation() {
+    // TODO: Tune PID values on motor
     m_enableRotationAutomation = true;
-    // TODO: Start TalonFX control
+    m_rotateMotor.setControl(new PositionDutyCycle(null).withSlot(0));
   }
 
   public void disableRotateAutomation() {
     m_enableRotationAutomation = false;
-    // TODO: Disable TalonFX velocity control (e.g. m_flywheelMotor1.setControl(new DutyCycleOut(0.0)))
+    m_rotateMotor.setControl(new DutyCycleOut(0.0));
   }
 
   public void setTargetRotateAngle(double angleDeg) {
@@ -181,8 +186,10 @@ public class ClimbSub extends SubsystemBase {
   }
 
   public boolean isAtTargetRotateAngle() {
-    // TODO:  Need to find the difference between the current and target angles and see if that is
-    // smaller than the tolerance
-    return false;
+    if((getRotationAngleDeg() - m_targetRotationAngleDeg) <= Constants.Climb.kRotationToleranceDeg) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
