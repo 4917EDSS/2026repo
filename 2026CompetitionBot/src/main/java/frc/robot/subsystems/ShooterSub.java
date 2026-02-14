@@ -30,7 +30,6 @@ public class ShooterSub extends SubsystemBase {
   private final SparkMax m_pitchMotor = new SparkMax(Constants.CanIds.kShooterPitchMotor, MotorType.kBrushless);
   private final TalonFX m_flywheelMotorL = new TalonFX(Constants.CanIds.kShooterFlywheelMotorL); // Make ABSOLUTELY sure its left
   private final TalonFX m_flywheelMotorR = new TalonFX(Constants.CanIds.kShooterFlywheelMotorR);
-  // TODO: Add pitch upper limit switch (connected to SparkMax)
 
   private final PIDController m_yawPidController =
       new PIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD);
@@ -104,6 +103,8 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Pitch Target", m_targetPitchAngleDeg);
     SmartDashboard.putNumber("Shooter Pitch Angle", getPitchAngleDeg());
     SmartDashboard.putNumber("Shooter Pitch Power", m_pitchMotor.get());
+    SmartDashboard.putBoolean("Shooter Upper Pitch Limit", isAtPitchUpperLimit());
+    SmartDashboard.putBoolean("Shooter Lower Pitch Limit", isAtPitchLowerLimit());
 
     SmartDashboard.putNumber("Shooter Target Flywheel", m_targetFlywheelVelocityRps);
     SmartDashboard.putBoolean("Shooter Fly Auto", m_flywheelAutomationEnabled);
