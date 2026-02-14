@@ -82,12 +82,10 @@ public class RobotContainer {
             .withRotationalRate(-m_driverController.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    // TODO: Create command to combine both yaw and pitch control
-    // m_shooterSub.setDefaultCommand(new RunCommand(
-    //     () -> m_shooterSub.setYawPower(m_operatorController.getLeftX() * 0.15), m_shooterSub));
-
     m_shooterSub.setDefaultCommand(new RunCommand(
-        () -> m_shooterSub.setPitchPower(-m_operatorController.getRightY() * 0.15), m_shooterSub));
+        () -> m_shooterSub.setPitchAndYawPower(-m_operatorController.getRightY() * 0.15,
+            m_operatorController.getLeftX() * 0.15),
+        m_shooterSub));
   }
 
 
@@ -125,8 +123,8 @@ public class RobotContainer {
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
 
     // Driver Right Trigger
-    // TODO: To spin the Singulator, call m_hopperSub.setSingulatorTargetVelocity()    
-    //m_driverController.rightTrigger().whileTrue(new SpinSingulatorCmd(m_hopperSub));
+    m_driverController.rightTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorTargetVelocity(3),
+        () -> m_hopperSub.setSingulatorTargetVelocity(0))); // Should be 9 balls per second
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading
@@ -195,8 +193,6 @@ public class RobotContainer {
     // Operator Start
     m_operatorController.start().whileTrue(
         new StartEndCommand(() -> m_climbSub.setRotatePower(0.1), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
-    // TODO: Modify this to simply set a low positive power while held (i.e. don't use the alogorithm)
-    //m_operatorContoller.start().whileTrue(new InstantCommand(() -> m_climbSub.setTargetRotateAngle(1, 0.1)));
 
     // Operator POV Up
     m_operatorController.povUp().whileTrue(

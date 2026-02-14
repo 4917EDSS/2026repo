@@ -51,7 +51,7 @@ public class CalculateShooterAiming {
   }
 
 
-  public double getTimeOfFlight(Double range, Double elevation, Double launchVelocity, Double launchAngle) {
+  public double getTimeOfFlight(double range, double elevation, double launchVelocity, double launchAngle) {
     // Use Kinematic equation: y = vy * t - 0.5 * g * t^2
     // Rearanged: 0.5 * g * t^2 - vy * t + elevation = 0
     // Solve using the quaderatic formula 
@@ -77,7 +77,7 @@ public class CalculateShooterAiming {
 
   }
 
-  public double calculateAngleatTarget(double range, double elevation, double launchVelocity, Double launchAngle) {
+  public double calculateAngleatTarget(double range, double elevation, double launchVelocity, double launchAngle) {
 
 
     double timeOfFlight = getTimeOfFlight(range, elevation, launchVelocity, launchAngle);

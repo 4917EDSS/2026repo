@@ -120,12 +120,17 @@ public class ShooterSub extends SubsystemBase {
     //runFlyhweelVelocityControl(m_flywheelAutomationEnabled);
   }
 
-  public void setYawPower(Double power) {
+  public void setYawPower(double power) {
     m_yawMotor.set(power);
   }
 
-  public void setPitchPower(Double power) {
+  public void setPitchPower(double power) {
     m_pitchMotor.set(power);
+  }
+
+  public void setPitchAndYawPower(double pitch, double yaw) {
+    setPitchPower(pitch);
+    setYawPower(yaw);
   }
 
   public void setFlywheelPower(double power) {
