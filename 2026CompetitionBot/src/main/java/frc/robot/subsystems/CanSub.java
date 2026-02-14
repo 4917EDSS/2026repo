@@ -28,6 +28,10 @@ public class CanSub extends SubsystemBase {
     m_ARBID = createCANId(0x123, CustomSensorID, 8, 10);
   }
 
+  public void init() {
+
+  }
+
   @Override
   public void periodic() {
     UpdateCustomSensor();

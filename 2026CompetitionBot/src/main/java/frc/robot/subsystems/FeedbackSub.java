@@ -22,6 +22,10 @@ public class FeedbackSub extends SubsystemBase {
     m_gameController = controller;
   }
 
+  public void init() {
+
+  }
+
   @Override
   public void periodic() {
     if(m_stopVibratingTime != null) {

@@ -56,6 +56,10 @@ public class ClimbSub extends SubsystemBase {
     talonFXConfiguratorDeploy.apply(outputConfigs);
   }
 
+  public void init() {
+
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

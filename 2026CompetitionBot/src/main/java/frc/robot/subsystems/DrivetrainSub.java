@@ -130,6 +130,10 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     SmartDashboard.putData("Field", m_field);
   }
 
+  public void init() {
+
+  }
+
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    * <p>

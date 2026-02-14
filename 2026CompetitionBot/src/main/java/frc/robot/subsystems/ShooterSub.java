@@ -103,6 +103,10 @@ public class ShooterSub extends SubsystemBase {
     m_shooterVelocitySignal = m_flywheelMotorL.getVelocity();
   }
 
+  public void init() {
+
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

@@ -56,6 +56,10 @@ public class IntakeSub extends SubsystemBase {
     m_beltMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
+  public void init() {
+
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

@@ -239,4 +239,14 @@ public class RobotContainer {
 
   }
 
+  public void initSubsystems() {
+    m_canSub.init();
+    m_climbSub.init();
+    m_drivetrainSub.init();
+    m_FeedbackSub.init();
+    m_hopperSub.init();
+    m_intakeSub.init();
+    m_shooterSub.init();
+    m_visionSub.init();
+  }
 }
