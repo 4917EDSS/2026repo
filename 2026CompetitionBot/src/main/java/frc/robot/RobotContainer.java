@@ -144,6 +144,11 @@ public class RobotContainer {
     // Driver POV Right
 
     // Driver POV Down
+    m_driverController.povDown()
+        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployInDistanceMm))
+            .andThen(new WaitUntilCommand(() -> m_climbSub.isAtDeployInLimit()))
+            .andThen(
+                new InstantCommand(() -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationInitialAngleDeg))));
 
     // Driver POV Left
 
