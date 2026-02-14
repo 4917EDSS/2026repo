@@ -93,6 +93,8 @@ public class ShooterSub extends SubsystemBase {
 
     // Setting up internal encoder for TalonFX
     m_shooterVelocitySignal = m_flywheelMotorL.getVelocity();
+
+    setFlywheelPower(0.0);
   }
 
   @Override
@@ -101,17 +103,17 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putBoolean("Sht Yaw Auto", m_yawAutomationEnabled);
     SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
     SmartDashboard.putNumber("Sht Yaw Angle", getYawAngleDeg());
-    // SmartDashboard.putNumber("Sht Yaw Power", m_yawMotor.get());
     SmartDashboard.putBoolean("Sht Yaw CCW", isAtYawAtCCWLimit());
     SmartDashboard.putBoolean("Sht Yaw CW", isAtYawAtCWLimit());
     SmartDashboard.putBoolean("Sht Yaw Enc Set", m_yawHasBeenReset);
+    // Yaw power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Ptc Auto", m_pitchAutomationEnabled);
     SmartDashboard.putNumber("Sht Ptc Target", m_targetPitchAngleDeg);
     SmartDashboard.putNumber("Sht Ptc Angle", getPitchAngleDeg());
-    SmartDashboard.putNumber("Sht Ptc Power", m_pitchMotor.get());
     SmartDashboard.putBoolean("Sht Ptc Up Lmt", isAtPitchUpperLimit());
     SmartDashboard.putBoolean("Sht Ptc Down Lmt", isAtPitchLowerLimit());
+    // Pitch power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Fly Auto", m_flywheelAutomationEnabled);
     SmartDashboard.putNumber("Sht Fly Target", m_targetFlywheelVelocityRps);
@@ -134,10 +136,12 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setYawPower(double power) {
+    SmartDashboard.putNumber("Sht Yaw Power", power);
     m_yawMotor.set(power);
   }
 
   public void setPitchPower(double power) {
+    SmartDashboard.putNumber("Sht Ptc Power", power);
     m_pitchMotor.set(power);
   }
 
@@ -224,9 +228,6 @@ public class ShooterSub extends SubsystemBase {
 
     if(setPower) {
       setYawPower(pidPower);
-      SmartDashboard.putNumber("Sht Yaw Power", pidPower);
-    } else {
-      System.out.println("**************************************No Power*******************");
     }
   }
 
