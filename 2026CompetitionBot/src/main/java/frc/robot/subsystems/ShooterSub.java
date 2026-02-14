@@ -8,7 +8,9 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -27,10 +29,8 @@ import frc.robot.Constants;
 public class ShooterSub extends SubsystemBase {
   private final SparkMax m_yawMotor = new SparkMax(Constants.CanIds.kShooterYawMotor, MotorType.kBrushless);
   private final SparkMax m_pitchMotor = new SparkMax(Constants.CanIds.kShooterPitchMotor, MotorType.kBrushless);
-  private final TalonFX m_flywheelMotor1 = new TalonFX(Constants.CanIds.kShooterFlywheelMotor1);
-  private final TalonFX m_flywheelMotor2 = new TalonFX(Constants.CanIds.kShooterFlywheelMotor2);
-  // TODO: Add yaw CCW and CW limit switches (connected to SparkMax)
-  // TODO: Add pitch lower and upper limit switches (connected to SparkMax)
+  private final TalonFX m_flywheelMotorL = new TalonFX(Constants.CanIds.kShooterFlywheelMotorL); // Make ABSOLUTELY sure its left
+  private final TalonFX m_flywheelMotorR = new TalonFX(Constants.CanIds.kShooterFlywheelMotorR);
 
   private final PIDController m_yawPidController =
       new PIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD);
@@ -44,7 +44,7 @@ public class ShooterSub extends SubsystemBase {
   private double m_targetPitchAngleDeg = 0;
   private double m_targetFlywheelVelocityRps = 0;
 
-  private StatusSignal<AngularVelocity> m_shooterVelocitySignal;
+  private StatusSignal<AngularVelocity> m_shooterVelocitySignal; // Do we need this?
 
   /** Creates a new ShooterSub. */
   public ShooterSub() { // Motor Configs need to be tested
@@ -67,8 +67,8 @@ public class ShooterSub extends SubsystemBase {
     m_pitchMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
 
-    TalonFXConfigurator talonFXConfigurator1 = m_flywheelMotor1.getConfigurator();
-    TalonFXConfigurator talonFXConfigurator2 = m_flywheelMotor2.getConfigurator();
+    TalonFXConfigurator talonFXConfigurator1 = m_flywheelMotorL.getConfigurator();
+    TalonFXConfigurator talonFXConfigurator2 = m_flywheelMotorR.getConfigurator();
     //This is how you set a current limit inside the motor (vs on the input power supply)
     //subject to change
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
@@ -86,50 +86,61 @@ public class ShooterSub extends SubsystemBase {
 
     outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
     talonFXConfigurator2.apply(outputConfigs);
-    m_flywheelMotor2.setControl(new Follower(m_flywheelMotor1.getDeviceID(), MotorAlignmentValue.Opposed));
+    m_flywheelMotorR.setControl(new Follower(m_flywheelMotorL.getDeviceID(), MotorAlignmentValue.Opposed));
 
     // Setting up internal encoder for TalonFX
-    m_shooterVelocitySignal = m_flywheelMotor1.getVelocity();
+    m_shooterVelocitySignal = m_flywheelMotorL.getVelocity();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Sht Yaw Auto", m_yawAutomationEnabled);
-    SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
-    SmartDashboard.putNumber("Sht Yaw Angle", getYawAngleDeg());
-    SmartDashboard.putNumber("Sht Yaw Power", m_yawMotor.get());
+    SmartDashboard.putBoolean("Shooter Yaw Auto", m_yawAutomationEnabled);
+    SmartDashboard.putNumber("Shooter Yaw Target", m_targetYawAngleDeg);
+    SmartDashboard.putNumber("Shooter Yaw Angle", getYawAngleDeg());
+    SmartDashboard.putNumber("Shooter Yaw Power", m_yawMotor.get());
 
-    SmartDashboard.putBoolean("Sht Pitch Auto", m_pitchAutomationEnabled);
-    SmartDashboard.putNumber("Sht Pitch Target", m_targetPitchAngleDeg);
-    SmartDashboard.putNumber("Sht Pitch Angle", getPitchAngleDeg());
-    SmartDashboard.putNumber("Sht Pitch Power", m_pitchMotor.get());
+    SmartDashboard.putBoolean("Shooter Pitch Auto", m_pitchAutomationEnabled);
+    SmartDashboard.putNumber("Shooter Pitch Target", m_targetPitchAngleDeg);
+    SmartDashboard.putNumber("Shooter Pitch Angle", getPitchAngleDeg());
+    SmartDashboard.putNumber("Shooter Pitch Power", m_pitchMotor.get());
+    SmartDashboard.putBoolean("Shooter Upper Pitch Limit", isAtPitchUpperLimit());
+    SmartDashboard.putBoolean("Shooter Lower Pitch Limit", isAtPitchLowerLimit());
 
-    SmartDashboard.putNumber("Sht Target Flywheel", m_targetFlywheelVelocityRps);
-    SmartDashboard.putBoolean("Sht Fly Auto", m_flywheelAutomationEnabled);
-    SmartDashboard.putNumber("Sht Fly Target", m_targetFlywheelVelocityRps);
-    SmartDashboard.putNumber("Sht Fly Velocity", getFlywheelVelocityRps());
-    SmartDashboard.putNumber("Sht Fly Power", m_flywheelMotor1.get());
+    SmartDashboard.putNumber("Shooter Target Flywheel", m_targetFlywheelVelocityRps);
+    SmartDashboard.putBoolean("Shooter Fly Auto", m_flywheelAutomationEnabled);
+    SmartDashboard.putNumber("Shooter Fly Target", m_targetFlywheelVelocityRps);
+    SmartDashboard.putNumber("Shooter Fly Velocity", getFlywheelVelocityRps());
+    SmartDashboard.putNumber("Shooter Fly Power", m_flywheelMotorL.get());
 
-    // TODO: Add code to zero the yaw encoder the first time it hits the CCW limit
-    // TODO: Add code to zero the pitch encoder the first time it hits the lower limit
+    if(isAtPitchLowerLimit()) {
+      resetPitchEncoder();
+    }
+
+    if(isAtYawAtCWLimit()) {
+      resetYawEncoder();
+    }
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
-    // TODO: This should run on the TalonFX, not here
-    //runFlyhweelVelocityControl(m_flywheelAutomationEnabled);
+    enableFlyhweelAutomation();
   }
 
-  public void setYawPower(Double power) {
+  public void setYawPower(double power) {
     m_yawMotor.set(power);
   }
 
-  public void setPitchPower(Double power) {
+  public void setPitchPower(double power) {
     m_pitchMotor.set(power);
   }
 
+  public void setPitchAndYawPower(double pitch, double yaw) {
+    setPitchPower(pitch);
+    setYawPower(yaw);
+  }
+
   public void setFlywheelPower(double power) {
-    m_flywheelMotor1.set(power);
+    m_flywheelMotorL.set(power);
     // Motor 2 should follow motor 1
   }
 
@@ -142,9 +153,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public double getFlywheelVelocityRps() {
-    // TODO: Might need to refresh the velocity signal before using: m_shooterVelocitySignal = m_flywheelMotor1.getVelocity();
-    // or simply m_flywheelMotor1.getVelocity().getValueAsDouble()    
-    return m_shooterVelocitySignal.getValueAsDouble();
+    return m_flywheelMotorL.getVelocity().getValueAsDouble();
   }
 
   public void resetYawEncoder() {
@@ -188,9 +197,10 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public boolean isAtTargetYawAngle() {
-    // TODO:  Need to find the difference between the current and target angles and see if that is
-    // smaller than the tolerance
-    return getYawAngleDeg() == m_targetYawAngleDeg;
+    if(Math.abs(getYawAngleDeg() - m_targetYawAngleDeg) < Constants.Shooter.kYawTolerance) {
+      return true;
+    }
+    return false;
   }
 
   // Set power based on difference between target and current yaw
@@ -227,9 +237,10 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public boolean isAtTargetPitchAngle() {
-    // TODO:  Need to find the difference between the current and target angles and see if that is
-    // smaller than the tolerance
-    return getPitchAngleDeg() == m_targetPitchAngleDeg;
+    if(Math.abs(getPitchAngleDeg() - m_targetPitchAngleDeg) < Constants.Shooter.kPitchTolerance) {
+      return true;
+    }
+    return false;
   }
 
   // Set power based on difference between target and current pitch
@@ -256,18 +267,24 @@ public class ShooterSub extends SubsystemBase {
 
   public void disableFlyhweelAutomation() {
     m_flywheelAutomationEnabled = false;
-    // TODO: Disable TalonFX velocity control (e.g. m_flywheelMotor1.setControl(new DutyCycleOut(0.0)))
+    m_flywheelMotorL.setControl(new DutyCycleOut(0.0));
   }
 
   public void setTargetFlywheelVelocity(double velocityRps) {
     m_targetFlywheelVelocityRps = velocityRps;
-    // TODO: Start TalonFX control
+    runFlywheelVelocityControl(true);
     enableFlyhweelAutomation();
   }
 
   public boolean isAtTargetFlywheelVelocity() {
-    // TODO:  Need to find the difference between the current and target angles and see if that is
-    // smaller than the tolerance
-    return getFlywheelVelocityRps() == m_targetFlywheelVelocityRps;
+    if(Math.abs(
+        getFlywheelVelocityRps() - m_targetFlywheelVelocityRps) < Constants.Shooter.kFlywheelVelocityToleranceRps) {
+      return true;
+    }
+    return false;
+  }
+
+  public void runFlywheelVelocityControl(boolean setPower) {
+    m_flywheelMotorL.setControl(new VelocityDutyCycle(Constants.Shooter.kFlywheelMaxVelocityRps).withSlot(0));
   }
 }
