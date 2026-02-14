@@ -30,6 +30,7 @@ public class HopperSub extends SubsystemBase {
   // IMPORTANT: The term singulator refers to the mechanism in the hopper which aligns the balls. 
   // The escalator forces the balls into the shooter.
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kHopperSingulatorMotor);
+  // TODO: Change this to a kraken
   private final SparkMax m_escalatorMotor = new SparkMax(Constants.CanIds.kHopperEscalatorMotor, MotorType.kBrushless);
 
   private final PIDController m_escalatorPid =

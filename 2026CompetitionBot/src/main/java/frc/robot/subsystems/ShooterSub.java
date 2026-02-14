@@ -98,23 +98,24 @@ public class ShooterSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Shooter Yaw Auto", m_yawAutomationEnabled);
-    SmartDashboard.putNumber("Shooter Yaw Target", m_targetYawAngleDeg);
-    SmartDashboard.putNumber("Shooter Yaw Angle", getYawAngleDeg());
-    SmartDashboard.putNumber("Shooter Yaw Power", m_yawMotor.get());
+    SmartDashboard.putBoolean("Sht Yaw Auto", m_yawAutomationEnabled);
+    SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
+    SmartDashboard.putNumber("Sht Yaw Angle", getYawAngleDeg());
+    SmartDashboard.putNumber("Sht Yaw Power", m_yawMotor.get());
+    SmartDashboard.putBoolean("Sht Yaw CCW", isAtYawAtCCWLimit());
+    SmartDashboard.putBoolean("Sht Yaw CW", isAtYawAtCWLimit());
 
-    SmartDashboard.putBoolean("Shooter Pitch Auto", m_pitchAutomationEnabled);
-    SmartDashboard.putNumber("Shooter Pitch Target", m_targetPitchAngleDeg);
-    SmartDashboard.putNumber("Shooter Pitch Angle", getPitchAngleDeg());
-    SmartDashboard.putNumber("Shooter Pitch Power", m_pitchMotor.get());
-    SmartDashboard.putBoolean("Shooter Upper Pitch Limit", isAtPitchUpperLimit());
-    SmartDashboard.putBoolean("Shooter Lower Pitch Limit", isAtPitchLowerLimit());
+    SmartDashboard.putBoolean("Sht Ptc Auto", m_pitchAutomationEnabled);
+    SmartDashboard.putNumber("Sht Ptc Target", m_targetPitchAngleDeg);
+    SmartDashboard.putNumber("Sht Ptc Angle", getPitchAngleDeg());
+    SmartDashboard.putNumber("Sht Ptc Power", m_pitchMotor.get());
+    SmartDashboard.putBoolean("Sht Ptc Up Lmt", isAtPitchUpperLimit());
+    SmartDashboard.putBoolean("Sht Ptc Down Lmt", isAtPitchLowerLimit());
 
-    SmartDashboard.putNumber("Shooter Target Flywheel", m_targetFlywheelVelocityRps);
-    SmartDashboard.putBoolean("Shooter Fly Auto", m_flywheelAutomationEnabled);
-    SmartDashboard.putNumber("Shooter Fly Target", m_targetFlywheelVelocityRps);
-    SmartDashboard.putNumber("Shooter Fly Velocity", getFlywheelVelocityRps());
-    SmartDashboard.putNumber("Shooter Fly Power", m_flywheelMotorL.get());
+    SmartDashboard.putBoolean("Sht Fly Auto", m_flywheelAutomationEnabled);
+    SmartDashboard.putNumber("Sht Fly Target", m_targetFlywheelVelocityRps);
+    SmartDashboard.putNumber("Sht Fly Velocity", getFlywheelVelocityRps());
+    SmartDashboard.putNumber("Sht Fly Power", m_flywheelMotorL.get());
 
     if(isAtPitchLowerLimit() && !m_pitchHasBeenReset) {
       resetPitchEncoder();
