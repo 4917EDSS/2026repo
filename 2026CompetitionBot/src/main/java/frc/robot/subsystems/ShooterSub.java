@@ -53,7 +53,7 @@ public class ShooterSub extends SubsystemBase {
   public ShooterSub() { // Motor Configs need to be tested
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
-        .inverted(false) // Set to true to invert the forward motor direction
+        .inverted(true) // Set to true to invert the forward motor direction
         .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor)
