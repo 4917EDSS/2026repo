@@ -93,6 +93,8 @@ public class ShooterSub extends SubsystemBase {
 
     // Setting up internal encoder for TalonFX
     m_shooterVelocitySignal = m_flywheelMotorL.getVelocity();
+
+    setFlywheelPower(0.0);
   }
 
   @Override
@@ -226,7 +228,7 @@ public class ShooterSub extends SubsystemBase {
       setYawPower(pidPower);
       SmartDashboard.putNumber("Sht Yaw Power", pidPower);
     } else {
-      System.out.println("**************************************No Power*******************");
+      //System.out.println("**************************************No Power*******************");
     }
   }
 
