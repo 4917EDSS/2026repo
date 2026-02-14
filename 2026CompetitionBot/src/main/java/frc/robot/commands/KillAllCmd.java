@@ -19,10 +19,14 @@ import frc.robot.subsystems.ShooterSub;
  */
 public class KillAllCmd extends Command {
   private static Logger m_logger = Logger.getLogger(KillAllCmd.class.getName());
+  ShooterSub m_shooterSub;
+  ClimbSub m_climbSub;
 
   /** Creates a new KillAllCmd. */
   public KillAllCmd(CanSub canSub, ClimbSub climbSub, DrivetrainSub drivetrainSub, HopperSub hopperSub,
       IntakeSub intakeSub, ShooterSub shooterSub) {
+    m_shooterSub = shooterSub;
+    m_climbSub = climbSub;
 
     addRequirements(canSub, climbSub, drivetrainSub, hopperSub, intakeSub, shooterSub);
   }
@@ -31,8 +35,12 @@ public class KillAllCmd extends Command {
   @Override
   public void initialize() {
     m_logger.fine("KillAllCmd - Init");
-    // TODO:  Also lock all of the movement algorithms by setting the target andgles/distances to the current locations
-    // e.g. from 2025:  m_elevatorSub.setTargetHeight(m_elevatorSub.getPositionMm());
+
+    m_shooterSub.setTargetPitchAngle(m_shooterSub.getPitchAngleDeg());
+    m_shooterSub.setTargetYawAngle(m_shooterSub.getYawAngleDeg());
+
+    m_climbSub.setTargetRotateAngle(m_climbSub.getRotationAngleDeg());
+    m_climbSub.setTargetDeployDistance(m_climbSub.getDeployDistanceMm());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
