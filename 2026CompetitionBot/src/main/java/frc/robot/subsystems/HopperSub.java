@@ -20,6 +20,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -29,7 +31,11 @@ public class HopperSub extends SubsystemBase {
   // The escalator forces the balls into the shooter.
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kHopperSingulatorMotor);
   private final SparkMax m_escalatorMotor = new SparkMax(Constants.CanIds.kHopperEscalatorMotor, MotorType.kBrushless);
-  // TODO:  Add sensors:  Hopper full, hopper empty, etc.
+
+  private final PIDController m_escalatorPid =
+      new PIDController(Constants.Hopper.kEscalatorKP, Constants.Hopper.kEscalatorKI, Constants.Hopper.kEscalatorKD);
+  private final SimpleMotorFeedforward m_escalatorFeedforward =
+      new SimpleMotorFeedforward(Constants.Hopper.kEscalatorKS, Constants.Hopper.kEscalatorKV);
 
   private final CanSub m_canSub;
 
@@ -103,11 +109,6 @@ public class HopperSub extends SubsystemBase {
     SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.getEncoder().getVelocity());
     SmartDashboard.putNumber("Escalator Power", m_escalatorMotor.get());
 
-    // TODO: Remove this.  The algorithm is running on the TalonFX.  No need to update it here.
-    if(m_singulatorAutomationEnabled) {
-      setSingulatorTargetVelocity(Constants.Hopper.kSingulatorMaxVelocityRps);
-    }
-
     runEscalatorVelocityControl(m_escalatorAutomationEnabled);
   }
 
@@ -126,15 +127,15 @@ public class HopperSub extends SubsystemBase {
   }
 
   public double getEscalatorVelocity() {
-    return m_escalatorMotor.get(); // TODO: Get velocity from internal encoder
+    return m_escalatorMotor.getEncoder().getVelocity();
   }
 
   public boolean isFull() {
-    return m_canSub.isHopperFull(); // need sensor from cansub
+    return m_canSub.isHopperFull();
   }
 
   public boolean isEmpty() {
-    return m_canSub.isHopperEmpty(); // need sensor from cansub
+    return m_canSub.isHopperEmpty();
   }
 
   public boolean isFuelInEscalator() {
@@ -194,7 +195,11 @@ public class HopperSub extends SubsystemBase {
   }
 
   private void runEscalatorVelocityControl(boolean setPower) {
-    // TODO: Implement velocity control
-  }
+    // TODO: Tune velocity multipliers 
+    double feedForwardVelocity = m_escalatorFeedforward.calculate(Constants.Hopper.kEscalatorMaxVelocityRps * 0.1, 0.0);
+    double pidVelocity =
+        m_escalatorPid.calculate(getEscalatorVelocity(), Constants.Hopper.kEscalatorMaxVelocityRps * 0.1);
 
+    setEscalatorVelocity(feedForwardVelocity + pidVelocity);
+  }
 }
