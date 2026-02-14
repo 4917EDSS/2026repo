@@ -117,7 +117,7 @@ public final class Constants {
 
   public static class Shooter {
     // TODO:  Set all the values correctly
-    public static final double kYawEncoderToDegConversionFactor = 1.0; // Gearing is 0.01851851852
+    public static final double kYawEncoderToDegConversionFactor = 0.02 * 360; // Gearing is 0.01851851852
     public static final double kYawMinAngleDeg = 0.0;
     public static final double kYawMaxAngleDeg = 180.0;
     public static final double kYawMaxCurrent = 120.0;
