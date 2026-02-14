@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class FeedbackSub extends SubsystemBase {
+  private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
 
   private final CommandXboxController m_gameController;
   private Instant m_stopVibratingTime = null;
@@ -20,6 +22,10 @@ public class FeedbackSub extends SubsystemBase {
   /** Creates a new FeedbackSub. */
   public FeedbackSub(CommandXboxController controller) {
     m_gameController = controller;
+  }
+
+  public void init() {
+    m_logger.info("Initializing FeedbackSub Subsystem");
   }
 
   @Override

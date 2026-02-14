@@ -6,10 +6,12 @@ package frc.robot.subsystems;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.logging.Logger;
 import edu.wpi.first.hal.can.CANJNI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class CanSub extends SubsystemBase {
+  private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
   byte m_data_buffer[];
 
   int m_ARBID;
@@ -26,6 +28,10 @@ public class CanSub extends SubsystemBase {
     m_data_buffer = new byte[8];
 
     m_ARBID = createCANId(0x123, CustomSensorID, 8, 10);
+  }
+
+  public void init() {
+    m_logger.info("Initializing CanSub Subsystem");
   }
 
   @Override

@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -27,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class HopperSub extends SubsystemBase {
+  private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
+
   // IMPORTANT: The term singulator refers to the mechanism in the hopper which aligns the balls. 
   // The escalator forces the balls into the shooter.
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kHopperSingulatorMotor);
@@ -96,6 +99,12 @@ public class HopperSub extends SubsystemBase {
     // Only persist parameters when configuring the motor on start up as this operation can be slow
     m_escalatorMotor.configure(motorConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
+  }
+
+  public void init() {
+    m_logger.info("Initializing HopperSub Subsystem");
+    disableEscalatorAutomation();
+    disableSingulatorAutomation();
   }
 
   @Override

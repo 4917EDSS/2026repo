@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-// import java.util.logging.Logger;
+import java.util.logging.Logger;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
@@ -20,7 +20,7 @@ import frc.robot.Constants;
 
 
 public class IntakeSub extends SubsystemBase {
-  //private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
+  private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
 
   private final SparkFlex m_beltMotor = new SparkFlex(Constants.CanIds.kIntakeBeltMotor, MotorType.kBrushless);
   private final SparkMax m_deployMotorL = new SparkMax(Constants.CanIds.kIntakeDeployMotorL, MotorType.kBrushless);
@@ -54,6 +54,13 @@ public class IntakeSub extends SubsystemBase {
 
     motorConfig.encoder.positionConversionFactor(1.0); // Don't care about the belt position.  Vortex is 1:1 gearing.
     m_beltMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  }
+
+  public void init() {
+    m_logger.info("Initializing IntakeSub Subsystem");
+    disableDeployAutomation();
+    m_beltMotor.set(0.0);
+    resetDeployEncoder(Constants.Intake.kDeployInAngleDeg);
   }
 
   @Override
