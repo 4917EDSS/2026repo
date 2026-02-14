@@ -59,8 +59,9 @@ public class IntakeSub extends SubsystemBase {
   public void init() {
     m_logger.info("Initializing IntakeSub Subsystem");
     disableDeployAutomation();
+    setDeployPower(0.0);
     m_beltMotor.set(0.0);
-    resetDeployEncoder(Constants.Intake.kDeployInAngleDeg);
+    m_isIntakeEncoderSet = false;
   }
 
   @Override

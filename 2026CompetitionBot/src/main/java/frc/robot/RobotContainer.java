@@ -63,7 +63,7 @@ public class RobotContainer {
   public final IntakeSub m_intakeSub = new IntakeSub();
   public final ShooterSub m_shooterSub = new ShooterSub();
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
-  public final FeedbackSub m_FeedbackSub = new FeedbackSub(m_driverController);
+  public final FeedbackSub m_feedbackSub = new FeedbackSub(m_driverController);
 
   public final CalculateShooterAiming m_calculateShooterAiming = new CalculateShooterAiming();
 
@@ -243,7 +243,7 @@ public class RobotContainer {
     m_canSub.init();
     m_climbSub.init();
     m_drivetrainSub.init();
-    m_FeedbackSub.init();
+    m_feedbackSub.init();
     m_hopperSub.init();
     m_intakeSub.init();
     m_shooterSub.init();
