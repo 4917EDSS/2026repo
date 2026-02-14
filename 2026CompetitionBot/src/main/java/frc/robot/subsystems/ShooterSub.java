@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -43,7 +44,7 @@ public class ShooterSub extends SubsystemBase {
   private double m_targetPitchAngleDeg = 0;
   private double m_targetFlywheelVelocityRps = 0;
 
-  private StatusSignal<AngularVelocity> m_shooterVelocitySignal;
+  private StatusSignal<AngularVelocity> m_shooterVelocitySignal; // Do we need this?
 
   /** Creates a new ShooterSub. */
   public ShooterSub() { // Motor Configs need to be tested
@@ -116,15 +117,13 @@ public class ShooterSub extends SubsystemBase {
       resetPitchEncoder();
     }
 
-    // TODO: Check if CW is positive, if so leave this, otherwise swap CCW with CW
-    if(isAtYawAtCCWLimit()) {
+    if(isAtYawAtCWLimit()) {
       resetYawEncoder();
     }
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
-    // TODO: This should run on the TalonFX, not here
-    //runFlyhweelVelocityControl(m_flywheelAutomationEnabled);
+    enableFlyhweelAutomation();
   }
 
   public void setYawPower(double power) {
@@ -273,7 +272,7 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetFlywheelVelocity(double velocityRps) {
     m_targetFlywheelVelocityRps = velocityRps;
-    // TODO: Start TalonFX control
+    runFlywheelVelocityControl(true);
     enableFlyhweelAutomation();
   }
 
@@ -283,5 +282,9 @@ public class ShooterSub extends SubsystemBase {
       return true;
     }
     return false;
+  }
+
+  public void runFlywheelVelocityControl(boolean setPower) {
+    m_flywheelMotorL.setControl(new VelocityDutyCycle(Constants.Shooter.kFlywheelMaxVelocityRps).withSlot(0));
   }
 }
