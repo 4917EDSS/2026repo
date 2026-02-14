@@ -19,7 +19,7 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
 
-  private boolean isInitialized = false;
+  private boolean m_isInitialized = false;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -66,8 +66,8 @@ public class Robot extends TimedRobot {
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
     // Reset the subsystems if this is the first time we run or if we have signaled that we should reset
-    if(!isInitialized) {
-      isInitialized = true;
+    if(!m_isInitialized) {
+      m_isInitialized = true;
       m_robotContainer.initSubsystems();
     }
   }
@@ -86,8 +86,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     // Reset the subsystems if this is the first time we run or if we have signaled that we should reset
-    if(!isInitialized) {
-      isInitialized = true;
+    if(!m_isInitialized) {
+      m_isInitialized = true;
       m_robotContainer.initSubsystems();
     }
   }
@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     //set isInitialized to false so we can reset subsystems once we switch to auto/telop
-    isInitialized = false;
+    m_isInitialized = false;
   }
 
   /** This function is called periodically during test mode. */

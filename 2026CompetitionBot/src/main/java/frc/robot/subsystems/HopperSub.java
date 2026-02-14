@@ -105,6 +105,8 @@ public class HopperSub extends SubsystemBase {
     m_logger.info("Initializing HopperSub Subsystem");
     disableEscalatorAutomation();
     disableSingulatorAutomation();
+    setEscalatorPower(0.0);
+    setSingulatorPower(0.0);
   }
 
   @Override

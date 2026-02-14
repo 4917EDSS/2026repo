@@ -63,8 +63,10 @@ public class ClimbSub extends SubsystemBase {
     m_logger.info("Initializing ClimbSub Subsystem");
     disableDeployAutomation();
     disableRotateAutomation();
-    resetDeployEncoder();
-    disableRotateAutomation();
+    m_deployEncoderSet = false;
+    m_rotateEncoderSet = false;
+    setDeployPower(0.0);
+    setRotatePower(0.0);
   }
 
   @Override
