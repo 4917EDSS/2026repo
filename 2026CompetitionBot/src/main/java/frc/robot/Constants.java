@@ -26,8 +26,8 @@ public final class Constants {
     public static final int kIntakeBeltMotor = 5;
     public static final int kIntakeDeployMotorL = 6;
     public static final int kIntakeDeployMotorR = 7;
-    public static final int kShooterFlywheelMotor1 = 8;
-    public static final int kShooterFlywheelMotor2 = 9;
+    public static final int kShooterFlywheelMotorL = 8;
+    public static final int kShooterFlywheelMotorR = 9;
     public static final int kShooterPitchMotor = 10;
     public static final int kShooterYawMotor = 11;
   }
@@ -120,6 +120,7 @@ public final class Constants {
     public static final double kYawMaxAngleDeg = 180.0;
     public static final double kYawMaxCurrent = 120.0;
     public static final double kYawMaxPower = 0.10;
+    public static final double kYawTolerance = 2.0;
     public static final double kYawKS = 0.25;
     public static final double kYawKV = 0.12;
     public static final double kYawKP = 0.1;
@@ -131,6 +132,7 @@ public final class Constants {
     public static final double kPitchMaxAngleDeg = 45.0;
     public static final double kPitchMaxCurrent = 120.0;
     public static final double kPitchMaxPower = 0.10;
+    public static final double kPitchTolerance = 2.0;
     public static final double kPitchKS = 0.25;
     public static final double kPitchKV = 0.12;
     public static final double kPitchKP = 0.1;
