@@ -6,8 +6,10 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
@@ -80,6 +82,12 @@ public class ShooterSub extends SubsystemBase {
     talonFXConfigurator1.apply(limitConfigs);
     talonFXConfigurator2.apply(limitConfigs);
 
+    FeedbackConfigs flywheelFeedbackConfigs = new FeedbackConfigs();
+    flywheelFeedbackConfigs.SensorToMechanismRatio = Constants.Shooter.kFlywheelEncoderToRpsConversionFactor;
+    talonFXConfigurator1.apply(flywheelFeedbackConfigs);
+    talonFXConfigurator2.apply(flywheelFeedbackConfigs);
+
+
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
@@ -116,6 +124,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Sht Fly Target", m_targetFlywheelVelocityRps);
     SmartDashboard.putNumber("Sht Fly Velocity", getFlywheelVelocityRps());
     SmartDashboard.putNumber("Sht Fly Power", m_flywheelMotorL.get());
+    SmartDashboard.putNumber("Sht Fly Pos", getFlywheelPosition());
 
     if(isAtPitchLowerLimit() && !m_pitchHasBeenReset) {
       resetPitchEncoder();
@@ -160,6 +169,10 @@ public class ShooterSub extends SubsystemBase {
 
   public double getFlywheelVelocityRps() {
     return m_flywheelMotorL.getVelocity().getValueAsDouble();
+  }
+
+  public double getFlywheelPosition() {
+    return m_flywheelMotorL.getPosition().getValueAsDouble();
   }
 
   public void resetYawEncoder() {
