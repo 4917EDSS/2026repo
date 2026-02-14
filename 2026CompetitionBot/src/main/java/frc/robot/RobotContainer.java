@@ -17,13 +17,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import frc.robot.commands.ClimbCmd;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeDeployCmd;
 import frc.robot.commands.KillAllCmd;
@@ -117,7 +118,11 @@ public class RobotContainer {
     // Driver Left Bumper
 
     // Driver Right Bumper
-    m_driverController.rightBumper().onTrue(new ClimbCmd(m_climbSub));
+    m_driverController.rightBumper()
+        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceMm))
+            .andThen(new WaitUntilCommand(() -> m_climbSub.isAtDeployOutLimit()))
+            .andThen(
+                new InstantCommand(() -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationFinalAngleDeg))));
 
     // Driver Left Trigger
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
@@ -139,6 +144,11 @@ public class RobotContainer {
     // Driver POV Right
 
     // Driver POV Down
+    m_driverController.povDown()
+        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployInDistanceMm))
+            .andThen(new WaitUntilCommand(() -> m_climbSub.isAtDeployInLimit()))
+            .andThen(
+                new InstantCommand(() -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationInitialAngleDeg))));
 
     // Driver POV Left
 
