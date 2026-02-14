@@ -141,7 +141,7 @@ public final class Constants {
     public static final double kPitchKI = 0.0;
     public static final double kPitchKD = 0.0;
 
-    public static final double kFlywheelEncoderToRpsConversionFactor = 3.41; // Gearing is 3.41 (overdriven 3.41:1)
+    public static final double kFlywheelEncoderToRpsConversionFactor = 1.0; // Gearing is 3.41 (overdriven 3.41:1)
     public static final double kFlywheelMaxVelocityRps = 25.0;
     public static final double kFlywheelVelocityToleranceRps = 1.0;
     public static final double kFlywheelMaxCurrent = 120.0;

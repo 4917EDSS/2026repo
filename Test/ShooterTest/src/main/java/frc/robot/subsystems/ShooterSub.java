@@ -4,13 +4,10 @@
 
 package frc.robot.subsystems;
 
-import java.util.logging.Logger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
@@ -30,8 +27,6 @@ import frc.robot.Constants;
 
 
 public class ShooterSub extends SubsystemBase {
-  private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
-
   private final SparkMax m_yawMotor = new SparkMax(Constants.CanIds.kShooterYawMotor, MotorType.kBrushless);
   private final SparkMax m_pitchMotor = new SparkMax(Constants.CanIds.kShooterPitchMotor, MotorType.kBrushless);
   private final TalonFX m_flywheelMotorL = new TalonFX(Constants.CanIds.kShooterFlywheelMotorL); // Make ABSOLUTELY sure its left
@@ -85,12 +80,6 @@ public class ShooterSub extends SubsystemBase {
     talonFXConfigurator1.apply(limitConfigs);
     talonFXConfigurator2.apply(limitConfigs);
 
-    FeedbackConfigs flywheelFeedbackConfigs = new FeedbackConfigs();
-    flywheelFeedbackConfigs.SensorToMechanismRatio = Constants.Shooter.kFlywheelEncoderToRpsConversionFactor;
-    talonFXConfigurator1.apply(flywheelFeedbackConfigs);
-    talonFXConfigurator2.apply(flywheelFeedbackConfigs);
-
-
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
@@ -108,38 +97,28 @@ public class ShooterSub extends SubsystemBase {
     setFlywheelPower(0.0);
   }
 
-  public void init() {
-    m_logger.info("Initializing ShooterSub Subsystem");
-    disableFlyhweelAutomation();
-    disablePitchAutomation();
-    disableYawAutomation();
-    resetPitchEncoder();
-    resetYawEncoder();
-  }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Sht Yaw Auto", m_yawAutomationEnabled);
     SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
     SmartDashboard.putNumber("Sht Yaw Angle", getYawAngleDeg());
+    // SmartDashboard.putNumber("Sht Yaw Power", m_yawMotor.get());
     SmartDashboard.putBoolean("Sht Yaw CCW", isAtYawAtCCWLimit());
     SmartDashboard.putBoolean("Sht Yaw CW", isAtYawAtCWLimit());
     SmartDashboard.putBoolean("Sht Yaw Enc Set", m_yawHasBeenReset);
-    // Yaw power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Ptc Auto", m_pitchAutomationEnabled);
     SmartDashboard.putNumber("Sht Ptc Target", m_targetPitchAngleDeg);
     SmartDashboard.putNumber("Sht Ptc Angle", getPitchAngleDeg());
+    SmartDashboard.putNumber("Sht Ptc Power", m_pitchMotor.get());
     SmartDashboard.putBoolean("Sht Ptc Up Lmt", isAtPitchUpperLimit());
     SmartDashboard.putBoolean("Sht Ptc Down Lmt", isAtPitchLowerLimit());
-    // Pitch power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Fly Auto", m_flywheelAutomationEnabled);
     SmartDashboard.putNumber("Sht Fly Target", m_targetFlywheelVelocityRps);
     SmartDashboard.putNumber("Sht Fly Velocity", getFlywheelVelocityRps());
     SmartDashboard.putNumber("Sht Fly Power", m_flywheelMotorL.get());
-    SmartDashboard.putNumber("Sht Fly Pos", getFlywheelPosition());
 
     if(isAtPitchLowerLimit() && !m_pitchHasBeenReset) {
       resetPitchEncoder();
@@ -157,12 +136,10 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setYawPower(double power) {
-    SmartDashboard.putNumber("Sht Yaw Power", power);
     m_yawMotor.set(power);
   }
 
   public void setPitchPower(double power) {
-    SmartDashboard.putNumber("Sht Ptc Power", power);
     m_pitchMotor.set(power);
   }
 
@@ -186,10 +163,6 @@ public class ShooterSub extends SubsystemBase {
 
   public double getFlywheelVelocityRps() {
     return m_flywheelMotorL.getVelocity().getValueAsDouble();
-  }
-
-  public double getFlywheelPosition() {
-    return m_flywheelMotorL.getPosition().getValueAsDouble();
   }
 
   public void resetYawEncoder() {
@@ -253,6 +226,9 @@ public class ShooterSub extends SubsystemBase {
 
     if(setPower) {
       setYawPower(pidPower);
+      SmartDashboard.putNumber("Sht Yaw Power", pidPower);
+    } else {
+      //System.out.println("**************************************No Power*******************");
     }
   }
 

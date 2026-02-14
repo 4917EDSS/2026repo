@@ -95,6 +95,7 @@ public class ClimbSub extends SubsystemBase {
     // Reset Rotate Encoder If We Have Not Already
     if(!m_rotateEncoderSet && isAtRotateCCWLimit()) {
       resetRotateEncoder();
+      m_rotateEncoderSet = true;
     }
   }
 
