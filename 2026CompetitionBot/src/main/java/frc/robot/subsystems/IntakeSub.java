@@ -120,9 +120,10 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public boolean isAtTargetDeployAngle() {
-    // TODO:  Need to find the difference between the current and target angles and see if that is
-    // smaller than the tolerance
-    return getDeployAngleDeg() == m_targetDeployAngleDeg;
+    if(Math.abs(getDeployAngleDeg() - m_targetDeployAngleDeg) < Constants.Intake.kDeployToleranceDeg) {
+      return true;
+    }
+    return false;
   }
 
   private void runDeployAngleControl(boolean setPower) {
@@ -140,13 +141,13 @@ public class IntakeSub extends SubsystemBase {
     // TODO: Choose an accurate value for this
     // Note: If we end up having to hold an angle that's not against a hard stop, we'll need to use a weak PID instead of a fixed power
     if(isAtTargetDeployAngle()) {
-      pidPower = 0.001;
+      pidPower = Constants.Intake.kHoldPositionPidPower;
     }
     if(isAtInLimit() && pidPower < 0.0) {
       pidPower = 0.0;
 
-    } else if(isAtOutLimit() && pidPower > 0.001) { // TODO: Make value a constant
-      pidPower = 0.001;
+    } else if(isAtOutLimit() && pidPower > Constants.Intake.kHoldPositionPidPower) {
+      pidPower = Constants.Intake.kHoldPositionPidPower;
     }
 
     if(setPower) {
