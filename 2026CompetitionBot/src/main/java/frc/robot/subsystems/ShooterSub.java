@@ -113,8 +113,11 @@ public class ShooterSub extends SubsystemBase {
     disableFlyhweelAutomation();
     disablePitchAutomation();
     disableYawAutomation();
-    resetPitchEncoder();
-    resetYawEncoder();
+    m_pitchHasBeenReset = false;
+    m_yawHasBeenReset = false;
+    setFlywheelPower(0.0);
+    setPitchPower(0.0);
+    setYawPower(0.0);
   }
 
   @Override
