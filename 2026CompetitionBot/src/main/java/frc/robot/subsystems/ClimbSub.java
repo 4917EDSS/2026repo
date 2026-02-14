@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
@@ -19,6 +20,8 @@ import frc.robot.Constants;
 
 
 public class ClimbSub extends SubsystemBase {
+  private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
+
   private final TalonFX m_deployMotor = new TalonFX(Constants.CanIds.kClimbDeployMotor);
   private final TalonFX m_rotateMotor = new TalonFX(Constants.CanIds.kClimbRotateMotor);
   private final DigitalInput m_inboardLimit = new DigitalInput(Constants.DioIds.kClimbInLimitSwitch);
@@ -57,7 +60,11 @@ public class ClimbSub extends SubsystemBase {
   }
 
   public void init() {
-
+    m_logger.info("Initializing ClimbSub Subsystem");
+    disableDeployAutomation();
+    disableRotateAutomation();
+    resetDeployEncoder();
+    disableRotateAutomation();
   }
 
   @Override

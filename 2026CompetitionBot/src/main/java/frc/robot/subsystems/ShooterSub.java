@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.logging.Logger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -29,6 +30,8 @@ import frc.robot.Constants;
 
 
 public class ShooterSub extends SubsystemBase {
+  private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
+
   private final SparkMax m_yawMotor = new SparkMax(Constants.CanIds.kShooterYawMotor, MotorType.kBrushless);
   private final SparkMax m_pitchMotor = new SparkMax(Constants.CanIds.kShooterPitchMotor, MotorType.kBrushless);
   private final TalonFX m_flywheelMotorL = new TalonFX(Constants.CanIds.kShooterFlywheelMotorL); // Make ABSOLUTELY sure its left
@@ -104,7 +107,12 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void init() {
-
+    m_logger.info("Initializing ShooterSub Subsystem");
+    disableFlyhweelAutomation();
+    disablePitchAutomation();
+    disableYawAutomation();
+    resetPitchEncoder();
+    resetYawEncoder();
   }
 
   @Override
