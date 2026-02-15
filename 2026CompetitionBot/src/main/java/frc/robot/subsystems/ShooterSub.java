@@ -5,12 +5,10 @@
 package frc.robot.subsystems;
 
 import java.util.logging.Logger;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
@@ -23,7 +21,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -51,8 +48,6 @@ public class ShooterSub extends SubsystemBase {
 
   private boolean m_pitchHasBeenReset = false;
   private boolean m_yawHasBeenReset = false;
-
-  private StatusSignal<AngularVelocity> m_shooterVelocitySignal; // Do we need this?
 
   /** Creates a new ShooterSub. */
   public ShooterSub() { // Motor Configs need to be tested
@@ -101,9 +96,6 @@ public class ShooterSub extends SubsystemBase {
     outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
     talonFXConfigurator2.apply(outputConfigs);
     m_flywheelMotorR.setControl(new Follower(m_flywheelMotorL.getDeviceID(), MotorAlignmentValue.Opposed));
-
-    // Setting up internal encoder for TalonFX
-    m_shooterVelocitySignal = m_flywheelMotorL.getVelocity();
 
     setFlywheelPower(0.0);
   }

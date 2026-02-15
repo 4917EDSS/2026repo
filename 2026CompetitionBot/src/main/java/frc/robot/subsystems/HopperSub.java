@@ -195,6 +195,7 @@ public class HopperSub extends SubsystemBase {
   // Set Escalator velocity with PID in RPS
   public void setEscalatorVelocity(double velocityRps) {
     m_targetEscalatorVelocityRps = velocityRps;
+    // TODO: Use velocity control on TalonFX
     // Use pid control to set velocity
   }
 
@@ -208,7 +209,8 @@ public class HopperSub extends SubsystemBase {
 
   private void runEscalatorVelocityControl(boolean setPower) {
     // TODO: Tune velocity multipliers 
-    double feedForwardVelocity = m_escalatorFeedforward.calculate(Constants.Hopper.kEscalatorMaxVelocityRps * 0.1, 0.0);
+    // What are velocity multipliers?  And they should go into Constants if needed.  [Eric]
+    double feedForwardVelocity = m_escalatorFeedforward.calculate(Constants.Hopper.kEscalatorMaxVelocityRps * 0.1);
     double pidVelocity =
         m_escalatorPid.calculate(getEscalatorVelocity(), Constants.Hopper.kEscalatorMaxVelocityRps * 0.1);
 

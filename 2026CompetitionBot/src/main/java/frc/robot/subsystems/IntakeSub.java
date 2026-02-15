@@ -146,15 +146,14 @@ public class IntakeSub extends SubsystemBase {
     }
 
     // If we are at the out limit, set our kP to a very small value so that it will retract if it gets hit
-    // TODO: Choose an accurate value for this
     // Note: If we end up having to hold an angle that's not against a hard stop, we'll need to use a weak PID instead of a fixed power
     if(isAtTargetDeployAngle()) {
       pidPower = Constants.Intake.kHoldPositionPidPower;
     }
+
     if(isAtInLimit() && pidPower < 0.0) {
       pidPower = 0.0;
-
-    } else if(isAtOutLimit() && pidPower > Constants.Intake.kHoldPositionPidPower) {
+    } else if(isAtOutLimit() && (pidPower > Constants.Intake.kHoldPositionPidPower)) {
       pidPower = Constants.Intake.kHoldPositionPidPower;
     }
 

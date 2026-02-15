@@ -97,6 +97,9 @@ public class ClimbSub extends SubsystemBase {
       resetRotateEncoder();
       m_rotateEncoderSet = true;
     }
+
+    // TODO: Add code to or configure TalonFX to respect deploy limit switches
+    // TODO: Add code to or configure TalonFX to respect rotation limit switches
   }
 
   public void setDeployPower(double power) {
@@ -155,6 +158,8 @@ public class ClimbSub extends SubsystemBase {
 
   ////////////////////////////// Deploy automation //////////////////////////////
   public void enableDeployAutomation() {
+    // TODO: Enable "Slot 0" control.  Needs to be configured beforehand too.
+    m_deployMotor.setControl(new PositionDutyCycle(null).withSlot(0));
     m_enableDeployAutomation = true;
   }
 
@@ -165,7 +170,6 @@ public class ClimbSub extends SubsystemBase {
 
   public void setTargetDeployDistance(double distanceMm) {
     m_targetDeployDistanceMm = distanceMm;
-    runDeployDistanceControl(true);
     enableDeployAutomation();
   }
 
@@ -177,14 +181,9 @@ public class ClimbSub extends SubsystemBase {
     }
   }
 
-  private void runDeployDistanceControl(boolean setPower) {
-    // TODO: Tune PID values on motor
-    m_deployMotor.setControl(new PositionDutyCycle(null).withSlot(0));
-  }
-
   ////////////////////////////// Rotation automation //////////////////////////////
   public void enableRotateAutomation() {
-    // TODO: Tune PID values on motor
+    // TODO: Tune PID values on motor (need to configure Slot 0)
     m_enableRotationAutomation = true;
     m_rotateMotor.setControl(new PositionDutyCycle(null).withSlot(0));
   }
