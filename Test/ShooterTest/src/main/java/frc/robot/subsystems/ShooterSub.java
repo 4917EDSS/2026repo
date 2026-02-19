@@ -12,6 +12,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -181,7 +182,7 @@ public class ShooterSub extends SubsystemBase {
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
-    runFlywheelVelocityControl(m_flywheelAutomationEnabled);
+    // Flywheel control is run on the TalonFX
   }
 
   public void setYawPower(double power) {
@@ -353,6 +354,11 @@ public class ShooterSub extends SubsystemBase {
   ////////////////////////////// Flywheel automation //////////////////////////////
   public void enableFlyhweelAutomation() {
     m_flywheelAutomationEnabled = true;
+    // Using voltage control is more reliable since it takes into account the current battery voltage
+    // Run it on the TalonFX instead of on the roboRIO
+    // The intial velocity is set to 0.0 but then immediately overridden in withVelocity()
+    // Slot 0 is just one of many available configuration slots on the TalonFX (so you can switch between them, if necessary)
+    m_flywheelMotorL.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetFlywheelVelocityRps));
   }
 
   public void disableFlyhweelAutomation() {
@@ -362,7 +368,6 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetFlywheelVelocity(double velocityRps) {
     m_targetFlywheelVelocityRps = velocityRps;
-    runFlywheelVelocityControl(true);
     enableFlyhweelAutomation();
   }
 
@@ -372,10 +377,6 @@ public class ShooterSub extends SubsystemBase {
       return true;
     }
     return false;
-  }
-
-  public void runFlywheelVelocityControl(boolean setPower) {
-    m_flywheelMotorL.setControl(new VelocityDutyCycle(Constants.Shooter.kFlywheelMaxVelocityRps).withSlot(0));
   }
 
 
