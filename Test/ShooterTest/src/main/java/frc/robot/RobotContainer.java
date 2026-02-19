@@ -7,8 +7,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.ShooterSub;
 
@@ -43,12 +45,26 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
+    // Have four buttons to set the angle we want for quick testing of Yaw
     m_driverController.a().onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(5.0)));
     m_driverController.b().onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(45.0)));
     m_driverController.y().onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(90.0)));
     m_driverController.x().onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(180.0)));
+
+    // Have four buttons to run the SysId tests so we can determine the feedforward constants using the generated log files and the SysId 2026 app
+    m_driverController.leftBumper().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    m_driverController.rightBumper().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    m_driverController.leftTrigger().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kForward));
+    m_driverController.rightTrigger().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // Zero the encoder
+    m_driverController.start().onTrue(new InstantCommand(() -> m_shooterSub.setYawPower(-0.1), m_shooterSub)
+        .andThen(new WaitUntilCommand(() -> m_shooterSub.isAtYawAtCWLimit()))
+        .andThen(new InstantCommand(() -> m_shooterSub.setYawPower(0.0))));
+
+    // Stop any commands that are running (e.g. SysId tests)
+    m_driverController.leftStick().onTrue(new InstantCommand(() -> m_shooterSub.setYawVoltage(0.0), m_shooterSub));
+    m_driverController.rightStick().onTrue(new InstantCommand(() -> m_shooterSub.setYawVoltage(0.0), m_shooterSub));
   }
 
   /**

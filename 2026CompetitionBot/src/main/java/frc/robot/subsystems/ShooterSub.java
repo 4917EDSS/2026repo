@@ -27,7 +27,7 @@ import frc.robot.Constants;
 
 
 public class ShooterSub extends SubsystemBase {
-  private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
+  private static Logger m_logger = Logger.getLogger(ShooterSub.class.getName());
 
   private final SparkMax m_yawMotor = new SparkMax(Constants.CanIds.kShooterYawMotor, MotorType.kBrushless);
   private final SparkMax m_pitchMotor = new SparkMax(Constants.CanIds.kShooterPitchMotor, MotorType.kBrushless);
@@ -85,7 +85,6 @@ public class ShooterSub extends SubsystemBase {
     talonFXConfigurator1.apply(flywheelFeedbackConfigs);
     talonFXConfigurator2.apply(flywheelFeedbackConfigs);
 
-
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
     outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
@@ -97,7 +96,7 @@ public class ShooterSub extends SubsystemBase {
     talonFXConfigurator2.apply(outputConfigs);
     m_flywheelMotorR.setControl(new Follower(m_flywheelMotorL.getDeviceID(), MotorAlignmentValue.Opposed));
 
-    setFlywheelPower(0.0);
+    init();
   }
 
   public void init() {
@@ -134,14 +133,14 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Sht Fly Target", m_targetFlywheelVelocityRps);
     SmartDashboard.putNumber("Sht Fly Velocity", getFlywheelVelocityRps());
     SmartDashboard.putNumber("Sht Fly Power", m_flywheelMotorL.get());
-    SmartDashboard.putNumber("Sht Fly Pos", getFlywheelPosition());
+    SmartDashboard.putNumber("Sht Fly Pos", getFlywheelPositionRot());
 
-    if(isAtPitchLowerLimit() && !m_pitchHasBeenReset) {
+    if(!m_pitchHasBeenReset && isAtPitchLowerLimit()) {
       resetPitchEncoder();
       m_pitchHasBeenReset = true;
     }
 
-    if(isAtYawAtCWLimit() && !m_yawHasBeenReset) {
+    if(!m_yawHasBeenReset && isAtYawAtCWLimit()) {
       resetYawEncoder();
       m_yawHasBeenReset = true;
     }
@@ -179,12 +178,12 @@ public class ShooterSub extends SubsystemBase {
     return m_pitchMotor.getEncoder().getPosition();
   }
 
-  public double getFlywheelVelocityRps() {
-    return m_flywheelMotorL.getVelocity().getValueAsDouble();
+  public double getFlywheelPositionRot() {
+    return m_flywheelMotorL.getPosition().getValueAsDouble();
   }
 
-  public double getFlywheelPosition() {
-    return m_flywheelMotorL.getPosition().getValueAsDouble();
+  public double getFlywheelVelocityRps() {
+    return m_flywheelMotorL.getVelocity().getValueAsDouble();
   }
 
   public void resetYawEncoder() {

@@ -114,10 +114,11 @@ public class RobotContainer {
 
     // Driver Right Bumper
     m_driverController.rightBumper()
-        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceMm))
-            .andThen(new WaitUntilCommand(() -> m_climbSub.isAtDeployOutLimit()))
-            .andThen(
-                new InstantCommand(() -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationFinalAngleDeg))));
+        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceMm),
+            m_climbSub)
+                .andThen(new WaitUntilCommand(() -> m_climbSub.isAtDeployOutLimit()))
+                .andThen(new InstantCommand(
+                    () -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationFinalAngleDeg), m_climbSub)));
 
     // Driver Left Trigger
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));

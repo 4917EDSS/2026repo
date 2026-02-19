@@ -123,6 +123,8 @@ public final class Constants {
     public static final double kYawMaxCurrent = 120.0;
     public static final double kYawMaxPower = 0.4;
     public static final double kYawTolerance = 2.0;
+    public static final double kYawMaxVelocityDegPerSec = 180.0;
+    public static final double kYawMaxAccelerationDegPerSec = 360.0;
     public static final double kYawKS = 0.25;
     public static final double kYawKV = 0.12;
     public static final double kYawKP = 0.011111111111;
