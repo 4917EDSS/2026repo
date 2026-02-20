@@ -99,7 +99,13 @@ public class ClimbSub extends SubsystemBase {
     }
 
     // TODO: Add code to or configure TalonFX to respect deploy limit switches
+    if(isAtDeployInLimit() || isAtDeployOutLimit()) {
+      disableDeployAutomation();
+    }
     // TODO: Add code to or configure TalonFX to respect rotation limit switches
+    if(isAtRotateCCWLimit() || isAtRotateCWLimit()) {
+      disableRotateAutomation();
+    }
   }
 
   public void setDeployPower(double power) {
