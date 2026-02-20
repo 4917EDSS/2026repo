@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -56,6 +57,13 @@ public class RobotContainer {
     m_driverController.rightBumper().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     m_driverController.leftTrigger().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kForward));
     m_driverController.rightTrigger().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    m_driverController.povLeft().whileTrue(new InstantCommand(() -> m_shooterSub.disableYawAutomation(), m_shooterSub)
+        .andThen(new StartEndCommand(() -> m_shooterSub.setYawPower(0.10), () -> m_shooterSub.setYawPower(0.0),
+            m_shooterSub)));
+    m_driverController.povRight().whileTrue(new InstantCommand(() -> m_shooterSub.disableYawAutomation(), m_shooterSub)
+        .andThen(new StartEndCommand(() -> m_shooterSub.setYawPower(-0.10), () -> m_shooterSub.setYawPower(0.0),
+            m_shooterSub)));
 
     // Zero the encoder
     m_driverController.start().onTrue(new InstantCommand(() -> m_shooterSub.setYawPower(-0.1), m_shooterSub)

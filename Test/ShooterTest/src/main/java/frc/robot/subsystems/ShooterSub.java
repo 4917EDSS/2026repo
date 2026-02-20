@@ -11,7 +11,6 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -46,8 +45,8 @@ public class ShooterSub extends SubsystemBase {
   private final SysIdRoutine m_yawSysIdRoutine = new SysIdRoutine(
       // SysIDRoutine takes a Config object (test parameters) and a Mechanism object (how to move motors and read sensors)
       new SysIdRoutine.Config(
-          Units.Volts.per(Units.Second).of(0.5), // Ramp rate (V/s) is how fast the quasistatic test increases the voltage
-          Units.Volts.of(4.0), // Step voltage (V) is the voltage used for the dynamic test (0V right to this voltage)
+          Units.Volts.per(Units.Second).of(0.25), // Ramp rate (V/s) is how fast the quasistatic test increases the voltage
+          Units.Volts.of(3.0), // Step voltage (V) is the voltage used for the dynamic test (0V right to this voltage)
           Units.Seconds.of(8.0) //  Timeout (s) is the time at which the test quits (for safety purposes)
       ),
       new SysIdRoutine.Mechanism(
@@ -55,8 +54,8 @@ public class ShooterSub extends SubsystemBase {
           (SysIdRoutineLog log) -> { // Log consumer is a method that returns all of the data from the sensors that we need to collect
             log.motor("shooterYaw")
                 .voltage(Units.Volts.of(m_yawMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
-                .angularPosition(Units.Radians.of(Math.toRadians(getYawAngleDeg())))
-                .angularVelocity(Units.RadiansPerSecond.of(Math.toRadians(getYawVelocityDegPerSec())));
+                .angularPosition(Units.Radians.of(getYawAngleDeg()))
+                .angularVelocity(Units.RadiansPerSecond.of(getYawVelocityDegPerSec()));
           },
           this // Subsystem we are testing
       ));
@@ -143,6 +142,7 @@ public class ShooterSub extends SubsystemBase {
     setFlywheelPower(0.0);
     setPitchPower(0.0);
     setYawPower(0.0);
+    setYawVoltage(0.0); // Doing this too to post the voltage to the dashboard
   }
 
   @Override

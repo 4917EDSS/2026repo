@@ -96,7 +96,7 @@
           },
           {
             "title": "Sht Yaw Auto",
-            "x": 0.0,
+            "x": 896.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -113,7 +113,7 @@
           },
           {
             "title": "Sht Yaw Power",
-            "x": 128.0,
+            "x": 0.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -127,7 +127,7 @@
           },
           {
             "title": "Sht Yaw Target",
-            "x": 384.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -264,6 +264,65 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Sht Fly Pos",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Fly Pos",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw Enc Set",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Enc Set",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Sht Yaw Vel",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Vel",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw Volts",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Volts",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
             }
           }
         ]
