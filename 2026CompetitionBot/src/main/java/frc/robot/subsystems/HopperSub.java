@@ -125,7 +125,7 @@ public class HopperSub extends SubsystemBase {
     SmartDashboard.putNumber("Singulator Power", m_singulatorMotor.get());
     SmartDashboard.putBoolean("Escalator Auto", m_escalatorAutomationEnabled);
     SmartDashboard.putNumber("Escalator Target", m_targetEscalatorVelocityRps);
-    SmartDashboard.putNumber("Escalator Velocity", getEscalatorVelocity());
+    SmartDashboard.putNumber("Escalator Velocity", getEscalatorVelocityRps());
     SmartDashboard.putNumber("Escalator Power", m_escalatorMotor.get());
 
     runEscalatorVelocityControl(m_escalatorAutomationEnabled);
@@ -145,12 +145,12 @@ public class HopperSub extends SubsystemBase {
     return m_singulatorMotor.getVelocity().getValueAsDouble();
   }
 
-  public double getEscalatorVelocity() {
-    return m_escalatorMotor.getVelocity().getValueAsDouble();
-  }
-
   public double getEscalatorPosition() {
     return m_escalatorMotor.getPosition().getValueAsDouble();
+  }
+
+  public double getEscalatorVelocityRps() {
+    return m_escalatorMotor.getVelocity().getValueAsDouble();
   }
 
   public boolean isFull() {
@@ -212,7 +212,8 @@ public class HopperSub extends SubsystemBase {
 
   public boolean isEscalatorAtTargetVelocity() {
     if(Math
-        .abs(m_targetEscalatorVelocityRps - getEscalatorVelocity()) < Constants.Hopper.kEscalatorVelocityToleranceRps) {
+        .abs(m_targetEscalatorVelocityRps
+            - getEscalatorVelocityRps()) < Constants.Hopper.kEscalatorVelocityToleranceRps) {
       return true;
     }
     return false;
@@ -223,7 +224,7 @@ public class HopperSub extends SubsystemBase {
     // What are velocity multipliers?  And they should go into Constants if needed.  [Eric]
     double feedForwardVelocity = m_escalatorFeedforward.calculate(Constants.Hopper.kEscalatorMaxVelocityRps * 0.1);
     double pidVelocity =
-        m_escalatorPid.calculate(getEscalatorVelocity(), Constants.Hopper.kEscalatorMaxVelocityRps * 0.1);
+        m_escalatorPid.calculate(getEscalatorVelocityRps(), Constants.Hopper.kEscalatorMaxVelocityRps * 0.1);
 
     setEscalatorVelocity(feedForwardVelocity + pidVelocity);
   }
