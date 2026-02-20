@@ -23,8 +23,12 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 
 public class HopperSub extends SubsystemBase {
@@ -85,20 +89,32 @@ public class HopperSub extends SubsystemBase {
     talonFXSingulatorConfigurator.apply(outputSingulatorConfigs);
 
 
-    // Escalator configuration
-    // Motor configs
-    SparkMaxConfig motorConfig = new SparkMaxConfig();
-    motorConfig
-        .inverted(false) // Set to true to invert the forward motor direction
-        .smartCurrentLimit((int) Constants.Hopper.kEscalatorMaxCurrent) // Current limit in amps
-        .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(1.0)
-            .velocityConversionFactor(Constants.Hopper.kEscalatorEncoderToRpsConversionFactor);
+  private final SysIdRoutine m_escolatorSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5), // Ramp rate (V/s) is how fast the quasistatic test increases the voltage
+          Units.Volts.of(3.0), // Step voltage (V) is the voltage used for the dynamic test (0V right to this voltage)
+          Units.Seconds.of(8.0) //  Timeout (s) is the time at which the test quits (for safety purposes)
+      ),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runEscalatorSysIdVolts(voltage.in(Units.Volts)), // Voltage Consumer is a method that sets the motor voltage to use for the next test step
+          (SysIdRoutineLog log) -> { // Log consumer is a method that returns all of the data from the sensors that we need to collect
+            log.motor("Hopper Escalator")
+                .voltage(Units.Volts.of(m_escalatorMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Radians.of(getEscalatorAngleDeg()))
+                .angularVelocity(Units.RadiansPerSecond.of(getEscalatorVelocity()));
+          },
+          this));
 
-    // Save the configuration to the motor
-    // Only persist parameters when configuring the motor on start up as this operation can be slow
-    m_escalatorMotor.configure(motorConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+
+  // Escalator configuration
+  // Motor configs
+  SparkMaxConfig motorConfig = new SparkMaxConfig();motorConfig.inverted(false) // Set to true to invert the forward motor direction
+  .smartCurrentLimit((int)Constants.Hopper.kEscalatorMaxCurrent) // Current limit in amps
+  .idleMode(IdleMode.kBrake).encoder.positionConversionFactor(1.0).velocityConversionFactor(Constants.Hopper.kEscalatorEncoderToRpsConversionFactor);
+
+  // Save the configuration to the motor
+  // Only persist parameters when configuring the motor on start up as this operation can be slow
+  m_escalatorMotor.configure(motorConfig,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
   }
 
   public void init() {
@@ -216,4 +232,11 @@ public class HopperSub extends SubsystemBase {
 
     setEscalatorVelocity(feedForwardVelocity + pidVelocity);
   }
-}
+
+  public void runEscaltorSysIDVolts (double volts) { 
+         if(((volts > 0) && isAtEscalatorAtCCWLimit()) || ((volts < 0) && isAtEscalatorAtCWLimit())) {
+      setEscalatorVoltage(0.0);
+      return;
+      
+    }
+  }
