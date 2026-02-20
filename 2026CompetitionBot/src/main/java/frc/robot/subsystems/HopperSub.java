@@ -40,7 +40,7 @@ public class HopperSub extends SubsystemBase {
   // The escalator forces the balls into the shooter.
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kHopperSingulatorMotor);
   // TODO: Change this to a kraken
-  private final SparkMax m_escalatorMotor = new SparkMax(Constants.CanIds.kHopperEscalatorMotor, MotorType.kBrushless);
+  private final TalonFX m_escalatorMotor = new TalonFX(Constants.CanIds.kHopperEscalatorMotor);
 
   private final PIDController m_escalatorPid =
       new PIDController(Constants.Hopper.kEscalatorKP, Constants.Hopper.kEscalatorKI, Constants.Hopper.kEscalatorKD);
@@ -61,19 +61,19 @@ public class HopperSub extends SubsystemBase {
   public HopperSub(CanSub canSub) {
     m_canSub = canSub;
 
-    TalonFXConfigurator talonFXSingulatorConfigurator = m_singulatorMotor.getConfigurator();
+    TalonFXConfigurator talonFxSingulatorConfigurator = m_singulatorMotor.getConfigurator();
 
     // Singulator configuration
     // Set encoder conversion factor
     FeedbackConfigs singulatorFeedbackConfigs = new FeedbackConfigs();
     singulatorFeedbackConfigs.SensorToMechanismRatio = Constants.Hopper.kSingulatorEncoderToRpsConversionFactor;
-    talonFXSingulatorConfigurator.apply(singulatorFeedbackConfigs);
+    talonFxSingulatorConfigurator.apply(singulatorFeedbackConfigs);
 
     // Current limits configurations for singulator
     CurrentLimitsConfigs limitSingulatorConfigs = new CurrentLimitsConfigs();
     limitSingulatorConfigs.StatorCurrentLimit = Constants.Hopper.kSingulatorMaxCurrent;
     limitSingulatorConfigs.StatorCurrentLimitEnable = true;
-    talonFXSingulatorConfigurator.apply(limitSingulatorConfigs);
+    talonFxSingulatorConfigurator.apply(limitSingulatorConfigs);
 
     // PID configurations for singulator
     Slot0Configs slot0SingulatorConfigs = new Slot0Configs();
@@ -82,14 +82,13 @@ public class HopperSub extends SubsystemBase {
     slot0SingulatorConfigs.kP = Constants.Hopper.kSingulatorKP;
     slot0SingulatorConfigs.kI = Constants.Hopper.kSingulatorKI;
     slot0SingulatorConfigs.kD = Constants.Hopper.kSingulatorKD;
-    talonFXSingulatorConfigurator.apply(slot0SingulatorConfigs);
+    talonFxSingulatorConfigurator.apply(slot0SingulatorConfigs);
 
     // Motor configurations for singulator
     MotorOutputConfigs outputSingulatorConfigs = new MotorOutputConfigs();
     outputSingulatorConfigs.Inverted = InvertedValue.Clockwise_Positive;
     outputSingulatorConfigs.NeutralMode = NeutralModeValue.Coast;
-    talonFXSingulatorConfigurator.apply(outputSingulatorConfigs);
-
+    talonFxSingulatorConfigurator.apply(outputSingulatorConfigs);
 
     private final SysIdRoutine m_escolatorSysIdRoutine = new SysIdRoutine(
         new SysIdRoutine.Config(
@@ -110,15 +109,26 @@ public class HopperSub extends SubsystemBase {
 
     // Escalator configuration
     // Motor configs
-    SparkMaxConfig motorConfig = new SparkMaxConfig();
-    motorConfig.inverted(false) // Set to true to invert the forward motor direction
-        .smartCurrentLimit((int) Constants.Hopper.kEscalatorMaxCurrent) // Current limit in amps
-        .idleMode(IdleMode.kBrake).encoder.positionConversionFactor(1.0)
-            .velocityConversionFactor(Constants.Hopper.kEscalatorEncoderToRpsConversionFactor);
 
-    // Save the configuration to the motor
-    // Only persist parameters when configuring the motor on start up as this operation can be slow
-    m_escalatorMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    TalonFXConfigurator talonFxEscalatorConfigurator = m_escalatorMotor.getConfigurator();
+
+    CurrentLimitsConfigs limitEscalatorConfigs = new CurrentLimitsConfigs();
+    limitEscalatorConfigs.StatorCurrentLimit = Constants.Hopper.kEscalatorMaxCurrent;
+    limitEscalatorConfigs.StatorCurrentLimitEnable = true;
+    talonFxEscalatorConfigurator.apply(limitEscalatorConfigs);
+
+    Slot0Configs slot0EscalatorConfigs = new Slot0Configs();
+    slot0EscalatorConfigs.kS = Constants.Hopper.kEscalatorKS;
+    slot0EscalatorConfigs.kV = Constants.Hopper.kEscalatorKV;
+    slot0EscalatorConfigs.kP = Constants.Hopper.kEscalatorKP;
+    slot0EscalatorConfigs.kI = Constants.Hopper.kEscalatorKI;
+    slot0EscalatorConfigs.kD = Constants.Hopper.kEscalatorKD;
+    talonFxEscalatorConfigurator.apply(slot0EscalatorConfigs);
+
+    MotorOutputConfigs outputEscalatorConfigs = new MotorOutputConfigs();
+    outputEscalatorConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+    outputEscalatorConfigs.NeutralMode = NeutralModeValue.Brake;
+    talonFxEscalatorConfigurator.apply(outputEscalatorConfigs);
   }
 
   public void init() {
@@ -134,11 +144,11 @@ public class HopperSub extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Singulator Auto", m_singulatorAutomationEnabled);
     SmartDashboard.putNumber("Singulator Target", m_targetSingulatorVelocityRps);
-    SmartDashboard.putNumber("Singulator Velocity", m_singulatorMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Singulator Velocity", getSingulatorVelocityRps());
     SmartDashboard.putNumber("Singulator Power", m_singulatorMotor.get());
     SmartDashboard.putBoolean("Escalator Auto", m_escalatorAutomationEnabled);
     SmartDashboard.putNumber("Escalator Target", m_targetEscalatorVelocityRps);
-    SmartDashboard.putNumber("Escalator Velocity", m_escalatorMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Escalator Velocity", getEscalatorVelocity());
     SmartDashboard.putNumber("Escalator Power", m_escalatorMotor.get());
 
     runEscalatorVelocityControl(m_escalatorAutomationEnabled);
@@ -159,7 +169,11 @@ public class HopperSub extends SubsystemBase {
   }
 
   public double getEscalatorVelocity() {
-    return m_escalatorMotor.getEncoder().getVelocity();
+    return m_escalatorMotor.getVelocity().getValueAsDouble();
+  }
+
+  public double getEscalatorPosition() {
+    return m_escalatorMotor.getPosition().getValueAsDouble();
   }
 
   public boolean isFull() {
