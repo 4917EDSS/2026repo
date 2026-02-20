@@ -53,10 +53,15 @@ public class RobotContainer {
     m_driverController.x().onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(180.0)));
 
     // Have four buttons to run the SysId tests so we can determine the feedforward constants using the generated log files and the SysId 2026 app
-    m_driverController.leftBumper().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    m_driverController.rightBumper().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    m_driverController.leftTrigger().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kForward));
-    m_driverController.rightTrigger().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // m_driverController.leftBumper().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // m_driverController.rightBumper().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // m_driverController.leftTrigger().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kForward));
+    // m_driverController.rightTrigger().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    m_driverController.leftBumper().whileTrue(m_shooterSub.flywheelSysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    m_driverController.rightBumper().whileTrue(m_shooterSub.flywheelSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    m_driverController.leftTrigger().whileTrue(m_shooterSub.flywheelSysIdDynamic(SysIdRoutine.Direction.kForward));
+    m_driverController.rightTrigger().whileTrue(m_shooterSub.flywheelSysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     m_driverController.povLeft().whileTrue(new InstantCommand(() -> m_shooterSub.disableYawAutomation(), m_shooterSub)
         .andThen(new StartEndCommand(() -> m_shooterSub.setYawPower(0.10), () -> m_shooterSub.setYawPower(0.0),
@@ -64,6 +69,8 @@ public class RobotContainer {
     m_driverController.povRight().whileTrue(new InstantCommand(() -> m_shooterSub.disableYawAutomation(), m_shooterSub)
         .andThen(new StartEndCommand(() -> m_shooterSub.setYawPower(-0.10), () -> m_shooterSub.setYawPower(0.0),
             m_shooterSub)));
+    m_driverController.back().whileTrue(new StartEndCommand(() -> m_shooterSub.setFlywheelPower(0.1),
+        () -> m_shooterSub.setFlywheelPower(0.0), m_shooterSub));
 
     // Zero the encoder
     m_driverController.start().onTrue(new InstantCommand(() -> m_shooterSub.setYawPower(-0.1), m_shooterSub)

@@ -60,6 +60,24 @@ public class ShooterSub extends SubsystemBase {
           this // Subsystem we are testing
       ));
 
+  private final SysIdRoutine m_flywheelSysIdRoutine = new SysIdRoutine(
+      // SysIDRoutine takes a Config object (test parameters) and a Mechanism object (how to move motors and read sensors)
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.25), // Ramp rate (V/s) is how fast the quasistatic test increases the voltage
+          Units.Volts.of(3.0), // Step voltage (V) is the voltage used for the dynamic test (0V right to this voltage)
+          Units.Seconds.of(8.0) //  Timeout (s) is the time at which the test quits (for safety purposes, since you should release the button before then)
+      ),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runFlywheelSysIdVolts(voltage.in(Units.Volts)), // Voltage Consumer is a method that sets the motor voltage to use for the next test step
+          (SysIdRoutineLog log) -> { // Log consumer is a method that returns all of the data from the sensors that we need to collect
+            log.motor("shooterFlywheel")
+                .voltage(Units.Volts.of(m_flywheelMotorL.get() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Radians.of(getFlywheelPositionRot()))
+                .angularVelocity(Units.RadiansPerSecond.of(getFlywheelVelocityRps()));
+          },
+          this // Subsystem we are testing
+      ));
+
   private final SimpleMotorFeedforward m_yawFeedforward =
       new SimpleMotorFeedforward(Constants.Shooter.kYawKS, Constants.Shooter.kYawKV);
   private final TrapezoidProfile.Constraints m_yawProfileConstraints = new TrapezoidProfile.Constraints(
@@ -215,7 +233,7 @@ public class ShooterSub extends SubsystemBase {
     // Motor 2 should follow motor 1
   }
 
-  public void setFlywheelVoltge(double volts) {
+  public void setFlywheelVoltage(double volts) {
     m_flywheelMotorL.setVoltage(volts);
     // Motor 2 should follow motor 1
   }
@@ -403,5 +421,23 @@ public class ShooterSub extends SubsystemBase {
 
   public Command yawSysIdDynamic(SysIdRoutine.Direction dir) {
     return m_yawSysIdRoutine.dynamic(dir);
+  }
+
+  public void runFlywheelSysIdVolts(double volts) {
+    // Make sure we don't exceed our maxiumum allowed power (relative to 12.0 volts)
+    if(Math.abs(volts) > (Constants.Shooter.kFlywheelMaxPower * 12.0)) {
+      double sign = (volts >= 0.0) ? 1.0 : -1.0;
+      volts = Constants.Shooter.kFlywheelMaxPower * 12.0 * sign;
+    }
+
+    setFlywheelVoltage(volts);
+  }
+
+  public Command flywheelSysIdQuasistatic(SysIdRoutine.Direction dir) {
+    return m_flywheelSysIdRoutine.quasistatic(dir);
+  }
+
+  public Command flywheelSysIdDynamic(SysIdRoutine.Direction dir) {
+    return m_flywheelSysIdRoutine.dynamic(dir);
   }
 }
