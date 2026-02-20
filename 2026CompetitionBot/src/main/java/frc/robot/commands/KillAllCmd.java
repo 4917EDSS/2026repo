@@ -21,6 +21,7 @@ public class KillAllCmd extends Command {
   private static Logger m_logger = Logger.getLogger(KillAllCmd.class.getName());
   ClimbSub m_climbSub;
   ShooterSub m_shooterSub;
+  IntakeSub m_intakeSub;
 
   /** Creates a new KillAllCmd. */
   public KillAllCmd(CanSub canSub, ClimbSub climbSub, DrivetrainSub drivetrainSub, HopperSub hopperSub,
@@ -28,6 +29,7 @@ public class KillAllCmd extends Command {
 
     m_climbSub = climbSub;
     m_shooterSub = shooterSub;
+    m_intakeSub = intakeSub;
 
     addRequirements(canSub, climbSub, drivetrainSub, hopperSub, intakeSub, shooterSub);
   }
@@ -39,9 +41,7 @@ public class KillAllCmd extends Command {
 
     m_climbSub.setTargetRotateAngle(m_climbSub.getRotationAngleDeg());
     m_climbSub.setTargetDeployDistance(m_climbSub.getDeployDistanceMm());
-
-    // TODO: Also set the intake's target angle to current angle
-
+    m_intakeSub.setTargetDeployAngle(m_intakeSub.getDeployAngleDeg());
     m_shooterSub.setTargetPitchAngle(m_shooterSub.getPitchAngleDeg());
     m_shooterSub.setTargetYawAngle(m_shooterSub.getYawAngleDeg());
 
