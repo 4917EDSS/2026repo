@@ -15,12 +15,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -39,8 +33,23 @@ public class HopperSub extends SubsystemBase {
   // IMPORTANT: The term singulator refers to the mechanism in the hopper which aligns the balls. 
   // The escalator forces the balls into the shooter.
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kHopperSingulatorMotor);
-  // TODO: Change this to a kraken
   private final TalonFX m_escalatorMotor = new TalonFX(Constants.CanIds.kHopperEscalatorMotor);
+
+  private final SysIdRoutine m_escalatorSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5), // Ramp rate (V/s) is how fast the quasistatic test increases the voltage
+          Units.Volts.of(3.0), // Step voltage (V) is the voltage used for the dynamic test (0V right to this voltage)
+          Units.Seconds.of(8.0) //  Timeout (s) is the time at which the test quits (for safety purposes)
+      ),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runEscalatorSysIdVolts(voltage.in(Units.Volts)), // Voltage Consumer is a method that sets the motor voltage to use for the next test step
+          (SysIdRoutineLog log) -> { // Log consumer is a method that returns all of the data from the sensors that we need to collect
+            log.motor("Hopper Escalator")
+                .voltage(Units.Volts.of(m_escalatorMotor.get() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Radians.of(getEscalatorPosition()))
+                .angularVelocity(Units.RadiansPerSecond.of(getEscalatorVelocity()));
+          },
+          this));
 
   private final PIDController m_escalatorPid =
       new PIDController(Constants.Hopper.kEscalatorKP, Constants.Hopper.kEscalatorKI, Constants.Hopper.kEscalatorKD);
@@ -89,22 +98,6 @@ public class HopperSub extends SubsystemBase {
     outputSingulatorConfigs.Inverted = InvertedValue.Clockwise_Positive;
     outputSingulatorConfigs.NeutralMode = NeutralModeValue.Coast;
     talonFxSingulatorConfigurator.apply(outputSingulatorConfigs);
-
-    private final SysIdRoutine m_escolatorSysIdRoutine = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            Units.Volts.per(Units.Second).of(0.5), // Ramp rate (V/s) is how fast the quasistatic test increases the voltage
-            Units.Volts.of(3.0), // Step voltage (V) is the voltage used for the dynamic test (0V right to this voltage)
-            Units.Seconds.of(8.0) //  Timeout (s) is the time at which the test quits (for safety purposes)
-        ),
-        new SysIdRoutine.Mechanism(
-            (voltage) -> runEscalatorSysIdVolts(voltage.in(Units.Volts)), // Voltage Consumer is a method that sets the motor voltage to use for the next test step
-            (SysIdRoutineLog log) -> { // Log consumer is a method that returns all of the data from the sensors that we need to collect
-              log.motor("Hopper Escalator")
-                  .voltage(Units.Volts.of(m_escalatorMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
-                  .angularPosition(Units.Radians.of(getEscalatorAngleDeg()))
-                  .angularVelocity(Units.RadiansPerSecond.of(getEscalatorVelocity()));
-            },
-            this));
 
 
     // Escalator configuration
@@ -256,11 +249,16 @@ public class HopperSub extends SubsystemBase {
   }
 
 
+  ////////////////////////////// SysId and Tests //////////////////////////////
+  public void runEscalatorSysIdVolts(double volts) {
+    // TODO: Implement this
+  }
+
   public Command yawSysIdQuasistatic(SysIdRoutine.Direction dir) {
-    return m_escolatorSysIdRoutine.quasistatic(dir);
+    return m_escalatorSysIdRoutine.quasistatic(dir);
   }
 
   public Command yawSysIdDynamic(SysIdRoutine.Direction dir) {
-    return m_escolatorSysIdRoutine.dynamic(dir);
+    return m_escalatorSysIdRoutine.dynamic(dir);
   }
 }
