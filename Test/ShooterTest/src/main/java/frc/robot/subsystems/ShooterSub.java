@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -133,6 +134,15 @@ public class ShooterSub extends SubsystemBase {
     flywheelFeedbackConfigs.SensorToMechanismRatio = Constants.Shooter.kFlywheelEncoderToRpsConversionFactor;
     talonFXConfigurator1.apply(flywheelFeedbackConfigs);
     talonFXConfigurator2.apply(flywheelFeedbackConfigs);
+
+    // Setup the flywheel velocity control
+    Slot0Configs slot0FlywheelConfigs = new Slot0Configs();
+    slot0FlywheelConfigs.kS = Constants.Shooter.kFlywheelKS;
+    slot0FlywheelConfigs.kV = Constants.Shooter.kFlywheelKV;
+    slot0FlywheelConfigs.kP = Constants.Shooter.kFlywheelKP;
+    slot0FlywheelConfigs.kI = Constants.Shooter.kFlywheelKI;
+    slot0FlywheelConfigs.kD = Constants.Shooter.kFlywheelKD;
+    talonFXConfigurator1.apply(slot0FlywheelConfigs);
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();

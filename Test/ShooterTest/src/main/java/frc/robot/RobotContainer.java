@@ -51,13 +51,17 @@ public class RobotContainer {
     m_driverController.b().onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(45.0)));
     m_driverController.y().onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(90.0)));
     m_driverController.x().onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(180.0)));
+    // m_driverController.a().onTrue(new InstantCommand(() -> m_shooterSub.setTargetFlywheelVelocity(5.0)));
+    // m_driverController.b().onTrue(new InstantCommand(() -> m_shooterSub.setTargetFlywheelVelocity(10.0)));
+    // m_driverController.y().onTrue(new InstantCommand(() -> m_shooterSub.setTargetFlywheelVelocity(20.0)));
+    // m_driverController.x().onTrue(new InstantCommand(() -> m_shooterSub.setTargetFlywheelVelocity(40.0)));
+
 
     // Have four buttons to run the SysId tests so we can determine the feedforward constants using the generated log files and the SysId 2026 app
     // m_driverController.leftBumper().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kForward));
     // m_driverController.rightBumper().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     // m_driverController.leftTrigger().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kForward));
     // m_driverController.rightTrigger().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kReverse));
-
     m_driverController.leftBumper().whileTrue(m_shooterSub.flywheelSysIdQuasistatic(SysIdRoutine.Direction.kForward));
     m_driverController.rightBumper().whileTrue(m_shooterSub.flywheelSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     m_driverController.leftTrigger().whileTrue(m_shooterSub.flywheelSysIdDynamic(SysIdRoutine.Direction.kForward));
