@@ -12,12 +12,18 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-
 
 public class IntakeSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
@@ -28,8 +34,22 @@ public class IntakeSub extends SubsystemBase {
   private final DigitalInput m_deployInLimit = new DigitalInput(Constants.DioIds.kIntakeDeployInLimit);
   private final DigitalInput m_deployOutLimit = new DigitalInput(Constants.DioIds.kIntakeDeployOutLimit);
 
-  private final PIDController m_deployPid =
-      new PIDController(Constants.Intake.kDeployKP, Constants.Intake.kDeployKI, Constants.Intake.kDeployKD);
+  private final SysIdRoutine m_deploySysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(Units.Volts.per(Units.Seconds).of(0.25), Units.Volts.of(3.0), Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism((voltage) -> runDeploySysIdVolts(voltage.in(Units.Volts)), (SysIdRoutineLog log) -> {
+        log.motor("intakeDeploy")
+            .voltage(Units.Volts.of(m_deployMotorL.getAppliedOutput() * RobotController.getBatteryVoltage()))
+            .angularPosition(Units.Radians.of(getDeployAngleDeg()))
+            .angularVelocity(Units.RadiansPerSecond.of(getDeployVelocityDegPerSec()));
+      }, this));
+
+  private final SimpleMotorFeedforward m_deployFeedforward =
+      new SimpleMotorFeedforward(Constants.Intake.kDeployKS, Constants.Intake.kDeployKV);
+  private final TrapezoidProfile.Constraints m_deployProfileConstraints = new TrapezoidProfile.Constraints(
+      Constants.Intake.kDeployMaxVelocityDegPerSec, Constants.Intake.kDeployMaxAccelerationDegPerSec);
+  private final ProfiledPIDController m_deployPid =
+      new ProfiledPIDController(Constants.Intake.kDeployKP, Constants.Intake.kDeployKI, Constants.Intake.kDeployKD,
+          m_deployProfileConstraints);
 
   private boolean m_deployAutomationEnabled = false;
   private boolean m_isIntakeEncoderSet = false;
@@ -95,8 +115,17 @@ public class IntakeSub extends SubsystemBase {
     m_deployMotorL.set(power);
   }
 
+  public void setDeployVoltage(double volts) {
+    SmartDashboard.putNumber("Sht Yaw Volts", volts);
+    m_deployMotorL.setVoltage(volts);
+  }
+
   public double getDeployAngleDeg() {
     return m_deployMotorL.getEncoder().getPosition();
+  }
+
+  public double getDeployVelocityDegPerSec() {
+    return m_deployMotorL.getEncoder().getVelocity();
   }
 
   public void resetDeployEncoder(double resetAngleDeg) {
@@ -160,5 +189,30 @@ public class IntakeSub extends SubsystemBase {
     if(setPower) {
       setDeployPower(pidPower);
     }
+  }
+
+  ////////////////////////////// SysId and Test //////////////////////////////
+  public void runDeploySysIdVolts(double volts) {
+    // Make sure we're pushing past the limits
+    if(((volts > 0) && isAtOutLimit()) || ((volts < 0) && isAtInLimit())) {
+      setDeployVoltage(0.0);
+      return;
+    }
+
+    // Make sure we don't exceed our maxiumum allowed power (relative to 12.0 volts)
+    if(Math.abs(volts) > (Constants.Shooter.kYawMaxPower * 12.0)) {
+      double sign = (volts >= 0.0) ? 1.0 : -1.0;
+      volts = Constants.Shooter.kPitchMaxPower * 12.0 * sign;
+    }
+
+    setDeployVoltage(volts);
+  }
+
+  public Command yawSysIdQuasistatic(SysIdRoutine.Direction dir) {
+    return m_deploySysIdRoutine.quasistatic(dir);
+  }
+
+  public Command yawSysIdDynamic(SysIdRoutine.Direction dir) {
+    return m_deploySysIdRoutine.dynamic(dir);
   }
 }

@@ -105,7 +105,11 @@ public final class Constants {
     public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxCurrent = 120.0;
     public static final double kDeployMaxPower = 0.25;
-    public static final double kDeployKP = 0.1;
+    public static final double kDeployMaxVelocityDegPerSec = 22.0;
+    public static final double kDeployMaxAccelerationDegPerSec = 44.0;
+    public static final double kDeployKS = 0.0;
+    public static final double kDeployKV = 0.0;
+    public static final double kDeployKP = 0.0;
     public static final double kDeployKI = 0.0;
     public static final double kDeployKD = 0.0;
 
