@@ -141,7 +141,8 @@ public class RobotContainer {
     // Driver POV Up
 
     // Driver POV Right
-
+    m_driverController.povRight()
+        .onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(Constants.Shooter.kYawMaxAngleDeg)));
     // Driver POV Down
     m_driverController.povDown()
         .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployInDistanceMm))
@@ -150,7 +151,8 @@ public class RobotContainer {
                 new InstantCommand(() -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationInitialAngleDeg))));
 
     // Driver POV Left
-
+    m_driverController.povLeft()
+        .onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(Constants.Shooter.kYawMaxAngleDeg)));
     // Driver Left Stick
     m_driverController.leftStick()
         .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));

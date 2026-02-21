@@ -299,28 +299,28 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetYawAngle(double angleDeg) {
     m_targetYawAngleDeg = angleDeg;
+    m_yawPidController.setGoal(angleDeg);
     runYawControl(true);
     enableYawAutomation();
   }
 
   public boolean isAtTargetYawAngle() {
-    if(Math.abs(getYawAngleDeg() - m_targetYawAngleDeg) < Constants.Shooter.kYawTolerance) {
-      return true;
-    }
-    return false;
+    // If the yaw encoder isn't reset, then we can never be at our goal since we don't know where we are
+    return m_yawHasBeenReset && m_yawPidController.atGoal();
   }
 
   // Set power based on difference between target and current yaw
   private void runYawControl(boolean setPower) {
+    // Can run automated control if encoder position is unknown
+    if(!m_yawHasBeenReset) {
+      return;
+    }
 
     double currentAngle = getYawAngleDeg();
     double pidVolts = m_yawPidController.calculate(currentAngle);
     TrapezoidProfile.State setPoint = m_yawPidController.getSetpoint();
     double ffVolts = m_yawFeedforward.calculate(setPoint.velocity);
     double totalVolts = pidVolts + ffVolts;
-
-    double pidPower = m_yawPidController.calculate(currentAngle, m_targetYawAngleDeg);
-
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
     // TODO: Consider using this method instead:  totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower, Constants.Shooter.kYawMaxPower);
