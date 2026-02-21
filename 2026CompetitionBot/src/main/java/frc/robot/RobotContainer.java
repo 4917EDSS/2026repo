@@ -82,7 +82,7 @@ public class RobotContainer {
 
     m_shooterSub.setDefaultCommand(new RunCommand(
         () -> m_shooterSub.setTargetPowers(
-            m_shooterAimingCalcs.calculateShooterRotation(m_drivetrainSub.getState().Pose),
+            m_shooterAimingCalcs.calculateShooterYawDegrees(m_drivetrainSub.getState().Pose),
             -m_operatorContoller.getRightY() * 0.15 * 25 / (0.05)),
         m_shooterSub));
 

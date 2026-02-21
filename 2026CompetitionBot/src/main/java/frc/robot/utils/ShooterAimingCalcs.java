@@ -13,28 +13,40 @@ import frc.robot.Constants;
 
 /** Add your docs here. */
 public class ShooterAimingCalcs {
-  private double targetAngle;
-  private double robotAngle;
+  private double targetYawAngle;
+  private double robotYawAngle;
   private Pose2d turretPos;
   private Translation2d distToHub;
-  private double relativeTargetAngle;
+  private double relativeTargetYawAngle;
 
-  public double calculateShooterRotation(Pose2d robot) {
+  private double flywheelPower;
+
+  public double calculateShooterFlywheelPower() {
+    return 0.0;
+  }
+
+  public double calculateShooterYawDegrees(Pose2d robot) {
     Alliance alliance = GameData.getAlliance();
 
-    turretPos = robot.plus(new Transform2d(-0.1,0.1, new Rotation2d(0.0)));
-    robotAngle = robot.getRotation().getDegrees() + 180; //robot angle 0 to 360
+    turretPos = robot.plus(new Transform2d(-0.1, 0.1, new Rotation2d(0.0)));
+    robotYawAngle = robot.getRotation().getDegrees() + 180; //robot angle 0 to 360
 
-    if (alliance == Alliance.Blue){
-      distToHub = new Translation2d(Constants.FieldElements.kBlueHubX-turretPos.getX(), Constants.FieldElements.kBlueHubY-turretPos.getY());
+    if(alliance == Alliance.Blue) {
+      distToHub = new Translation2d(Constants.FieldElements.kBlueHubX - turretPos.getX(),
+          Constants.FieldElements.kBlueHubY - turretPos.getY());
     } else {
-      distToHub = new Translation2d(Constants.FieldElements.kRedHubX-turretPos.getX(), Constants.FieldElements.kRedHubY-turretPos.getY());
+      distToHub = new Translation2d(Constants.FieldElements.kRedHubX - turretPos.getX(),
+          Constants.FieldElements.kRedHubY - turretPos.getY());
     }
 
-    targetAngle = Math.toDegrees(Math.atan2(distToHub.getY(), distToHub.getX()))+180;
+    targetYawAngle = Math.toDegrees(Math.atan2(distToHub.getY(), distToHub.getX())) + 180;
 
-    relativeTargetAngle = (360+targetAngle-robotAngle)%360;
-    
-    return relativeTargetAngle;
+    relativeTargetYawAngle = (360 + targetYawAngle - robotYawAngle) % 360;
+
+    return relativeTargetYawAngle;
+  }
+
+  public double calculateShooterPitchDegrees() {
+    return 0.0;
   }
 }
