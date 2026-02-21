@@ -227,8 +227,7 @@ public class HopperSub extends SubsystemBase {
   public void enableEscalatorAutomation() {
     m_escalatorAutomationEnabled = true;
     // Use TalonFX's PID control to set velocity
-    m_escalatorMotor.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetEscalatorVelocityRps)
-        .withFeedForward(Constants.Hopper.kEscalatorKV));
+    m_escalatorMotor.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetEscalatorVelocityRps));
   }
 
   public void disableEscalatorAutomation() {
