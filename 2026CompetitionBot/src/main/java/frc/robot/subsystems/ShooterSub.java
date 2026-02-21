@@ -22,7 +22,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -44,6 +44,37 @@ public class ShooterSub extends SubsystemBase {
   private final TalonFX m_flywheelMotorL = new TalonFX(Constants.CanIds.kShooterFlywheelMotorL); // Make ABSOLUTELY sure its left
   private final TalonFX m_flywheelMotorR = new TalonFX(Constants.CanIds.kShooterFlywheelMotorR);
 
+  private final SysIdRoutine m_yawSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runYawSysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("shooterYaw")
+                .voltage(Units.Volts.of(m_yawMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Degrees.of(getYawAngleDeg()))
+                .angularVelocity(Units.DegreesPerSecond.of(getYawVelocityDegPerSec()));
+          },
+          this));
+
+  private final SysIdRoutine m_pitchSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runPitchSysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("shooterPtc")
+                .voltage(Units.Volts.of(m_pitchMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Degrees.of(getPitchAngleDeg()))
+                .angularVelocity(Units.DegreesPerSecond.of(getPitchVelocityDegPerSec()));
+          },
+          this));
+
+
   private final SysIdRoutine m_flywheelSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
           Units.Volts.per(Units.Second).of(0.5),
@@ -60,29 +91,6 @@ public class ShooterSub extends SubsystemBase {
           this //subsystem we are testing
       ));
 
-
-  // private final PIDController m_yawPidController =
-  //     new PIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD);
-  private final PIDController m_pitchPidController =
-      new PIDController(Constants.Shooter.kPitchKP, Constants.Shooter.kPitchKI, Constants.Shooter.kPitchKD);
-
-
-  private final SysIdRoutine m_yawSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(
-          Units.Volts.per(Units.Second).of(0.5),
-          Units.Volts.of(2.0),
-          Units.Seconds.of(8.0)),
-      new SysIdRoutine.Mechanism(
-          (voltage) -> runYawSysIdVolts(voltage.in(Units.Volts)),
-          (SysIdRoutineLog log) -> {
-            log.motor("shooterYaw")
-                .voltage(Units.Volts.of(m_yawMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
-                .angularPosition(Units.Degrees.of(getYawAngleDeg()))
-                .angularVelocity(Units.DegreesPerSecond.of(getYawVelocityDegPerSec()));
-          },
-          this));
-
-
   private final SimpleMotorFeedforward m_yawFeedforward =
       new SimpleMotorFeedforward(Constants.Shooter.kYawKS, Constants.Shooter.kYawKV);
   private final TrapezoidProfile.Constraints m_yawProfileConstraints = new TrapezoidProfile.Constraints(
@@ -91,6 +99,13 @@ public class ShooterSub extends SubsystemBase {
       new ProfiledPIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD,
           m_yawProfileConstraints);
 
+  private final ArmFeedforward m_pitchFeedforward =
+      new ArmFeedforward(Constants.Shooter.kPitchKS, Constants.Shooter.kPitchKG, Constants.Shooter.kPitchKV);
+  private final TrapezoidProfile.Constraints m_pitchProfileConstraints = new TrapezoidProfile.Constraints(
+      Constants.Shooter.kPitchMaxVelocityDegPerSec, Constants.Shooter.kPitchMaxAccelerationDegPerSec);
+  private final ProfiledPIDController m_pitchPidController =
+      new ProfiledPIDController(Constants.Shooter.kPitchKP, Constants.Shooter.kPitchKI, Constants.Shooter.kPitchKD,
+          m_pitchProfileConstraints);
 
   private boolean m_flywheelAutomationEnabled = false;
   private boolean m_yawAutomationEnabled = false;
@@ -234,6 +249,14 @@ public class ShooterSub extends SubsystemBase {
     // Motor 2 should follow motor 1
   }
 
+  public void setYawVoltage(double volts) {
+    m_yawMotor.setVoltage(volts);
+  }
+
+  public void setPitchVoltage(double volts) {
+    m_pitchMotor.setVoltage(volts);
+  }
+
   public void setFlywheelVoltage(double volts) {
     m_flywheelMotorL.setVoltage(volts);
     // Motor 2 should follow motor 1
@@ -247,12 +270,12 @@ public class ShooterSub extends SubsystemBase {
     return m_yawMotor.getEncoder().getVelocity();
   }
 
-  public void setYawVoltage(double volts) {
-    m_yawMotor.setVoltage(volts);
-  }
-
   public double getPitchAngleDeg() {
     return m_pitchMotor.getEncoder().getPosition();
+  }
+
+  public double getPitchVelocityDegPerSec() {
+    return m_pitchMotor.getEncoder().getVelocity();
   }
 
   public double getFlywheelPositionRot() {
@@ -323,11 +346,7 @@ public class ShooterSub extends SubsystemBase {
     double totalVolts = pidVolts + ffVolts;
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
-    // TODO: Consider using this method instead:  totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower, Constants.Shooter.kYawMaxPower);
-    if(Math.abs(totalVolts) > (Constants.Shooter.kYawMaxPower * 12.0)) {
-      double sign = (totalVolts >= 0.0) ? 1.0 : -1.0;
-      totalVolts = Constants.Shooter.kYawMaxPower * 12.0 * sign;
-    }
+    totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower * 12, Constants.Shooter.kYawMaxPower * 12);
 
     if(setPower) {
       setYawVoltage(totalVolts);
@@ -346,31 +365,34 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetPitchAngle(double angleDeg) {
     m_targetPitchAngleDeg = angleDeg;
+    m_pitchPidController.setGoal(angleDeg);
     runPitchControl(true);
     enablePitchAutomation();
   }
 
   public boolean isAtTargetPitchAngle() {
-    if(Math.abs(getPitchAngleDeg() - m_targetPitchAngleDeg) < Constants.Shooter.kPitchTolerance) {
-      return true;
-    }
-    return false;
+    return m_pitchHasBeenReset && m_pitchPidController.atGoal();
   }
 
   // Set power based on difference between target and current pitch
   private void runPitchControl(boolean setPower) {
-    double currentAngle = getPitchAngleDeg();
-
-    double pidPower = m_pitchPidController.calculate(currentAngle, m_targetPitchAngleDeg);
-
-    // Make sure we don't exceed our maxiumum allowed power
-    if(Math.abs(pidPower) > Constants.Shooter.kPitchMaxPower) {
-      double sign = (pidPower >= 0.0) ? 1.0 : -1.0;
-      pidPower = Constants.Shooter.kPitchMaxPower * sign;
+    // Can run automated control if encoder position is unknown
+    if(!m_pitchHasBeenReset) {
+      return;
     }
 
+    double currentAngle = getPitchAngleDeg();
+    double pidVolts = m_pitchPidController.calculate(currentAngle);
+    TrapezoidProfile.State setPoint = m_pitchPidController.getSetpoint();
+    double ffVolts = m_pitchFeedforward.calculate(Math.toRadians(setPoint.position), setPoint.velocity);
+    double totalVolts = pidVolts + ffVolts;
+
+    // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
+    totalVolts =
+        MathUtil.clamp(totalVolts, -Constants.Shooter.kPitchMaxPower * 12, Constants.Shooter.kPitchMaxPower * 12);
+
     if(setPower) {
-      setPitchPower(pidPower);
+      setPitchVoltage(totalVolts);
     }
   }
 
@@ -400,6 +422,48 @@ public class ShooterSub extends SubsystemBase {
   }
 
 
+  ////////////////////////////// Yaw SysId //////////////////////////////
+  public void runYawSysIdVolts(double volts) {
+    //if we hit a limit switch then don't set volts
+    if(isAtYawAtCCWLimit() && volts > 0 || isAtYawAtCWLimit() && volts < 0) {
+      return;
+    }
+    //make sure voltage doesn't go between min and max
+    MathUtil.clamp(volts, -(Constants.Shooter.kYawMaxPower * 12.0), (Constants.Shooter.kYawMaxPower * 12.0));
+    //set the volts
+    setYawVoltage(volts);
+  }
+
+  public Command yawSysIdQuasistatic(SysIdRoutine.Direction dir) {
+    return m_yawSysIdRoutine.quasistatic(dir);
+  }
+
+  public Command yawSysIdDynamic(SysIdRoutine.Direction dir) {
+    return m_yawSysIdRoutine.dynamic(dir);
+  }
+
+
+  ////////////////////////////// Pitch SysId //////////////////////////////
+  public void runPitchSysIdVolts(double volts) {
+    //if we hit a limit switch then don't set volts
+    if(isAtPitchUpperLimit() && volts > 0 || isAtPitchLowerLimit() && volts < 0) {
+      return;
+    }
+    //make sure voltage doesn't go between min and max
+    MathUtil.clamp(volts, -(Constants.Shooter.kPitchMaxPower * 12.0), (Constants.Shooter.kPitchMaxPower * 12.0));
+    //set the volts
+    setPitchVoltage(volts);
+  }
+
+  public Command pitchSysIdQuasistatic(SysIdRoutine.Direction dir) {
+    return m_pitchSysIdRoutine.quasistatic(dir);
+  }
+
+  public Command pitchSysIdDynamic(SysIdRoutine.Direction dir) {
+    return m_pitchSysIdRoutine.dynamic(dir);
+  }
+
+
   ////////////////////////////// Flywheel SysId //////////////////////////////
   public void runFlywheelSysIdVolts(double volts) {
     // Make sure we don't exceed our maxiumum allowed power (relative to 12.0 volts)
@@ -418,27 +482,5 @@ public class ShooterSub extends SubsystemBase {
 
   public Command flywheelSysIdDynamicCmd(SysIdRoutine.Direction dir) {
     return m_flywheelSysIdRoutine.dynamic(dir);
-  }
-
-
-  ////////////////////////////// Yaw SysId //////////////////////////////
-  public void runYawSysIdVolts(double volts) {
-    //if we hit a limit switch then don't set volts
-    if(isAtYawAtCCWLimit() && volts > 0 || isAtYawAtCWLimit() && volts < 0) {
-      return;
-    }
-    //make sure voltage doesn't go between min and max
-    MathUtil.clamp(volts, -(Constants.Shooter.kYawMaxPower * 12.0), (Constants.Shooter.kYawMaxPower * 12.0));
-    //set the volts
-    setYawVoltage(volts);
-  }
-
-
-  public Command yawSysIdQuasistatic(SysIdRoutine.Direction dir) {
-    return m_yawSysIdRoutine.quasistatic(dir);
-  }
-
-  public Command yawSysIdDynamic(SysIdRoutine.Direction dir) {
-    return m_yawSysIdRoutine.dynamic(dir);
   }
 }
