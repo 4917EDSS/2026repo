@@ -7,12 +7,15 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -232,7 +235,9 @@ public class RobotContainer {
    * Create a list of auto period action choices+
    */
   void autoChooserSetup() {
-
+    m_Chooser.addOption("70pt auto", new PathPlannerAuto("70 Point Auto"));
+    m_Chooser.addOption("test auto", new PathPlannerAuto("70 Point Test"));
+    SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 
   public void initSubsystems() {
