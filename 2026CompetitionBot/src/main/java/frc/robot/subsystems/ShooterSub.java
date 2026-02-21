@@ -165,7 +165,7 @@ public class ShooterSub extends SubsystemBase {
 
   public void init() {
     m_logger.info("Initializing ShooterSub Subsystem");
-    disableFlyhweelAutomation();
+    disableFlywheelAutomation();
     disablePitchAutomation();
     disableYawAutomation();
     m_pitchHasBeenReset = false;
@@ -380,7 +380,7 @@ public class ShooterSub extends SubsystemBase {
     m_flywheelMotorL.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetFlywheelVelocityRotsPerSec));
   }
 
-  public void disableFlyhweelAutomation() {
+  public void disableFlywheelAutomation() {
     m_flywheelAutomationEnabled = false;
     m_flywheelMotorL.setControl(new DutyCycleOut(0.0));
   }
