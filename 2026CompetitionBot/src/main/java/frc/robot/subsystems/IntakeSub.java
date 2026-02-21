@@ -185,7 +185,7 @@ public class IntakeSub extends SubsystemBase {
     double totalVolts = pidVolts + ffVolts;
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
-    MathUtil.clamp(totalVolts, -(Constants.Intake.kDeployMaxPower * 12), Constants.Intake.kDeployMaxPower * 12);
+    MathUtil.clamp(totalVolts, -Constants.Intake.kDeployMaxPower * 12, Constants.Intake.kDeployMaxPower * 12);
 
     // We may need to apply a small amount of power to hold the intake in and out
 
