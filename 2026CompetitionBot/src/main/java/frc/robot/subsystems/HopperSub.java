@@ -16,16 +16,14 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import edu.wpi.first.wpilibj.RobotController;
 
 public class HopperSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
@@ -66,10 +64,6 @@ public class HopperSub extends SubsystemBase {
           },
           this));
 
-  private final PIDController m_escalatorPid =
-      new PIDController(Constants.Hopper.kEscalatorKP, Constants.Hopper.kEscalatorKI, Constants.Hopper.kEscalatorKD);
-  private final SimpleMotorFeedforward m_escalatorFeedforward =
-      new SimpleMotorFeedforward(Constants.Hopper.kEscalatorKS, Constants.Hopper.kEscalatorKV);
 
   private final CanSub m_canSub;
 
@@ -158,7 +152,6 @@ public class HopperSub extends SubsystemBase {
     SmartDashboard.putNumber("Escalator Velocity", getEscalatorVelocityRotPerSec());
     SmartDashboard.putNumber("Escalator Power", m_escalatorMotor.get());
 
-    runEscalatorVelocityControl(m_escalatorAutomationEnabled);
   }
 
   public void setSingulatorPower(double power) {
@@ -223,19 +216,6 @@ public class HopperSub extends SubsystemBase {
     m_singulatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
   }
 
-  ////////////////////////////// Escalator automation //////////////////////////////
-  public void enableEscalatorAutomation() {
-    m_escalatorAutomationEnabled = true;
-    // Use TalonFX's PID control to set velocity
-    m_escalatorMotor.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetEscalatorVelocityRps)
-        .withFeedForward(Constants.Hopper.kEscalatorKV));
-  }
-
-  public void disableEscalatorAutomation() {
-    m_escalatorAutomationEnabled = false;
-    m_escalatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
-  }
-
   // Set Singulator velocity with PID in RPS
   public void setSingulatorTargetVelocity(double velocityRps) {
     m_targetSingulatorVelocityRps = velocityRps;
@@ -250,11 +230,22 @@ public class HopperSub extends SubsystemBase {
     return false;
   }
 
+  ////////////////////////////// Escalator automation //////////////////////////////
+  public void enableEscalatorAutomation() {
+    m_escalatorAutomationEnabled = true;
+    // Use TalonFX's PID control to set velocity
+    m_escalatorMotor.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetEscalatorVelocityRps));
+  }
+
+  public void disableEscalatorAutomation() {
+    m_escalatorAutomationEnabled = false;
+    m_escalatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
+  }
+
   // Set Escalator velocity with PID in RPS
   public void setEscalatorVelocity(double velocityRps) {
     m_targetEscalatorVelocityRps = velocityRps;
-    // TODO: Use velocity control on TalonFX
-    // Use pid control to set velocity
+    enableEscalatorAutomation();
   }
 
   public boolean isEscalatorAtTargetVelocity() {
@@ -264,22 +255,6 @@ public class HopperSub extends SubsystemBase {
       return true;
     }
     return false;
-  }
-
-  private void runEscalatorVelocityControl(boolean setPower) {
-    // TODO: Tune velocity multipliers 
-    // What are velocity multipliers?  And they should go into Constants if needed.  [Eric]
-    double feedForwardVelocity =
-        m_escalatorFeedforward.calculate(Constants.Hopper.kEscalatorMaxVelocityRotPerSec * 0.1);
-    double pidVelocity =
-        m_escalatorPid.calculate(getEscalatorVelocityRotPerSec(),
-            Constants.Hopper.kEscalatorMaxVelocityRotPerSec * 0.1);
-
-    setEscalatorVelocity(feedForwardVelocity + pidVelocity);
-
-    double totalVelocity = feedForwardVelocity + pidVelocity;
-    totalVelocity =
-        MathUtil.clamp(totalVelocity, -Constants.Hopper.kEscalatorMaxPower, Constants.Hopper.kEscalatorMaxPower);
   }
 
   ////////////////////////////// SysId and Tests //////////////////////////////
