@@ -78,6 +78,14 @@ public final class Constants {
     public static final double kRotationToleranceDeg = 2.0;
     public static final double kRotationMaxCurrent = 120.0;
     public static final double kRotationMaxPower = 1.0;
+    public static final double kRotateMaxVelocityMPerSec = 0.5;
+    public static final double kRotateMaxAccelerationMPerSec = 0.25;
+    public static final double kRotateKS = 0.25;
+    public static final double kRotateKV = 0.12;
+    public static final double kRotateKA = 0.0;
+    public static final double kRotateKP = 0.1;
+    public static final double kRotateKI = 0.0;
+    public static final double kRotateKD = 0.0;
   }
 
   public static class Hopper {

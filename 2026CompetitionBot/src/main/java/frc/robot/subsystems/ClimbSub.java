@@ -66,7 +66,7 @@ public class ClimbSub extends SubsystemBase {
     TalonFXConfigurator talonFXConfiguratorDeploy = m_deployMotor.getConfigurator();
     TalonFXConfigurator talonFXConfiguratorRotate = m_rotateMotor.getConfigurator();
 
-    // TODO Add constants for this
+    // This is for the deploy
     Slot0Configs slot0DeployConfigs = new Slot0Configs();
     slot0DeployConfigs.kS = Constants.Climb.kDeployKS;
     slot0DeployConfigs.kV = Constants.Climb.kDeployKV;
@@ -80,6 +80,22 @@ public class ClimbSub extends SubsystemBase {
     mmcDeploy.MotionMagicCruiseVelocity = Constants.Climb.kDeployMaxVelocityMPerSec;
     mmcDeploy.MotionMagicAcceleration = Constants.Climb.kDeployMaxAccelerationMPerSec;
     talonFXConfiguratorDeploy.apply(mmcDeploy);
+
+    // This is for the rotate 
+    // TODO: Acoount for gravity in kRotateKG
+    Slot0Configs slot0RotateConfigs = new Slot0Configs();
+    slot0RotateConfigs.kS = Constants.Climb.kRotateKS;
+    slot0RotateConfigs.kV = Constants.Climb.kRotateKV;
+    slot0RotateConfigs.kA = Constants.Climb.kRotateKA;
+    slot0RotateConfigs.kP = Constants.Climb.kRotateKP;
+    slot0RotateConfigs.kI = Constants.Climb.kRotateKI;
+    slot0RotateConfigs.kD = Constants.Climb.kRotateKD;
+    talonFXConfiguratorRotate.apply(slot0RotateConfigs);
+
+    MotionMagicConfigs mmcRotate = new MotionMagicConfigs();
+    mmcRotate.MotionMagicCruiseVelocity = Constants.Climb.kRotateMaxVelocityMPerSec;
+    mmcRotate.MotionMagicAcceleration = Constants.Climb.kRotateMaxAccelerationMPerSec;
+    talonFXConfiguratorDeploy.apply(mmcRotate);
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
@@ -224,9 +240,9 @@ public class ClimbSub extends SubsystemBase {
 
   ////////////////////////////// Rotation automation //////////////////////////////
   public void enableRotateAutomation() {
-    // TODO: Tune PID values on motor (need to configure Slot 0)
+    // TODO: Convert Angle to Rotations if necessary
     m_enableRotationAutomation = true;
-    m_rotateMotor.setControl(new PositionDutyCycle(null).withSlot(0));
+    m_rotateMotor.setControl(new MotionMagicTorqueCurrentFOC(m_targetRotationAngleDeg).withSlot(0));
   }
 
   public void disableRotateAutomation() {
