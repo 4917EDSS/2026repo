@@ -12,7 +12,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -28,7 +27,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -61,15 +59,6 @@ public class ShooterSub extends SubsystemBase {
           },
           this //subsystem we are testing
       ));
-
-  private final SimpleMotorFeedforward m_flywheelFeedforward =
-      new SimpleMotorFeedforward(Constants.Shooter.kFlywheelKS, Constants.Shooter.kFlywheelKV);
-  private final TrapezoidProfile.Constraints m_flywheelProfileConstraints = new TrapezoidProfile.Constraints(
-      Constants.Shooter.kFlywheelMaxVelocityRotsPerSec, Constants.Shooter.kFlywheelMaxAccelerationRotsPerSec);
-  private final ProfiledPIDController m_flywheelPidController =
-      new ProfiledPIDController(Constants.Shooter.kFlywheelKP, Constants.Shooter.kFlywheelKI,
-          Constants.Shooter.kFlywheelKD,
-          m_flywheelProfileConstraints);
 
 
   // private final PIDController m_yawPidController =
@@ -222,7 +211,7 @@ public class ShooterSub extends SubsystemBase {
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
-    runFlywheelVelocityControl(false);//m_flywheelAutomationEnabled);
+    // flywheel control done on talonfx
   }
 
   public void setYawPower(double power) {
@@ -398,7 +387,6 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetFlywheelVelocity(double velocityRotsPerSec) {
     m_targetFlywheelVelocityRotsPerSec = velocityRotsPerSec;
-    // runFlywheelVelocityControl(true);   Unsure if this line is needed after changes to automation
     enableFlyhweelAutomation();
   }
 
@@ -411,9 +399,6 @@ public class ShooterSub extends SubsystemBase {
     return false;
   }
 
-  public void runFlywheelVelocityControl(boolean setPower) {
-    m_flywheelMotorL.setControl(new VelocityDutyCycle(Constants.Shooter.kFlywheelMaxVelocityRotsPerSec).withSlot(0));
-  }
 
   ////////////////////////////// Flywheel SysId //////////////////////////////
   public void runFlywheelSysIdVolts(double volts) {
