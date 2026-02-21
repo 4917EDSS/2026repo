@@ -179,11 +179,12 @@ public class ShooterSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Sht Yaw Auto", m_yawAutomationEnabled);
-    SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
     SmartDashboard.putNumber("Sht Yaw Angle", getYawAngleDeg());
+    SmartDashboard.putNumber("Sht Yaw Vel", getYawVelocityDegPerSec());
     SmartDashboard.putBoolean("Sht Yaw CCW", isAtYawAtCCWLimit());
     SmartDashboard.putBoolean("Sht Yaw CW", isAtYawAtCWLimit());
     SmartDashboard.putBoolean("Sht Yaw Enc Set", m_yawHasBeenReset);
+    SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
     // Yaw power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Ptc Auto", m_pitchAutomationEnabled);
