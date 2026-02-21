@@ -57,14 +57,20 @@ public final class Constants {
   //////////////////// These are the subsystem constants ////////////////////
   public static class Climb {
     // TODO:  Set all the values correctly
-    public static final double kDeployEncoderToMmConversionFactor = 1.0;
-    public static final double kDeployInDistanceMm = 0.0;
-    public static final double kDeployOutDistanceMm = 10.0;
-    public static final double kDeployToleranceMm = 2.0;
+    public static final double kDeployEncoderToMConversionFactor = 1.0;
+    public static final double kDeployInDistanceM = 0.0;
+    public static final double kDeployOutDistanceM = 0.01;
+    public static final double kDeployToleranceM = 0.002;
     public static final double kDeployMaxCurrent = 120.0;
     public static final double kDeployMaxPower = 1.0;
-    public static final double kDeployMaxVelocityDegPerSec = 0.5;
-    public static final double kDeployMaxAccelerationDegPerSec = 0.25;
+    public static final double kDeployMaxVelocityMPerSec = 0.5;
+    public static final double kDeployMaxAccelerationMPerSec = 0.25;
+    public static final double kDeployKS = 0.25;
+    public static final double kDeployKV = 0.12;
+    public static final double kDeployKA = 0.0;
+    public static final double kDeployKP = 0.1;
+    public static final double kDeployKI = 0.0;
+    public static final double kDeployKD = 0.0;
 
     public static final double kRotationEncoderToDegConversionFactor = 1.0;
     public static final double kRotationInitialAngleDeg = 0.0;

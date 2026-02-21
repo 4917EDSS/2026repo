@@ -117,7 +117,7 @@ public class RobotContainer {
 
     // Driver Right Bumper
     m_driverController.rightBumper()
-        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceMm),
+        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceM),
             m_climbSub)
                 .andThen(new WaitUntilCommand(() -> m_climbSub.isAtDeployOutLimit()))
                 .andThen(new InstantCommand(
@@ -145,7 +145,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(Constants.Shooter.kYawMaxAngleDeg)));
     // Driver POV Down
     m_driverController.povDown()
-        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployInDistanceMm))
+        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployInDistanceM))
             .andThen(new WaitUntilCommand(() -> m_climbSub.isAtDeployInLimit()))
             .andThen(
                 new InstantCommand(() -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationInitialAngleDeg))));
