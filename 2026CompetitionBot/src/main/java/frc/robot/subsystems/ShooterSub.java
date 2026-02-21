@@ -8,10 +8,11 @@ import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -20,9 +21,18 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 
 
@@ -34,17 +44,60 @@ public class ShooterSub extends SubsystemBase {
   private final TalonFX m_flywheelMotorL = new TalonFX(Constants.CanIds.kShooterFlywheelMotorL); // Make ABSOLUTELY sure its left
   private final TalonFX m_flywheelMotorR = new TalonFX(Constants.CanIds.kShooterFlywheelMotorR);
 
-  private final PIDController m_yawPidController =
-      new PIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD);
+  private final SysIdRoutine m_flywheelSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runFlywheelSysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("shooterFlywheel")
+                .voltage(Units.Volts.of(m_flywheelMotorL.get() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Rotations.of(getFlywheelPositionRot()))
+                .angularVelocity(Units.RotationsPerSecond.of(getFlywheelVelocityRotsPerSec()));
+          },
+          this //subsystem we are testing
+      ));
+
+
+  // private final PIDController m_yawPidController =
+  //     new PIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD);
   private final PIDController m_pitchPidController =
       new PIDController(Constants.Shooter.kPitchKP, Constants.Shooter.kPitchKI, Constants.Shooter.kPitchKD);
+
+
+  private final SysIdRoutine m_yawSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runYawSysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("shooterYaw")
+                .voltage(Units.Volts.of(m_yawMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Degrees.of(getYawAngleDeg()))
+                .angularVelocity(Units.DegreesPerSecond.of(getYawVelocityDegPerSec()));
+          },
+          this));
+
+
+  private final SimpleMotorFeedforward m_yawFeedforward =
+      new SimpleMotorFeedforward(Constants.Shooter.kYawKS, Constants.Shooter.kYawKV);
+  private final TrapezoidProfile.Constraints m_yawProfileConstraints = new TrapezoidProfile.Constraints(
+      Constants.Shooter.kYawMaxVelocityDegPerSec, Constants.Shooter.kYawMaxAccelerationDegPerSec);
+  private final ProfiledPIDController m_yawPidController =
+      new ProfiledPIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD,
+          m_yawProfileConstraints);
+
 
   private boolean m_flywheelAutomationEnabled = false;
   private boolean m_yawAutomationEnabled = false;
   private boolean m_pitchAutomationEnabled = false;
   private double m_targetYawAngleDeg = 0;
   private double m_targetPitchAngleDeg = 0;
-  private double m_targetFlywheelVelocityRps = 0;
+  private double m_targetFlywheelVelocityRotsPerSec = 0;
 
   private boolean m_pitchHasBeenReset = false;
   private boolean m_yawHasBeenReset = false;
@@ -81,9 +134,18 @@ public class ShooterSub extends SubsystemBase {
     talonFXConfigurator2.apply(limitConfigs);
 
     FeedbackConfigs flywheelFeedbackConfigs = new FeedbackConfigs();
-    flywheelFeedbackConfigs.SensorToMechanismRatio = Constants.Shooter.kFlywheelEncoderToRpsConversionFactor;
+    flywheelFeedbackConfigs.SensorToMechanismRatio = Constants.Shooter.kFlywheelEncoderToRotsPerSecConversionFactor;
     talonFXConfigurator1.apply(flywheelFeedbackConfigs);
     talonFXConfigurator2.apply(flywheelFeedbackConfigs);
+
+    // Setup the flywheel velocity control
+    Slot0Configs slot0FlywheelConfigs = new Slot0Configs();
+    slot0FlywheelConfigs.kS = Constants.Shooter.kFlywheelKS;
+    slot0FlywheelConfigs.kV = Constants.Shooter.kFlywheelKV;
+    slot0FlywheelConfigs.kP = Constants.Shooter.kFlywheelKP;
+    slot0FlywheelConfigs.kI = Constants.Shooter.kFlywheelKI;
+    slot0FlywheelConfigs.kD = Constants.Shooter.kFlywheelKD;
+    talonFXConfigurator1.apply(slot0FlywheelConfigs);
 
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
@@ -96,12 +158,14 @@ public class ShooterSub extends SubsystemBase {
     talonFXConfigurator2.apply(outputConfigs);
     m_flywheelMotorR.setControl(new Follower(m_flywheelMotorL.getDeviceID(), MotorAlignmentValue.Opposed));
 
+    m_yawPidController.setTolerance(Constants.Shooter.kYawTolerance);
+
     init();
   }
 
   public void init() {
     m_logger.info("Initializing ShooterSub Subsystem");
-    disableFlyhweelAutomation();
+    disableFlywheelAutomation();
     disablePitchAutomation();
     disableYawAutomation();
     m_pitchHasBeenReset = false;
@@ -130,8 +194,8 @@ public class ShooterSub extends SubsystemBase {
     // Pitch power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Fly Auto", m_flywheelAutomationEnabled);
-    SmartDashboard.putNumber("Sht Fly Target", m_targetFlywheelVelocityRps);
-    SmartDashboard.putNumber("Sht Fly Velocity", getFlywheelVelocityRps());
+    SmartDashboard.putNumber("Sht Fly Target", m_targetFlywheelVelocityRotsPerSec);
+    SmartDashboard.putNumber("Sht Fly Velocity", getFlywheelVelocityRotsPerSec());
     SmartDashboard.putNumber("Sht Fly Power", m_flywheelMotorL.get());
     SmartDashboard.putNumber("Sht Fly Pos", getFlywheelPositionRot());
 
@@ -147,7 +211,7 @@ public class ShooterSub extends SubsystemBase {
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
-    runFlywheelVelocityControl(m_flywheelAutomationEnabled);
+    // flywheel control done on talonfx
   }
 
   public void setYawPower(double power) {
@@ -170,8 +234,21 @@ public class ShooterSub extends SubsystemBase {
     // Motor 2 should follow motor 1
   }
 
+  public void setFlywheelVoltage(double volts) {
+    m_flywheelMotorL.setVoltage(volts);
+    // Motor 2 should follow motor 1
+  }
+
   public double getYawAngleDeg() {
     return m_yawMotor.getEncoder().getPosition();
+  }
+
+  public double getYawVelocityDegPerSec() {
+    return m_yawMotor.getEncoder().getVelocity();
+  }
+
+  public void setYawVoltage(double volts) {
+    m_yawMotor.setVoltage(volts);
   }
 
   public double getPitchAngleDeg() {
@@ -182,7 +259,7 @@ public class ShooterSub extends SubsystemBase {
     return m_flywheelMotorL.getPosition().getValueAsDouble();
   }
 
-  public double getFlywheelVelocityRps() {
+  public double getFlywheelVelocityRotsPerSec() {
     return m_flywheelMotorL.getVelocity().getValueAsDouble();
   }
 
@@ -222,31 +299,38 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetYawAngle(double angleDeg) {
     m_targetYawAngleDeg = angleDeg;
+    m_yawPidController.setGoal(angleDeg);
     runYawControl(true);
     enableYawAutomation();
   }
 
   public boolean isAtTargetYawAngle() {
-    if(Math.abs(getYawAngleDeg() - m_targetYawAngleDeg) < Constants.Shooter.kYawTolerance) {
-      return true;
-    }
-    return false;
+    // If the yaw encoder isn't reset, then we can never be at our goal since we don't know where we are
+    return m_yawHasBeenReset && m_yawPidController.atGoal();
   }
 
   // Set power based on difference between target and current yaw
   private void runYawControl(boolean setPower) {
+    // Can run automated control if encoder position is unknown
+    if(!m_yawHasBeenReset) {
+      return;
+    }
+
     double currentAngle = getYawAngleDeg();
+    double pidVolts = m_yawPidController.calculate(currentAngle);
+    TrapezoidProfile.State setPoint = m_yawPidController.getSetpoint();
+    double ffVolts = m_yawFeedforward.calculate(setPoint.velocity);
+    double totalVolts = pidVolts + ffVolts;
 
-    double pidPower = m_yawPidController.calculate(currentAngle, m_targetYawAngleDeg);
-
-    // Make sure we don't exceed our maxiumum allowed power
-    if(Math.abs(pidPower) > Constants.Shooter.kYawMaxPower) {
-      double sign = (pidPower >= 0.0) ? 1.0 : -1.0;
-      pidPower = Constants.Shooter.kYawMaxPower * sign;
+    // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
+    // TODO: Consider using this method instead:  totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower, Constants.Shooter.kYawMaxPower);
+    if(Math.abs(totalVolts) > (Constants.Shooter.kYawMaxPower * 12.0)) {
+      double sign = (totalVolts >= 0.0) ? 1.0 : -1.0;
+      totalVolts = Constants.Shooter.kYawMaxPower * 12.0 * sign;
     }
 
     if(setPower) {
-      setYawPower(pidPower);
+      setYawVoltage(totalVolts);
     }
   }
 
@@ -293,28 +377,68 @@ public class ShooterSub extends SubsystemBase {
   ////////////////////////////// Flywheel automation //////////////////////////////
   public void enableFlyhweelAutomation() {
     m_flywheelAutomationEnabled = true;
+    m_flywheelMotorL.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetFlywheelVelocityRotsPerSec));
   }
 
-  public void disableFlyhweelAutomation() {
+  public void disableFlywheelAutomation() {
     m_flywheelAutomationEnabled = false;
     m_flywheelMotorL.setControl(new DutyCycleOut(0.0));
   }
 
-  public void setTargetFlywheelVelocity(double velocityRps) {
-    m_targetFlywheelVelocityRps = velocityRps;
-    runFlywheelVelocityControl(true);
+  public void setTargetFlywheelVelocity(double velocityRotsPerSec) {
+    m_targetFlywheelVelocityRotsPerSec = velocityRotsPerSec;
     enableFlyhweelAutomation();
   }
 
   public boolean isAtTargetFlywheelVelocity() {
     if(Math.abs(
-        getFlywheelVelocityRps() - m_targetFlywheelVelocityRps) < Constants.Shooter.kFlywheelVelocityToleranceRps) {
+        getFlywheelVelocityRotsPerSec()
+            - m_targetFlywheelVelocityRotsPerSec) < Constants.Shooter.kFlywheelVelocityToleranceRotsPerSec) {
       return true;
     }
     return false;
   }
 
-  public void runFlywheelVelocityControl(boolean setPower) {
-    m_flywheelMotorL.setControl(new VelocityDutyCycle(Constants.Shooter.kFlywheelMaxVelocityRps).withSlot(0));
+
+  ////////////////////////////// Flywheel SysId //////////////////////////////
+  public void runFlywheelSysIdVolts(double volts) {
+    // Make sure we don't exceed our maxiumum allowed power (relative to 12.0 volts)
+
+
+    // Check if we're at max power
+    volts =
+        MathUtil.clamp(volts, -(Constants.Shooter.kFlywheelMaxPower * 12.0),
+            (Constants.Shooter.kFlywheelMaxPower * 12.0));
+    setFlywheelPower(volts);
+  }
+
+  public Command flywheelSysIdQuasistaticCmd(SysIdRoutine.Direction dir) {
+    return m_flywheelSysIdRoutine.quasistatic(dir);
+  }
+
+  public Command flywheelSysIdDynamicCmd(SysIdRoutine.Direction dir) {
+    return m_flywheelSysIdRoutine.dynamic(dir);
+  }
+
+
+  ////////////////////////////// Yaw SysId //////////////////////////////
+  public void runYawSysIdVolts(double volts) {
+    //if we hit a limit switch then don't set volts
+    if(isAtYawAtCCWLimit() && volts > 0 || isAtYawAtCWLimit() && volts < 0) {
+      return;
+    }
+    //make sure voltage doesn't go between min and max
+    MathUtil.clamp(volts, -(Constants.Shooter.kYawMaxPower * 12.0), (Constants.Shooter.kYawMaxPower * 12.0));
+    //set the volts
+    setYawVoltage(volts);
+  }
+
+
+  public Command yawSysIdQuasistatic(SysIdRoutine.Direction dir) {
+    return m_yawSysIdRoutine.quasistatic(dir);
+  }
+
+  public Command yawSysIdDynamic(SysIdRoutine.Direction dir) {
+    return m_yawSysIdRoutine.dynamic(dir);
   }
 }

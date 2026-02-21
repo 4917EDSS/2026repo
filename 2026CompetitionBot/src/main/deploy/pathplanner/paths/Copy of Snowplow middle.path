@@ -3,79 +3,72 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.353409090909091,
-        "y": 5.395499999999999
+        "x": 3.5597840909090905,
+        "y": 2.478670454545455
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.023522271411064,
-        "y": 5.982125968693695
+        "x": 5.250102272727272,
+        "y": 2.4168295454545454
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.847181818181816,
-        "y": 6.951829545454546
+        "x": 7.785579545454922,
+        "y": 2.282840909090909
       },
       "prevControl": {
-        "x": 7.978078968568165,
-        "y": 7.720229240533225
+        "x": 6.857965909090909,
+        "y": 2.2828409090918957
       },
       "nextControl": {
-        "x": 9.373766853656912,
-        "y": 6.486260043672415
+        "x": 8.727649943998543,
+        "y": 2.2828409090899067
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.847181818181816,
-        "y": 5.395499999999999
+        "x": 7.785579545454922,
+        "y": 5.756238636362649
       },
       "prevControl": {
-        "x": 8.886389169692896,
-        "y": 5.642406426784493
+        "x": 8.296324463671535,
+        "y": 5.301704151110722
       },
       "nextControl": {
-        "x": 8.799668913367002,
-        "y": 5.0962897472834205
+        "x": 7.23470527481323,
+        "y": 6.246486006652604
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.847181818181816,
-        "y": 1.293386363636364
+        "x": 5.713909090909091,
+        "y": 5.756238636362649
       },
       "prevControl": {
-        "x": 8.895150126595158,
-        "y": 4.3372367163937735
+        "x": 6.435649236460632,
+        "y": 5.795197303829808
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Snowplow end"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9716981132075471,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "turn intake on",
-      "waypointRelativePos": 0.7486535008976585,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 2.0,
@@ -85,13 +78,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 90.0
+    "velocity": 3.0,
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Top Start",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 0.0
   },
   "useDefaultConstraints": true
