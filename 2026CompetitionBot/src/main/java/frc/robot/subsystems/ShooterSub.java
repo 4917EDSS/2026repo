@@ -147,7 +147,7 @@ public class ShooterSub extends SubsystemBase {
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
-    runFlywheelVelocityControl(m_flywheelAutomationEnabled);
+    runFlywheelVelocityControl(false);//m_flywheelAutomationEnabled);
   }
 
   public void setYawPower(double power) {
@@ -315,6 +315,6 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void runFlywheelVelocityControl(boolean setPower) {
-    m_flywheelMotorL.setControl(new VelocityDutyCycle(Constants.Shooter.kFlywheelMaxVelocityRps).withSlot(0));
+    m_flywheelMotorL.setControl(new VelocityDutyCycle(Constants.Shooter.kFlywheelMaxVelocityRps).withSlot(1));
   }
 }
