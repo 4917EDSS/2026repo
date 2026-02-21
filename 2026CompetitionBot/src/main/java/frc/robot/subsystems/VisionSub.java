@@ -151,9 +151,9 @@ public class VisionSub extends SubsystemBase {
     SmartDashboard.putNumber("Vi Pipeline", pipeline);
     SmartDashboard.putString("Vi Pipetype", pipetype);
 
-    SmartDashboard.putNumber("x estimate", getEstimatedPose().getX());
-    SmartDashboard.putNumber("y estimate", getEstimatedPose().getY());
-    SmartDashboard.putNumber("rot estimate", getEstimatedPose().getRotation().getDegrees());
+    //SmartDashboard.putNumber("x estimate", getEstimatedPose().getX());
+    //SmartDashboard.putNumber("y estimate", getEstimatedPose().getY());
+    //SmartDashboard.putNumber("rot estimate", getEstimatedPose().getRotation().getDegrees());
     // SmartDashboard.putString("Main Limelight:", "none");
   }
 

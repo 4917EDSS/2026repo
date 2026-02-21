@@ -53,7 +53,7 @@ public class HopperSub extends SubsystemBase {
   private final SysIdRoutine m_escalatorSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
           Units.Volts.per(Units.Second).of(0.5), // Ramp rate (V/s) is how fast the quasistatic test increases the voltage
-          Units.Volts.of(3.0), // Step voltage (V) is the voltage used for the dynamic test (0V right to this voltage)
+          Units.Volts.of(2.0), // Step voltage (V) is the voltage used for the dynamic test (0V right to this voltage)
           Units.Seconds.of(8.0) //  Timeout (s) is the time at which the test quits (for safety purposes)
       ),
       new SysIdRoutine.Mechanism(
@@ -61,8 +61,8 @@ public class HopperSub extends SubsystemBase {
           (SysIdRoutineLog log) -> { // Log consumer is a method that returns all of the data from the sensors that we need to collect
             log.motor("Hopper Escalator")
                 .voltage(Units.Volts.of(m_escalatorMotor.get() * RobotController.getBatteryVoltage()))
-                .angularPosition(Units.Radians.of(getEscalatorPosition()))
-                .angularVelocity(Units.RadiansPerSecond.of(getEscalatorVelocity()));
+                .angularPosition(Units.Rotations.of(getEscalatorPositionRot()))
+                .angularVelocity(Units.RotationsPerSecond.of(getEscalatorVelocityRotPerSec()));
           },
           this));
 
@@ -155,7 +155,7 @@ public class HopperSub extends SubsystemBase {
     SmartDashboard.putNumber("Singulator Power", m_singulatorMotor.get());
     SmartDashboard.putBoolean("Escalator Auto", m_escalatorAutomationEnabled);
     SmartDashboard.putNumber("Escalator Target", m_targetEscalatorVelocityRps);
-    SmartDashboard.putNumber("Escalator Velocity", getEscalatorVelocity());
+    SmartDashboard.putNumber("Escalator Velocity", getEscalatorVelocityRotPerSec());
     SmartDashboard.putNumber("Escalator Power", m_escalatorMotor.get());
 
     runEscalatorVelocityControl(m_escalatorAutomationEnabled);
@@ -176,6 +176,11 @@ public class HopperSub extends SubsystemBase {
     m_escalatorMotor.set(power);
   }
 
+  public void setEscalatorVoltage(double volts) {
+    SmartDashboard.putNumber("Hop Esc Volts", volts);
+    m_escalatorMotor.set(volts);
+  }
+
   public double getSingulatorRot() {
     return m_singulatorMotor.getPosition().getValueAsDouble();
   }
@@ -184,12 +189,13 @@ public class HopperSub extends SubsystemBase {
     return m_singulatorMotor.getVelocity().getValueAsDouble();
   }
 
-  public double getEscalatorVelocity() {
-    return m_escalatorMotor.getVelocity().getValueAsDouble();
+
+  public double getEscalatorPositionRot() {
+    return m_escalatorMotor.getPosition().getValueAsDouble();
   }
 
-  public double getEscalatorPosition() {
-    return m_escalatorMotor.getPosition().getValueAsDouble();
+  public double getEscalatorVelocityRotPerSec() {
+    return m_escalatorMotor.getVelocity().getValueAsDouble();
   }
 
   public boolean isFull() {
@@ -217,6 +223,19 @@ public class HopperSub extends SubsystemBase {
     m_singulatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
   }
 
+  ////////////////////////////// Escalator automation //////////////////////////////
+  public void enableEscalatorAutomation() {
+    m_escalatorAutomationEnabled = true;
+    // Use TalonFX's PID control to set velocity
+    m_escalatorMotor.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetEscalatorVelocityRps)
+        .withFeedForward(Constants.Hopper.kEscalatorKV));
+  }
+
+  public void disableEscalatorAutomation() {
+    m_escalatorAutomationEnabled = false;
+    m_escalatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
+  }
+
   // Set Singulator velocity with PID in RPS
   public void setSingulatorTargetVelocity(double velocityRps) {
     m_targetSingulatorVelocityRps = velocityRps;
@@ -231,17 +250,6 @@ public class HopperSub extends SubsystemBase {
     return false;
   }
 
-  ////////////////////////////// Escalator automation //////////////////////////////
-  public void enableEscalatorAutomation() {
-    m_escalatorAutomationEnabled = true;
-    runEscalatorVelocityControl(true);
-  }
-
-  public void disableEscalatorAutomation() {
-    m_escalatorAutomationEnabled = false;
-    setEscalatorPower(0.0);
-  }
-
   // Set Escalator velocity with PID in RPS
   public void setEscalatorVelocity(double velocityRps) {
     m_targetEscalatorVelocityRps = velocityRps;
@@ -251,7 +259,8 @@ public class HopperSub extends SubsystemBase {
 
   public boolean isEscalatorAtTargetVelocity() {
     if(Math
-        .abs(m_targetEscalatorVelocityRps - getEscalatorVelocity()) < Constants.Hopper.kEscalatorVelocityToleranceRps) {
+        .abs(m_targetEscalatorVelocityRps
+            - getEscalatorVelocityRotPerSec()) < Constants.Hopper.kEscalatorVelocityToleranceRotPerSec) {
       return true;
     }
     return false;
@@ -260,9 +269,11 @@ public class HopperSub extends SubsystemBase {
   private void runEscalatorVelocityControl(boolean setPower) {
     // TODO: Tune velocity multipliers 
     // What are velocity multipliers?  And they should go into Constants if needed.  [Eric]
-    double feedForwardVelocity = m_escalatorFeedforward.calculate(Constants.Hopper.kEscalatorMaxVelocityRps * 0.1);
+    double feedForwardVelocity =
+        m_escalatorFeedforward.calculate(Constants.Hopper.kEscalatorMaxVelocityRotPerSec * 0.1);
     double pidVelocity =
-        m_escalatorPid.calculate(getEscalatorVelocity(), Constants.Hopper.kEscalatorMaxVelocityRps * 0.1);
+        m_escalatorPid.calculate(getEscalatorVelocityRotPerSec(),
+            Constants.Hopper.kEscalatorMaxVelocityRotPerSec * 0.1);
 
     setEscalatorVelocity(feedForwardVelocity + pidVelocity);
 
@@ -271,17 +282,19 @@ public class HopperSub extends SubsystemBase {
         MathUtil.clamp(totalVelocity, -Constants.Hopper.kEscalatorMaxPower, Constants.Hopper.kEscalatorMaxPower);
   }
 
-
   ////////////////////////////// SysId and Tests //////////////////////////////
   public void runEscalatorSysIdVolts(double volts) {
+    volts = MathUtil.clamp(volts, -(Constants.Hopper.kEscalatorMaxPower * 12.0),
+        (Constants.Hopper.kEscalatorMaxPower * 12.0));
+    setEscalatorVoltage(volts);
     // TODO: Implement this
   }
 
-  public Command yawSysIdQuasistatic(SysIdRoutine.Direction dir) {
+  public Command escalatorSysIdQuasistaticCmd(SysIdRoutine.Direction dir) {
     return m_escalatorSysIdRoutine.quasistatic(dir);
   }
 
-  public Command yawSysIdDynamic(SysIdRoutine.Direction dir) {
+  public Command escalatorSysIdDynamicCmd(SysIdRoutine.Direction dir) {
     return m_escalatorSysIdRoutine.dynamic(dir);
   }
 
@@ -303,3 +316,4 @@ public class HopperSub extends SubsystemBase {
 
 
 }
+
