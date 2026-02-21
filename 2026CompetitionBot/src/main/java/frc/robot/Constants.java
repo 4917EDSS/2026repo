@@ -63,6 +63,8 @@ public final class Constants {
     public static final double kDeployToleranceMm = 2.0;
     public static final double kDeployMaxCurrent = 120.0;
     public static final double kDeployMaxPower = 1.0;
+    public static final double kDeployMaxVelocityDegPerSec = 0.5;
+    public static final double kDeployMaxAccelerationDegPerSec = 0.25;
 
     public static final double kRotationEncoderToDegConversionFactor = 1.0;
     public static final double kRotationInitialAngleDeg = 0.0;
