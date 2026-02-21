@@ -17,6 +17,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Power;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -99,7 +100,6 @@ public class IntakeSub extends SubsystemBase {
     SmartDashboard.putBoolean("Intake Out Limit", isAtOutLimit());
     SmartDashboard.putBoolean("Intake Enc Set", m_isIntakeEncoderSet);
     SmartDashboard.putNumber("Intake Target Angle", m_targetDeployAngleDeg);
-    SmartDashboard.putNumber("Intake Deploy Power", m_deployMotorL.get());
 
     // Check if the relative encoder has been zeroed yet or not
     if(!m_isIntakeEncoderSet) {
@@ -119,6 +119,7 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public void setDeployPower(double power) {
+    SmartDashboard.putNumber("Intake Deploy Power", m_deployMotorL.get());
     m_deployMotorL.set(power);
   }
 
