@@ -75,8 +75,8 @@ public final class Constants {
   public static class Hopper {
     // TODO:  Set all the values correctly
     public static final double kSingulatorEncoderToRpsConversionFactor = 1.0; // Gearing TBD
-    public static final double kSingulatorMaxVelocityRps = 1.0; // Throughput must be slower than Escalator to avoid jams
-    public static final double kSingulatorVelocityToleranceRps = 0.1;
+    public static final double kSingulatorMaxVelocityRotPerSec = 2.0; // Throughput must be slower than Escalator to avoid jams
+    public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 120.0;
     public static final double kSingulatorMaxPower = 1.0;
     public static final double kSingulatorKS = 0.25;
