@@ -164,9 +164,10 @@ public final class Constants {
 
   //////////////////// These are the other constants ////////////////////
   public static class FieldElements {
-    public static final double kRedHubX = 4.675; // coordinates of the hub on the field
-    public static final double kRedHubY = 4.035;
-    public static final double kBlueHubX = 11.856;
+    public static final double kBlueHubX = 4.675; // coordinates of the hub on the field
     public static final double kBlueHubY = 4.035;
+    public static final double kRedHubX = 11.856;
+    public static final double kRedHubY = 4.035;
   }
 }
+
