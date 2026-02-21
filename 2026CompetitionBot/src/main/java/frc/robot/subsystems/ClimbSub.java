@@ -7,15 +7,23 @@ package frc.robot.subsystems;
 import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 
 
@@ -29,6 +37,23 @@ public class ClimbSub extends SubsystemBase {
   private final DigitalInput m_rotateCCWLimit = new DigitalInput(Constants.DioIds.kClimbCCWLimitSwitch);
   private final DigitalInput m_rotateCWLimit = new DigitalInput(Constants.DioIds.kClimbCWLimitSwitch);
 
+  private final SysIdRoutine m_deploySysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runDeploySysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("climbDeploy")
+                .voltage(Units.Volts.of(m_deployMotor.get() * RobotController.getBatteryVoltage()))
+                .linearPosition(Units.Meters.of(getDeployDistanceMm()))
+                .linearVelocity(Units.MetersPerSecond.of(getDeployVelocityDegPerSec()));
+          },
+          this));
+
+  private final TrapezoidProfile.Constraints m_Constraints = new TrapezoidProfile.Constraints(
+      Constants.Climb.kDeployMaxVelocityDegPerSec, Constants.Climb.kDeployMaxAccelerationDegPerSec);
   private boolean m_enableDeployAutomation = false;
   private boolean m_enableRotationAutomation = false;
   private boolean m_deployEncoderSet = false;
@@ -36,11 +61,19 @@ public class ClimbSub extends SubsystemBase {
   private double m_targetDeployDistanceMm = 0.0;
   private double m_targetRotationAngleDeg = Constants.Climb.kRotationInitialAngleDeg; // This could be different than the encoder-reset angle
 
-
   /** Creates a new ClimbSub. */
   public ClimbSub() {
     TalonFXConfigurator talonFXConfiguratorDeploy = m_deployMotor.getConfigurator();
     TalonFXConfigurator talonFXConfiguratorRotate = m_rotateMotor.getConfigurator();
+
+    // TODO Add constants for this
+    // Slot0Configs slot0DeployConfigs = new Slot0Configs();
+    // slot0DeployConfigs.kS = Constants.Climb.kDeployKS;
+    // slot0DeployConfigs.kV = Constants.Climb.kDeployKV;
+    // slot0DeployConfigs.kP = Constants.Climb.kDeployKP;
+    // slot0DeployConfigs.kI = Constants.Climb.kDeployKI;
+    // slot0DeployConfigs.kD = Constants.Climb.kDeployKD;
+    // talonFxDeployConfigurator.apply(slot0DeployConfigs);
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
@@ -98,12 +131,6 @@ public class ClimbSub extends SubsystemBase {
       m_rotateEncoderSet = true;
     }
 
-    if(isAtDeployInLimit() || isAtDeployOutLimit()) {
-      disableDeployAutomation();
-    }
-    if(isAtRotateCCWLimit() || isAtRotateCWLimit()) {
-      disableRotateAutomation();
-    }
   }
 
   public void setDeployPower(double power) {
@@ -122,6 +149,10 @@ public class ClimbSub extends SubsystemBase {
 
   public double getDeployDistanceMm() {
     return m_deployMotor.get();
+  }
+
+  public double getDeployVelocityDegPerSec() {
+    return m_deployMotor.getVelocity().getValueAsDouble();
   }
 
   /**
@@ -208,5 +239,24 @@ public class ClimbSub extends SubsystemBase {
     } else {
       return false;
     }
+  }
+
+  ////////////////////////////// Deploy SysId //////////////////////////////
+  public void runDeploySysIdVolts(double volts) {
+    MathUtil.clamp(volts, -(Constants.Climb.kDeployMaxPower * 12.0), (Constants.Climb.kDeployMaxPower * 12.0));
+    if(((volts < 0) && isAtDeployInLimit()) || (volts > 0) && isAtDeployOutLimit()) {
+      disableDeployAutomation();
+    }
+    if(isAtRotateCCWLimit() || isAtRotateCWLimit()) {
+      disableRotateAutomation();
+    }
+  }
+
+  public Command deploySysIdQuasistaticCmd(SysIdRoutine.Direction dir) {
+    return m_deploySysIdRoutine.quasistatic(dir);
+  }
+
+  public Command deploySysIdDynamicCmd(SysIdRoutine.Direction dir) {
+    return m_deploySysIdRoutine.dynamic(dir);
   }
 }
