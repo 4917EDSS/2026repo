@@ -6,16 +6,26 @@ package frc.robot.subsystems;
 
 import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 
 
@@ -29,18 +39,63 @@ public class ClimbSub extends SubsystemBase {
   private final DigitalInput m_rotateCCWLimit = new DigitalInput(Constants.DioIds.kClimbCCWLimitSwitch);
   private final DigitalInput m_rotateCWLimit = new DigitalInput(Constants.DioIds.kClimbCWLimitSwitch);
 
+  private final SysIdRoutine m_deploySysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runDeploySysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("climbDeploy")
+                .voltage(Units.Volts.of(m_deployMotor.get() * RobotController.getBatteryVoltage()))
+                .linearPosition(Units.Meters.of(getDeployDistanceM()))
+                .linearVelocity(Units.MetersPerSecond.of(getDeployVelocityDegPerSec()));
+          },
+          this));
+
   private boolean m_enableDeployAutomation = false;
   private boolean m_enableRotationAutomation = false;
   private boolean m_deployEncoderSet = false;
   private boolean m_rotateEncoderSet = false;
-  private double m_targetDeployDistanceMm = 0.0;
+  private double m_targetDeployDistanceM = 0.0;
   private double m_targetRotationAngleDeg = Constants.Climb.kRotationInitialAngleDeg; // This could be different than the encoder-reset angle
-
 
   /** Creates a new ClimbSub. */
   public ClimbSub() {
     TalonFXConfigurator talonFXConfiguratorDeploy = m_deployMotor.getConfigurator();
     TalonFXConfigurator talonFXConfiguratorRotate = m_rotateMotor.getConfigurator();
+
+    // This is for the deploy
+    Slot0Configs slot0DeployConfigs = new Slot0Configs();
+    slot0DeployConfigs.kS = Constants.Climb.kDeployKS;
+    slot0DeployConfigs.kV = Constants.Climb.kDeployKV;
+    slot0DeployConfigs.kA = Constants.Climb.kDeployKA;
+    slot0DeployConfigs.kP = Constants.Climb.kDeployKP;
+    slot0DeployConfigs.kI = Constants.Climb.kDeployKI;
+    slot0DeployConfigs.kD = Constants.Climb.kDeployKD;
+    talonFXConfiguratorDeploy.apply(slot0DeployConfigs);
+
+    MotionMagicConfigs mmcDeploy = new MotionMagicConfigs();
+    mmcDeploy.MotionMagicCruiseVelocity = Constants.Climb.kDeployMaxVelocityMPerSec;
+    mmcDeploy.MotionMagicAcceleration = Constants.Climb.kDeployMaxAccelerationMPerSec;
+    talonFXConfiguratorDeploy.apply(mmcDeploy);
+
+    // This is for the rotate 
+    // TODO: Acoount for gravity in kRotateKG
+    Slot0Configs slot0RotateConfigs = new Slot0Configs();
+    slot0RotateConfigs.kS = Constants.Climb.kRotateKS;
+    slot0RotateConfigs.kV = Constants.Climb.kRotateKV;
+    slot0RotateConfigs.kA = Constants.Climb.kRotateKA;
+    slot0RotateConfigs.kP = Constants.Climb.kRotateKP;
+    slot0RotateConfigs.kI = Constants.Climb.kRotateKI;
+    slot0RotateConfigs.kD = Constants.Climb.kRotateKD;
+    talonFXConfiguratorRotate.apply(slot0RotateConfigs);
+
+    MotionMagicConfigs mmcRotate = new MotionMagicConfigs();
+    mmcRotate.MotionMagicCruiseVelocity = Constants.Climb.kRotateMaxVelocityMPerSec;
+    mmcRotate.MotionMagicAcceleration = Constants.Climb.kRotateMaxAccelerationMPerSec;
+    talonFXConfiguratorDeploy.apply(mmcRotate);
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
@@ -73,8 +128,8 @@ public class ClimbSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Cl Dep Auto", m_enableDeployAutomation);
-    SmartDashboard.putNumber("Cl Dep Target", m_targetDeployDistanceMm);
-    SmartDashboard.putNumber("Cl Dep Dist", getDeployDistanceMm());
+    SmartDashboard.putNumber("Cl Dep Target", m_targetDeployDistanceM);
+    SmartDashboard.putNumber("Cl Dep Dist", getDeployDistanceM());
     SmartDashboard.putNumber("Cl Dep Power", m_deployMotor.get());
     SmartDashboard.putBoolean("Cl Dep In", isAtDeployInLimit());
     SmartDashboard.putBoolean("Cl Dep Out", isAtDeployOutLimit());
@@ -98,8 +153,6 @@ public class ClimbSub extends SubsystemBase {
       m_rotateEncoderSet = true;
     }
 
-    // TODO: Add code to or configure TalonFX to respect deploy limit switches
-    // TODO: Add code to or configure TalonFX to respect rotation limit switches
   }
 
   public void setDeployPower(double power) {
@@ -116,8 +169,12 @@ public class ClimbSub extends SubsystemBase {
 
   }
 
-  public double getDeployDistanceMm() {
+  public double getDeployDistanceM() {
     return m_deployMotor.get();
+  }
+
+  public double getDeployVelocityDegPerSec() {
+    return m_deployMotor.getVelocity().getValueAsDouble();
   }
 
   /**
@@ -137,7 +194,7 @@ public class ClimbSub extends SubsystemBase {
   }
 
   public void resetDeployEncoder() {
-    m_deployMotor.setPosition(Constants.Climb.kDeployInDistanceMm);
+    m_deployMotor.setPosition(Constants.Climb.kDeployInDistanceM);
   }
 
   public boolean isAtDeployInLimit() {
@@ -158,23 +215,23 @@ public class ClimbSub extends SubsystemBase {
 
   ////////////////////////////// Deploy automation //////////////////////////////
   public void enableDeployAutomation() {
-    // TODO: Enable "Slot 0" control.  Needs to be configured beforehand too.
-    m_deployMotor.setControl(new PositionDutyCycle(null).withSlot(0));
+    // TODO: Convert Distance To Rotation if necessary
+    m_deployMotor.setControl(new MotionMagicTorqueCurrentFOC(m_targetDeployDistanceM).withSlot(0));
     m_enableDeployAutomation = true;
   }
 
   public void disableDeployAutomation() {
     m_enableDeployAutomation = false;
-    setDeployPower(0.0);
+    m_deployMotor.setControl(new DutyCycleOut(0.0));
   }
 
-  public void setTargetDeployDistance(double distanceMm) {
-    m_targetDeployDistanceMm = distanceMm;
+  public void setTargetDeployDistance(double distanceM) {
+    m_targetDeployDistanceM = distanceM;
     enableDeployAutomation();
   }
 
   public boolean isAtTargetDistance() {
-    if((getDeployDistanceMm() - m_targetDeployDistanceMm) <= Constants.Climb.kDeployToleranceMm) {
+    if((getDeployDistanceM() - m_targetDeployDistanceM) <= Constants.Climb.kDeployToleranceM) {
       return true;
     } else {
       return false;
@@ -183,9 +240,9 @@ public class ClimbSub extends SubsystemBase {
 
   ////////////////////////////// Rotation automation //////////////////////////////
   public void enableRotateAutomation() {
-    // TODO: Tune PID values on motor (need to configure Slot 0)
+    // TODO: Convert Angle to Rotations if necessary
     m_enableRotationAutomation = true;
-    m_rotateMotor.setControl(new PositionDutyCycle(null).withSlot(0));
+    m_rotateMotor.setControl(new MotionMagicTorqueCurrentFOC(m_targetRotationAngleDeg).withSlot(0));
   }
 
   public void disableRotateAutomation() {
@@ -204,5 +261,24 @@ public class ClimbSub extends SubsystemBase {
     } else {
       return false;
     }
+  }
+
+  ////////////////////////////// Deploy SysId //////////////////////////////
+  public void runDeploySysIdVolts(double volts) {
+    MathUtil.clamp(volts, -(Constants.Climb.kDeployMaxPower * 12.0), (Constants.Climb.kDeployMaxPower * 12.0));
+    if(((volts < 0) && isAtDeployInLimit()) || (volts > 0) && isAtDeployOutLimit()) {
+      disableDeployAutomation();
+    }
+    if(isAtRotateCCWLimit() || isAtRotateCWLimit()) {
+      disableRotateAutomation();
+    }
+  }
+
+  public Command deploySysIdQuasistaticCmd(SysIdRoutine.Direction dir) {
+    return m_deploySysIdRoutine.quasistatic(dir);
+  }
+
+  public Command deploySysIdDynamicCmd(SysIdRoutine.Direction dir) {
+    return m_deploySysIdRoutine.dynamic(dir);
   }
 }
