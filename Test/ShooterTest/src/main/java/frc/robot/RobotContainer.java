@@ -60,8 +60,9 @@ public class RobotContainer {
             .withRotationalRate(-m_driverController.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    //m_shooterSub.setDefaultCommand(new RunCommand( ()-> m_shooterSub
-    //    .setTargetYawAngle(m_shooterAimingCalcs.calculateShooterYawDegrees(m_drivetrainSub.getState().Pose))));
+    m_shooterSub.setDefaultCommand(new RunCommand(() -> m_shooterSub
+        .setTargetYawAngle(m_shooterAimingCalcs.calculateShooterYawDegrees(m_drivetrainSub.getState().Pose)),
+        m_shooterSub));
 
     // Configure the trigger bindings
     configureBindings();
