@@ -155,7 +155,7 @@ public final class Constants {
     public static final double kFlywheelKI = 0.0;
     public static final double kFlywheelKD = 0.0;
 
-    public static final double kGravity = 9.80665;
+    public static final double kGravity = 9.80665; // Calculate local gravity for more accuracy (totally useful) 
   }
 
   public static class Vision {
@@ -168,6 +168,13 @@ public final class Constants {
     public static final double kBlueHubY = 4.035;
     public static final double kRedHubX = 11.856;
     public static final double kRedHubY = 4.035;
+  }
+
+  public static class TrajectoryCalculations {
+    public static final double interpolationShoot = 0.3;
+    public static final double interpolationLobber = 0.5;
+    public static final double piecewiseSwapCalculationDistance = 3.5;
+    public static final double shooterToHubHeight = 1.0668; // 42 in, not exactly measured
   }
 }
 
