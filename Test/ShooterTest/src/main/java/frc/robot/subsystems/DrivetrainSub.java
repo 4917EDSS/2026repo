@@ -1,11 +1,8 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*;
-
+import static edu.wpi.first.units.Units.Volts;
 import java.util.Optional;
 import java.util.function.Supplier;
-
-import java.util.logging.Logger;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -17,7 +14,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -27,12 +23,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -285,6 +281,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
 
   @Override
   public void periodic() {
+    double startTime = Timer.getFPGATimestamp();
     /*
      * Periodically try to apply the operator perspective.
      * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
@@ -308,6 +305,10 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     SmartDashboard.putNumber("current rot", getState().Pose.getRotation().getDegrees());
     m_field.setRobotPose(getState().Pose);
     //m_field.allianceColor = 
+
+    double endTime = Timer.getFPGATimestamp();
+    double diff = endTime - startTime;
+    SmartDashboard.putNumber("Drive Peri Time", diff);
   }
 
   private void startSimThread() {

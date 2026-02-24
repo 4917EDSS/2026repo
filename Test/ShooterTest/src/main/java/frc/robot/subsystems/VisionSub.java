@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -112,6 +113,7 @@ public class VisionSub extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double startTime = Timer.getFPGATimestamp();
     if(m_taL.getDouble(0) > m_taR.getDouble(0)) {
       id = m_tidL.getInteger(0);
       t2d = m_t2dL.getDoubleArray(new double[2]);
@@ -155,6 +157,9 @@ public class VisionSub extends SubsystemBase {
     //SmartDashboard.putNumber("y estimate", getEstimatedPose().getY());
     //SmartDashboard.putNumber("rot estimate", getEstimatedPose().getRotation().getDegrees());
     // SmartDashboard.putString("Main Limelight:", "none");
+    double endTime = Timer.getFPGATimestamp();
+    double diff = endTime - startTime;
+    SmartDashboard.putNumber("Vis Peri Time", diff);
   }
 
   public Pose2d getTagPose2d() {

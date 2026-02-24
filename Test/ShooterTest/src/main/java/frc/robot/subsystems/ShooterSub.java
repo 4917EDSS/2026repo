@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.logging.Logger;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -26,7 +27,10 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -98,6 +102,10 @@ public class ShooterSub extends SubsystemBase {
 
   private boolean m_pitchHasBeenReset = false;
   private boolean m_yawHasBeenReset = false;
+
+  //Alert Fields
+  Alert m_flywheelMotorLalert = new Alert("Left Flywheel Error", AlertType.kWarning);
+  Alert m_flywheelMotorRalert = new Alert("Right Flywheel Error", AlertType.kWarning);
 
   /** Creates a new ShooterSub. */
   public ShooterSub() { // Motor Configs need to be tested
@@ -171,11 +179,27 @@ public class ShooterSub extends SubsystemBase {
     setPitchPower(0.0);
     setYawPower(0.0);
     setYawVoltage(0.0); // Doing this too to post the voltage to the dashboard
+
+
+    // TODO: find out how to ask the motor for an error
+    // TODO: Test this code
+    StatusSignal<Integer> leftFault = m_flywheelMotorL.getFaultField();
+
+    StatusSignal<Integer> rightFault = m_flywheelMotorR.getFaultField();
+
+
+    if(!leftFault.isAllGood()) {
+      m_flywheelMotorLalert.set(true);
+    }
+    if(!rightFault.isAllGood()) {
+      m_flywheelMotorRalert.set(true);
+    }
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    double startTime = Timer.getFPGATimestamp();
     SmartDashboard.putBoolean("Sht Yaw Auto", m_yawAutomationEnabled);
     SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
     SmartDashboard.putNumber("Sht Yaw Angle", getYawAngleDeg());
@@ -211,6 +235,9 @@ public class ShooterSub extends SubsystemBase {
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
     // Flywheel control is run on the TalonFX
+    double endTime = Timer.getFPGATimestamp();
+    double diff = endTime - startTime;
+    SmartDashboard.putNumber("Sht Peri Time", diff);
   }
 
   public void setYawPower(double power) {
