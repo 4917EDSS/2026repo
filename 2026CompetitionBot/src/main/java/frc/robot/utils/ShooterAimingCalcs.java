@@ -91,8 +91,21 @@ public class ShooterAimingCalcs {
       dy = Constants.TrajectoryCalculations.shooterToHubHeight;
       dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
     } else {
-      dx = 0.0;
-      dy = 0.0;
+      if(RobotStatus.wasLobbing()){
+        if(RobotStatus.getPreviousFieldPosition() == "RightLob"){
+          dy = Constants.TrajectoryCalculations.kRightLobY;
+          dx = Constants.TrajectoryCalculations.kLobX;
+        }  else {
+        dy = Constants.TrajectoryCalculations.kLeftLobY;
+        dx = Constants.TrajectoryCalculations.kLobX;
+        }
+      } else if (RobotStatus.wasShooting()) {
+        dy = Constants.TrajectoryCalculations.shooterToHubHeight;
+        dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
+      } else {
+        dx = 0.0;
+        dy = 0.0;
+      }
     }
 
 
