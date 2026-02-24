@@ -192,5 +192,21 @@ public final class Constants {
     public static final double kRedHubY = 4.035;
     public static final double kBlueHubX = 11.856;
     public static final double kBlueHubY = 4.035;
+
+    public static final double kNeutralZoneX = 0.0;
+    public static final double kAllianceZoneX = 0.0;
+    public static final double kLeftSideY = 0.0;
+    public static final double kRightSideY = 0.0;
+  }
+
+  public static class TrajectoryCalculations {
+    public static final double interpolationShoot = 0.3;
+    public static final double interpolationLobber = 0.5;
+    public static final double piecewiseSwapCalculationDistance = 3.5;
+    public static final double shooterToHubHeight = 1.0668; // 42 in, not exactly measured
+    public static final double kShooterToFloorHeight = 0.762;
+    public static final double kLeftLobY = 0.0;
+    public static final double kRightLobY = 0.0;
+    public static final double kLobX = 0.0;
   }
 }

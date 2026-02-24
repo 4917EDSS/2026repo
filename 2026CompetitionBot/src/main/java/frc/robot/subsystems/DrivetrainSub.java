@@ -17,7 +17,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -32,8 +31,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.utils.RobotStatus;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -285,6 +285,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
 
   @Override
   public void periodic() {
+    updateFieldPosition();
     /*
      * Periodically try to apply the operator perspective.
      * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
@@ -378,5 +379,21 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     // Display field position
     SmartDashboard.putData("Field", m_field);
     m_field.setRobotPose(getState().Pose);
+  }
+
+  public void updateFieldPosition() {
+    if(getState().Pose.getX() > Constants.FieldElements.kNeutralZoneX) {
+      if(getState().Pose.getY() > Constants.FieldElements.kRightSideY) {
+        RobotStatus.RightLob();
+      } else if(getState().Pose.getY() < Constants.FieldElements.kLeftSideY) {
+        RobotStatus.LeftLob();
+      } else {
+        RobotStatus.CenterlineTransition();
+      }
+    } else if(getState().Pose.getX() < Constants.FieldElements.kAllianceZoneX) {
+      RobotStatus.Shoot();
+    } else {
+      RobotStatus.BumpTransition();
+    }
   }
 }

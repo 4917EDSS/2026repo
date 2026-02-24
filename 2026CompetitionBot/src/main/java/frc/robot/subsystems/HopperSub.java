@@ -191,6 +191,10 @@ public class HopperSub extends SubsystemBase {
     return m_escalatorMotor.getVelocity().getValueAsDouble();
   }
 
+  public double getEscalatorVelocityRps() {
+    return m_escalatorMotor.getVelocity().getValueAsDouble();
+  }
+
   public boolean isFull() {
     return m_canSub.isHopperFull();
   }
