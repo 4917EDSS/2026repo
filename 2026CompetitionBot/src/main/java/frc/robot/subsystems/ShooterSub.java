@@ -347,7 +347,7 @@ public class ShooterSub extends SubsystemBase {
     double totalVolts = pidVolts + ffVolts;
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
-    totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower * 12, Constants.Shooter.kYawMaxPower * 12);
+    totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower * 12, Constants.Shooter.kYawMaxPower * 12`);
 
     if(setPower) {
       setYawVoltage(totalVolts);
