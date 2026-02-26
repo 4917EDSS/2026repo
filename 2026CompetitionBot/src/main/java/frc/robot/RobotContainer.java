@@ -7,10 +7,9 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -39,12 +38,13 @@ import frc.robot.utils.CalculateShooterAiming;
 
 
 public class RobotContainer {
-  private double maxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-  private double maxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+  // Swerve variables
+  private double m_maxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  private double m_maxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(maxSpeed * 0.1).withRotationalDeadband(maxAngularRate * 0.1) // Add a 10% deadband
+  private final SwerveRequest.FieldCentric m_drive = new SwerveRequest.FieldCentric()
+      .withDeadband(m_maxSpeed * 0.1).withRotationalDeadband(m_maxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
   // Controllers
@@ -57,11 +57,11 @@ public class RobotContainer {
   public final CanSub m_canSub = new CanSub(1);
   public final ClimbSub m_climbSub = new ClimbSub();
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
+  public final FeedbackSub m_feedbackSub = new FeedbackSub(m_driverController);
   public final HopperSub m_hopperSub = new HopperSub(m_canSub);
   public final IntakeSub m_intakeSub = new IntakeSub();
   public final ShooterSub m_shooterSub = new ShooterSub();
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
-  public final FeedbackSub m_feedbackSub = new FeedbackSub(m_driverController);
 
   public final CalculateShooterAiming m_calculateShooterAiming = new CalculateShooterAiming();
 
@@ -76,9 +76,9 @@ public class RobotContainer {
     // and Y (coordinate) is defined as to the left according to WPILib convention.
     m_drivetrainSub.setDefaultCommand(
         // Drivetrain will execute this command periodically
-        m_drivetrainSub.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * maxSpeed) // Drive forward with negative Y (forward)
-            .withVelocityY(-m_driverController.getLeftX() * maxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-m_driverController.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
+        m_drivetrainSub.applyRequest(() -> m_drive.withVelocityX(-m_driverController.getLeftY() * m_maxSpeed) // Drive forward with negative Y (forward)
+            .withVelocityY(-m_driverController.getLeftX() * m_maxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(-m_driverController.getRightX() * m_maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
     m_shooterSub.setDefaultCommand(new RunCommand(
@@ -89,7 +89,7 @@ public class RobotContainer {
 
 
   private void registerNameCommand() {
-
+    // TODO: Add commands that PathPlanner needs access to here
   }
 
   /*
@@ -237,6 +237,7 @@ public class RobotContainer {
    * Create a list of auto period action choices+
    */
   void autoChooserSetup() {
+    // TODO: Let's be more descriptive and say what the auto does rather than how much we think it will score
     m_Chooser.addOption("70pt auto", new PathPlannerAuto("70 Point Auto"));
     m_Chooser.addOption("test auto", new PathPlannerAuto("70 Point Test"));
     SmartDashboard.putData("Auto Choices", m_Chooser);

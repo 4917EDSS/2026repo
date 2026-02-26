@@ -261,7 +261,7 @@ public class HopperSub extends SubsystemBase {
     return false;
   }
 
-  ////////////////////////////// SysId and Tests //////////////////////////////
+  ////////////////////////////// Escalator SysId and Tests //////////////////////////////
   public void runEscalatorSysIdVolts(double volts) {
     volts = MathUtil.clamp(volts, -(Constants.Hopper.kEscalatorMaxPower * 12.0),
         (Constants.Hopper.kEscalatorMaxPower * 12.0));
@@ -277,7 +277,7 @@ public class HopperSub extends SubsystemBase {
     return m_escalatorSysIdRoutine.dynamic(dir);
   }
 
-  ////////////////////////////// SysId and Tests //////////////////////////////
+  ////////////////////////////// Singulator SysId and Tests //////////////////////////////
   public void runSingulatorSysIdVolts(double volts) {
     //check if we're at max power
     MathUtil.clamp(volts, -(Constants.Hopper.kSingulatorMaxPower * 12.0),
