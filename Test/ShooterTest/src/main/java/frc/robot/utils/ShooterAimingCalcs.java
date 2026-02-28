@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.math.interpolation.*;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Constants;
 
 /** Add your docs here. */
@@ -17,37 +19,71 @@ public class ShooterAimingCalcs {
   private double robotYawAngle;
   private double relativeTargetYawAngle;
 
-  private double flywheelPower;
-
-  public double calculateShooterFlywheelPower() {
-    return 0.0;
+  public double calculateShooterFlywheelRps(Pose2d robot) {
+    double rps;
+    InterpolatingDoubleTreeMap velocityInterpolation = new InterpolatingDoubleTreeMap();
+    //This will need to be derived experementally (only)
+    velocityInterpolation.put(0.0, null);
+    velocityInterpolation.put(1.0, null);
+    velocityInterpolation.put(2.0, null);
+    velocityInterpolation.put(3.0, null);
+    velocityInterpolation.put(4.0, null);
+    velocityInterpolation.put(5.0, null);
+    velocityInterpolation.put(6.0, null);
+    velocityInterpolation.put(7.0, null);
+    velocityInterpolation.put(8.0, null);
+    velocityInterpolation.put(9.0, null);
+    velocityInterpolation.put(10.0, null);
+    if(RobotStatus.isLobbing()) {
+      if(RobotStatus.getCurrentFieldPosition() == "RightLob") {
+        rps = velocityInterpolation.get(getDistanceFromRightLob(robot));
+      } else {
+        rps = velocityInterpolation.get(getDistanceFromLeftLob(robot));
+      }
+    } else if(RobotStatus.isShooting()) {
+      rps = velocityInterpolation.get(getDistanceFromHub(robot).getNorm());
+    } else {
+      if(RobotStatus.wasLobbing()) {
+        if(RobotStatus.getPreviousFieldPosition() == "RightLob") {
+          rps = velocityInterpolation.get(getDistanceFromRightLob(robot));
+        } else {
+          rps = velocityInterpolation.get(getDistanceFromLeftLob(robot));
+        }
+      } else if(RobotStatus.wasShooting()) {
+        rps = velocityInterpolation.get(getDistanceFromHub(robot).getNorm());
+      } else {
+        rps = 0.0;
+      }
+    }
+    return rps;
   }
 
   public double calculateShooterYawDegrees(Pose2d robot) {
     robotYawAngle = robot.getRotation().getDegrees() + 180; //robot angle 0 to 360
-
     targetYawAngle =
         Math.toDegrees(Math.atan2(getDistanceFromHub(robot).getY(), getDistanceFromHub(robot).getX())) + 180;
-
     relativeTargetYawAngle = (360 + (targetYawAngle - robotYawAngle)) % 360;
-
     return relativeTargetYawAngle;
   }
 
-  public double calculateShooterYawInMotion(Pose2d robot, double velocityX, double velocityY,
-      double angularVelocityDegrees,
-      double launchVelocity, double launchPitch) {
-    double offsetX = velocityX * calculateTimeOfFlight(robot, launchVelocity, launchPitch); // Get the offset by getting the product of the x velocity and the time of flight
-    double offsetY = velocityY * calculateTimeOfFlight(robot, launchVelocity, launchPitch); // Same with y
-    double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot, launchVelocity, launchPitch); // Same but with angular velocity
-    return calculateShooterYawDegrees(new Pose2d(robot.getX() + offsetX, robot.getY() + offsetY,
-        robot.getRotation().plus(new Rotation2d(Math.toRadians(offsetRot))))); // Returns a new pose2d with the offset added
+  // public double calculateShooterYawInMotion(Pose2d robot, double velocityX, double velocityY,
+  //     double angularVelocityDegrees, double launchPitch) {
+  //   double offsetX = velocityX * calculateTimeOfFlight(robot, launchPitch); // Get the offset by getting the product of the x velocity and the time of flight
+  //   double offsetY = velocityY * calculateTimeOfFlight(robot, launchPitch); // Same with y
+  //   double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot, launchPitch); // Same but with angular velocity
+  //   return calculateShooterYawDegrees(new Pose2d(robot.getX() + offsetX, robot.getY() + offsetY,
+  //       robot.getRotation().plus(new Rotation2d(Math.toRadians(offsetRot))))); // Returns a new pose2d with the offset added
+  // }
+
+  public double calculateTimeOfFlight(Pose2d robot, double launchPitch) {
+    double distanceX = getDistanceFromHub(robot).getX();
+    double velocityX =
+        flywheelRpsToVelocity(calculateShooterFlywheelRps(robot)) * Math.cos(Math.toRadians(launchPitch));
+    return distanceX / velocityX;
   }
 
-  public double calculateTimeOfFlight(Pose2d robot, double launchVelocity, double launchPitch) {
-    double distanceX = getDistanceFromHub(robot).getX();
-    double velocityX = launchVelocity * Math.cos(Math.toRadians(launchPitch));
-    return distanceX / velocityX;
+  public double flywheelRpsToVelocity(double rps) {
+    return 0.0;
   }
 
   public Translation2d getDistanceFromHub(Pose2d robot) {
@@ -65,21 +101,61 @@ public class ShooterAimingCalcs {
     return distToHub;
   }
 
-  public double calculateShooterPitchDegrees(Pose2d robot, double velocity, boolean isLobbingMode) {
+  public double getDistanceFromLeftLob(Pose2d robot) {
+    return Math.hypot(robot.getX() - Constants.TrajectoryCalculations.kLobX,
+        robot.getY() - Constants.TrajectoryCalculations.kLeftLobY);
+  }
+
+  public double getDistanceFromRightLob(Pose2d robot) {
+    return Math.hypot(robot.getX() - Constants.TrajectoryCalculations.kLobX,
+        robot.getY() - Constants.TrajectoryCalculations.kRightLobY);
+  }
+
+  public double calculateShooterPitchDegrees(Pose2d robot) {
     // link to the visual trajectory calculation desmos graph
     // desmos.com/calculator/kd3svmcurr
     // link to the proof for each equation
     // desmos.com/calculator/er6sltycq6
     // 0 degrees output is horizontal, 90 is vertical pointing up
 
-    double dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
-    double dy = Constants.TrajectoryCalculations.shooterToHubHeight;
+    double dx;
+    double dy;
     double g = Constants.Shooter.kGravity;
-    double v = velocity;
+    double v = flywheelRpsToVelocity(calculateShooterFlywheelRps(robot));
     double pitch;
 
     double uShoot = Constants.TrajectoryCalculations.interpolationShoot;
     double uLob = Constants.TrajectoryCalculations.interpolationLobber;
+
+    if(RobotStatus.isLobbing()) {
+      if(RobotStatus.getCurrentFieldPosition() == "RightLob") {
+        dy = Constants.TrajectoryCalculations.kRightLobY;
+        dx = Constants.TrajectoryCalculations.kLobX;
+      } else {
+        dy = Constants.TrajectoryCalculations.kLeftLobY;
+        dx = Constants.TrajectoryCalculations.kLobX;
+      }
+    } else if(RobotStatus.isShooting()) {
+      dy = Constants.TrajectoryCalculations.shooterToHubHeight;
+      dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
+    } else {
+      if(RobotStatus.wasLobbing()) {
+        if(RobotStatus.getPreviousFieldPosition() == "RightLob") {
+          dy = Constants.TrajectoryCalculations.kRightLobY;
+          dx = Constants.TrajectoryCalculations.kLobX;
+        } else {
+          dy = Constants.TrajectoryCalculations.kLeftLobY;
+          dx = Constants.TrajectoryCalculations.kLobX;
+        }
+      } else if(RobotStatus.wasShooting()) {
+        dy = Constants.TrajectoryCalculations.shooterToHubHeight;
+        dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
+      } else {
+        dx = 0.0;
+        dy = 0.0;
+      }
+    }
+
 
     double D = 1 - (2 * g * dy) / Math.pow(v, 2) - (Math.pow(g, 2) * Math.pow(dx, 2)) / Math.pow(v, 4);
     double T1 = (Math.pow(v, 2) / (g * dx)) * (1 + Math.sqrt(D)); // Higher angle
@@ -89,16 +165,18 @@ public class ShooterAimingCalcs {
     double TMin = Math.pow(vMin, 2) / (g * dx);
 
     double angleLow = Math.toDegrees(Math.atan(T2));
-    double angleHigh = Math.toDegrees(Math.atan(T1));
+    double anleHigh = Math.toDegrees(Math.atan(T1));
     double angleInterpShoot = Math.toDegrees(Math.atan(uShoot * T1 + (1 - uShoot) * T2));
     double angleInterpLob = Math.toDegrees(Math.atan(uLob * T1 + (1 - uLob) * T2));
     double angleVMin = Math.toDegrees(Math.atan(TMin));
 
-    if(isLobbingMode) {
+    if(RobotStatus.isLobbing()) {
       pitch = angleInterpLob;
-    } else {
+    } else if(RobotStatus.isShooting()) {
       pitch =
           (dx < Constants.TrajectoryCalculations.piecewiseSwapCalculationDistance) ? angleInterpShoot : angleVMin;
+    } else {
+      pitch = 0.0;
     }
 
     if(D < 0) {
@@ -108,14 +186,27 @@ public class ShooterAimingCalcs {
     return pitch;
   }
 
-  public double calculateShooterPitchinMotion(Pose2d robot, double velocityX, double velocityY,
-      double angularVelocityDegrees,
-      double launchVelocity, double launchPitch, boolean isLobbingMode) {
+  // public double calculateShooterPitchinMotion(Pose2d robot, double velocityX, double velocityY,
+  //     double angularVelocityDegrees, double launchPitch) {
 
-    double offsetX = velocityX * calculateTimeOfFlight(robot, launchVelocity, launchPitch); // Get the offset by getting the product of the x velocity and the time of flight
-    double offsetY = velocityY * calculateTimeOfFlight(robot, launchVelocity, launchPitch); // Same with y
-    double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot, launchVelocity, launchPitch); // Same but with angular velocity
-    return calculateShooterPitchDegrees(new Pose2d(robot.getX() + offsetX, robot.getY() + offsetY,
-        robot.getRotation().plus(new Rotation2d(Math.toRadians(offsetRot)))), launchVelocity, isLobbingMode); // Returns a new pose2d with the offset added
+  //   double offsetX = velocityX * calculateTimeOfFlight(robot, launchPitch); // Get the offset by getting the product of the x velocity and the time of flight
+  //   double offsetY = velocityY * calculateTimeOfFlight(robot, launchPitch); // Same with y
+  //   double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot, launchPitch); // Same but with angular velocity
+  //   return calculateShooterPitchDegrees(new Pose2d(robot.getX() + offsetX, robot.getY() + offsetY,
+  //       robot.getRotation().plus(new Rotation2d(Math.toRadians(offsetRot))))); // Returns a new pose2d with the offset added
+  // }
+
+  public void calculationsInMotion(Pose2d robot, ChassisSpeeds velocity) {
+    double velocityX = velocity.vxMetersPerSecond;
+    double velocityY = velocity.vyMetersPerSecond;
+    double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
+    double pitchDegrees = calculateShooterPitchDegrees(robot);
+    double offsetX = velocityX * calculateTimeOfFlight(robot, pitchDegrees); //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
+    double offsetY = velocityY * calculateTimeOfFlight(robot, pitchDegrees);
+    double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot, pitchDegrees);
+    Pose2d offsetPos = new Pose2d(offsetX, offsetY, new Rotation2d(offsetRot));
+    calculateShooterPitchDegrees(offsetPos);
+    calculateShooterYawDegrees(offsetPos);
+    calculateShooterFlywheelRps(offsetPos);
   }
 }
