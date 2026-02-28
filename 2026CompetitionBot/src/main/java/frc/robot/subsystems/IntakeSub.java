@@ -33,7 +33,7 @@ public class IntakeSub extends SubsystemBase {
   private final SparkMax m_deployMotorL = new SparkMax(Constants.CanIds.kIntakeDeployMotorL, MotorType.kBrushless);
   private final SparkMax m_deployMotorR = new SparkMax(Constants.CanIds.kIntakeDeployMotorR, MotorType.kBrushless); // Run in tandem
   private final DigitalInput m_deployInLimit = new DigitalInput(Constants.DioIds.kIntakeDeployInLimit);
-  private final DigitalInput m_deployOutLimit = new DigitalInput(Constants.DioIds.kIntakeDeployOutLimit);
+  private final DigitalInput m_deployOutLimit = new DigitalInput(Constants.DioIds.kIntakeDeployOtherInLimit);
 
   private final SysIdRoutine m_deploySysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
@@ -77,7 +77,10 @@ public class IntakeSub extends SubsystemBase {
     // Only persist parameters when configuring the motor on start up as this
     // operation can be slow
     m_deployMotorL.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_deployMotorR.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    SparkMaxConfig followConfig = new SparkMaxConfig();
+    followConfig.follow(Constants.CanIds.kIntakeDeployMotorL, false);
+    m_deployMotorR.configure(followConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     motorConfig.encoder.positionConversionFactor(1.0); // Don't care about the belt position.  Vortex is 1:1 gearing.
     m_beltMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

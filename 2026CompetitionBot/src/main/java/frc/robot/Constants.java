@@ -40,12 +40,12 @@ public final class Constants {
   }
 
   public static class DioIds {
-    public static final int kClimbInLimitSwitch = 1;
+    public static final int kClimbInLimitSwitch = 7;//1;
     public static final int kClimbOutLimitSwitch = 2;
     public static final int kClimbCCWLimitSwitch = 3;
     public static final int kClimbCWLimitSwitch = 4;
-    public static final int kIntakeDeployInLimit = 5;
-    public static final int kIntakeDeployOutLimit = 6;
+    public static final int kIntakeDeployInLimit = 0;//5;
+    public static final int kIntakeDeployOtherInLimit = 1;//6;
   }
 
   public static class OperatorConstants {
