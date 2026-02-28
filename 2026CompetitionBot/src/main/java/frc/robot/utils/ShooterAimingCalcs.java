@@ -67,10 +67,10 @@ public class ShooterAimingCalcs {
     return relativeTargetYawAngle;
   }
 
-  public double calculateTimeOfFlight(Pose2d robot, double launchPitch) {
+  public double calculateTimeOfFlight(Pose2d robot) {
     double distanceX = getDistanceFromHub(robot).getX();
     double velocityX =
-        flywheelRpsToVelocity(calculateShooterFlywheelRps(robot)) * Math.cos(Math.toRadians(launchPitch));
+        flywheelRpsToVelocity(calculateShooterFlywheelRps(robot)) * Math.cos(calculateShooterPitchDegrees(robot));
     return distanceX / velocityX;
   }
 
@@ -182,10 +182,9 @@ public class ShooterAimingCalcs {
     double velocityX = velocity.vxMetersPerSecond;
     double velocityY = velocity.vyMetersPerSecond;
     double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
-    double pitchDegrees = calculateShooterPitchDegrees(robot);
-    double offsetX = velocityX * calculateTimeOfFlight(robot, pitchDegrees); //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
-    double offsetY = velocityY * calculateTimeOfFlight(robot, pitchDegrees);
-    double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot, pitchDegrees);
+    double offsetX = velocityX * calculateTimeOfFlight(robot); //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
+    double offsetY = velocityY * calculateTimeOfFlight(robot);
+    double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
     Pose2d offsetPos = new Pose2d(robot.getX() + offsetX, robot.getY() + offsetY,
         robot.getRotation().plus(new Rotation2d(Math.toRadians(offsetRot))));
     calculateShooterPitchDegrees(offsetPos);
