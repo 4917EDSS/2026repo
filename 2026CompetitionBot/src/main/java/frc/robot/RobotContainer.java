@@ -169,11 +169,17 @@ public class RobotContainer {
 
     // Operator A
     m_operatorController.a().whileTrue(
-        new StartEndCommand(() -> m_intakeSub.setDeployPower(0.1), () -> m_intakeSub.setDeployPower(0.0), m_intakeSub));
+        new StartEndCommand(() -> m_intakeSub.setDeployPower(0.1), () -> {
+          m_intakeSub.setDeployPower(0.0);
+          m_intakeSub.disableDeployAutomation();
+        }, m_intakeSub));
 
     // Operator B
     m_operatorController.b().whileTrue(new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1),
-        () -> m_intakeSub.setDeployPower(0.0), m_intakeSub));
+        () -> {
+          m_intakeSub.setDeployPower(0.0);
+          m_intakeSub.disableDeployAutomation();
+        }, m_intakeSub));
 
     // Operator X
     m_operatorController.x().whileTrue(

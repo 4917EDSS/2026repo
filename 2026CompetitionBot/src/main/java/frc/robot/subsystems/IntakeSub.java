@@ -65,13 +65,14 @@ public class IntakeSub extends SubsystemBase {
 
   /** Creates a new IntakeSub. */
   public IntakeSub() { // Motor Configs need to be tested
+    m_deployPidController.setTolerance(Constants.Intake.kDeployToleranceDeg);
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
         .inverted(false) // Set to true to invert the forward motor direction
         .smartCurrentLimit(100) // Current limit in amps
         .idleMode(IdleMode.kCoast).encoder
             .positionConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor)
-            .velocityConversionFactor(1.0); // Should not be reading deploy velocity (outside of possible kD)
+            .velocityConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor); // Should not be reading deploy velocity (outside of possible kD)
 
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this
@@ -92,6 +93,7 @@ public class IntakeSub extends SubsystemBase {
     setDeployPower(0.0);
     m_beltMotor.set(0.0);
     m_isIntakeEncoderSet = false;
+    SmartDashboard.putNumber("totalVolts", 0.0);
   }
 
   @Override
@@ -102,6 +104,8 @@ public class IntakeSub extends SubsystemBase {
     SmartDashboard.putBoolean("Intake Out Limit", isAtOutLimit());
     SmartDashboard.putBoolean("Intake Enc Set", m_isIntakeEncoderSet);
     SmartDashboard.putNumber("Intake Target Angle", m_targetDeployAngleDeg);
+    SmartDashboard.putNumber("Intake Current Angle", getDeployAngleDeg());
+    SmartDashboard.putNumber("deploy velcity", getDeployVelocityDegPerSec());
 
     // Check if the relative encoder has been zeroed yet or not
     if(!m_isIntakeEncoderSet) {
@@ -131,7 +135,7 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public double getDeployAngleDeg() {
-    return m_deployMotorL.getEncoder().getPosition();
+    return m_deployMotorL.getEncoder().getPosition() * 360;
   }
 
   public double getDeployVelocityDegPerSec() {
@@ -143,11 +147,11 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public boolean isAtInLimit() {
-    return m_deployInLimit.get();
+    return !m_deployInLimit.get();
   }
 
   public boolean isAtOutLimit() {
-    return m_deployOutLimit.get();
+    return !m_deployOutLimit.get();
   }
 
   ////////////////////////////// Deploy automation //////////////////////////////
@@ -183,8 +187,10 @@ public class IntakeSub extends SubsystemBase {
     double pidVolts = m_deployPidController.calculate(currentAngle);
     TrapezoidProfile.State setPoint = m_deployPidController.getSetpoint();
     double ffVolts =
-        m_deployFeedforward.calculate(Math.toRadians(Constants.Intake.kDeployOutAngleDeg - 90), setPoint.velocity);
+        m_deployFeedforward.calculate(0, setPoint.velocity);
     double totalVolts = pidVolts + ffVolts;
+    SmartDashboard.putNumber("totalVolts", totalVolts);
+    SmartDashboard.putNumber("SETPOINT VELO", setPoint.velocity);
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
     MathUtil.clamp(totalVolts, -Constants.Intake.kDeployMaxPower * 12, Constants.Intake.kDeployMaxPower * 12);

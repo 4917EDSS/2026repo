@@ -40,12 +40,12 @@ public final class Constants {
   }
 
   public static class DioIds {
-    public static final int kClimbInLimitSwitch = 7;//1;
+    public static final int kClimbInLimitSwitch = 7;
     public static final int kClimbOutLimitSwitch = 2;
     public static final int kClimbCCWLimitSwitch = 3;
     public static final int kClimbCWLimitSwitch = 4;
-    public static final int kIntakeDeployInLimit = 0;//5;
-    public static final int kIntakeDeployOtherInLimit = 1;//6;
+    public static final int kIntakeDeployInLimit = 0;
+    public static final int kIntakeDeployOtherInLimit = 1;
   }
 
   public static class OperatorConstants {
@@ -115,18 +115,18 @@ public final class Constants {
 
   public static class Intake {
     // TODO:  Set all the values correctly
-    public static final double kDeployEncoderToDegConversionFactor = 1.0; // Gearing is 0.014368 (approx 1:69.5)
+    public static final double kDeployEncoderToDegConversionFactor = 0.002778; // Gearing is 0.014368 (approx 1:69.5)
     public static final double kDeployInAngleDeg = 0.0;
-    public static final double kDeployOutAngleDeg = 10.0;
+    public static final double kDeployOutAngleDeg = 54.0;
     public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxCurrent = 120.0;
     public static final double kDeployMaxPower = 0.25;
-    public static final double kDeployMaxVelocityDegPerSec = 22.0;
-    public static final double kDeployMaxAccelerationDegPerSec = 44.0;
-    public static final double kDeployKS = 0.0;
+    public static final double kDeployMaxVelocityDegPerSec = 50.0;
+    public static final double kDeployMaxAccelerationDegPerSec = 100.0;
+    public static final double kDeployKS = 0.3;
     public static final double kDeployKG = 0.0;
-    public static final double kDeployKV = 0.0;
-    public static final double kDeployKP = 0.0;
+    public static final double kDeployKV = 3.0 / 50.0;
+    public static final double kDeployKP = 0.0;//0.01;
     public static final double kDeployKI = 0.0;
     public static final double kDeployKD = 0.0;
 

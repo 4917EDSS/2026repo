@@ -151,6 +151,7 @@ public class HopperSub extends SubsystemBase {
     SmartDashboard.putNumber("Escalator Target", m_targetEscalatorVelocityRps);
     SmartDashboard.putNumber("Escalator Velocity", getEscalatorVelocityRotPerSec());
     SmartDashboard.putNumber("Escalator Power", m_escalatorMotor.get());
+    SmartDashboard.putBoolean("isFull", isFull());
 
   }
 
