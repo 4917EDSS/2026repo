@@ -93,7 +93,7 @@ public class ClimbSub extends SubsystemBase {
     MotionMagicConfigs mmcRotate = new MotionMagicConfigs();
     mmcRotate.MotionMagicCruiseVelocity = Constants.Climb.kRotateMaxVelocityMPerSec;
     mmcRotate.MotionMagicAcceleration = Constants.Climb.kRotateMaxAccelerationMPerSec;
-    talonFXConfiguratorDeploy.apply(mmcRotate);
+    talonFXConfiguratorRotate.apply(mmcRotate);
 
     // This is how you set a current limit inside the motor (vs on the input power supply)
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();

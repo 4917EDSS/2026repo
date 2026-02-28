@@ -34,7 +34,7 @@ import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
 import frc.robot.subsystems.VisionSub;
-import frc.robot.utils.CalculateShooterAiming;
+import frc.robot.utils.ShooterAimingCalcs;
 
 
 public class RobotContainer {
@@ -63,7 +63,7 @@ public class RobotContainer {
   public final ShooterSub m_shooterSub = new ShooterSub();
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
 
-  public final CalculateShooterAiming m_calculateShooterAiming = new CalculateShooterAiming();
+  public final ShooterAimingCalcs m_shooterAimingCalcs = new ShooterAimingCalcs();
 
   private SendableChooser<Command> m_Chooser = new SendableChooser<>();
 
@@ -81,9 +81,14 @@ public class RobotContainer {
             .withRotationalRate(-m_driverController.getRightX() * m_maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
+    // m_shooterSub.setDefaultCommand(new RunCommand(
+    //     () -> m_shooterSub.setPitchAndYawPower(-m_operatorController.getRightY() * 0.15,
+    //         m_operatorController.getLeftX() * 0.15),
+    //     m_shooterSub));
+
     m_shooterSub.setDefaultCommand(new RunCommand(
-        () -> m_shooterSub.setPitchAndYawPower(-m_operatorController.getRightY() * 0.15,
-            m_operatorController.getLeftX() * 0.15),
+        () -> m_shooterSub.setPitchYawFlywheelPower(m_shooterAimingCalcs.calculationsInMotion(m_drivetrainSub.getPose(),
+            m_drivetrainSub.getRobotRelativeSpeeds())),
         m_shooterSub));
   }
 
@@ -97,11 +102,11 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Driver A
-    m_driverController.a()
-        .onTrue(new ConditionalCommand(
-            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
-            new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)),
-            m_calculateShooterAiming.getLobbingMode()));
+    // m_driverController.a()
+    //     .onTrue(new ConditionalCommand(
+    // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
+    // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)),
+    // m_calculateShooterAiming.getLobbingMode()));
 
     // Driver B
 
