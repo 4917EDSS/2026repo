@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModuleState;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -302,8 +303,11 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
         m_hasAppliedOperatorPerspective = true;
       });
     }
-
-
+    var states = getState().ModuleStates;
+    SmartDashboard.putNumber("frontleft", states[0].angle.getRotations());
+    SmartDashboard.putNumber("frontright", states[1].angle.getRotations());
+    SmartDashboard.putNumber("backleft", states[2].angle.getRotations());
+    SmartDashboard.putNumber("backright", states[3].angle.getRotations());
     SmartDashboard.putNumber("current x", getState().Pose.getX());
     SmartDashboard.putNumber("current y", getState().Pose.getY());
     SmartDashboard.putNumber("current rot", getState().Pose.getRotation().getDegrees());
