@@ -65,8 +65,8 @@ public class RobotContainer {
     //     m_shooterSub));
 
     m_shooterSub.setDefaultCommand(new RunCommand(
-        () -> m_shooterAimingCalcs.calculationsInMotion(m_drivetrainSub.getPose(),
-            m_drivetrainSub.getRobotRelativeSpeeds()),
+        () -> m_shooterSub.setPitchYawFlywheelPower(m_shooterAimingCalcs.calculationsInMotion(m_drivetrainSub.getPose(),
+            m_drivetrainSub.getRobotRelativeSpeeds())),
         m_shooterSub));
 
     // Configure the trigger bindings

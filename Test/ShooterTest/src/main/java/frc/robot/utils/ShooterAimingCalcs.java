@@ -196,7 +196,7 @@ public class ShooterAimingCalcs {
   //       robot.getRotation().plus(new Rotation2d(Math.toRadians(offsetRot))))); // Returns a new pose2d with the offset added
   // }
 
-  public void calculationsInMotion(Pose2d robot, ChassisSpeeds velocity) {
+  public double[] calculationsInMotion(Pose2d robot, ChassisSpeeds velocity) {
     double velocityX = velocity.vxMetersPerSecond;
     double velocityY = velocity.vyMetersPerSecond;
     double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
@@ -208,5 +208,8 @@ public class ShooterAimingCalcs {
     calculateShooterPitchDegrees(offsetPos);
     calculateShooterYawDegrees(offsetPos);
     calculateShooterFlywheelRps(offsetPos);
+    double[] trajectoriesArray = {calculateShooterPitchDegrees(offsetPos), calculateShooterYawDegrees(offsetPos),
+        calculateShooterFlywheelRps(offsetPos)};
+    return trajectoriesArray;
   }
 }

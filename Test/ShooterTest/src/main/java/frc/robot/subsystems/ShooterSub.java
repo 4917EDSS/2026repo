@@ -480,9 +480,9 @@ public class ShooterSub extends SubsystemBase {
 
 
   //RUN ALL CONTROL ALGORTHMS
-  public void setPitchYawFlywheelPower(double pitch, double yaw, double flywheel) {
-    setPitchPower(pitch);
-    setYawPower(yaw);
-    setFlywheelPower(flywheel);
+  public void setPitchYawFlywheelPower(double[] trajectoriesArray) {
+    setPitchPower(trajectoriesArray[0]);
+    setYawPower(trajectoriesArray[1]);
+    setFlywheelPower(trajectoriesArray[2]);
   }
 }
