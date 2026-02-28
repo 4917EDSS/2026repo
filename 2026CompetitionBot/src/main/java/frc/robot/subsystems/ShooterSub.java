@@ -484,4 +484,11 @@ public class ShooterSub extends SubsystemBase {
   public Command flywheelSysIdDynamicCmd(SysIdRoutine.Direction dir) {
     return m_flywheelSysIdRoutine.dynamic(dir);
   }
+
+  //RUN ALL CONTROL ALGORTHMS
+  public void setPitchYawFlywheelPower(double[] trajectoriesArray) {
+    setPitchPower(trajectoriesArray[0]);
+    setYawPower(trajectoriesArray[1]);
+    setFlywheelPower(trajectoriesArray[2]);
+  }
 }
