@@ -35,20 +35,6 @@ public class IntakeSub extends SubsystemBase {
   private final DigitalInput m_deployInLimit = new DigitalInput(Constants.DioIds.kIntakeDeployInLimit);
   private final DigitalInput m_deployOutLimit = new DigitalInput(Constants.DioIds.kIntakeDeployOtherInLimit);
 
-  private final SysIdRoutine m_deploySysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(
-          Units.Volts.per(Units.Seconds).of(0.5),
-          Units.Volts.of(2.0),
-          Units.Seconds.of(8.0)),
-      new SysIdRoutine.Mechanism(
-          (voltage) -> runDeploySysIdVolts(voltage.in(Units.Volts)),
-          (SysIdRoutineLog log) -> {
-            log.motor("intakeDeploy")
-                .voltage(Units.Volts.of(m_deployMotorL.getAppliedOutput() * RobotController.getBatteryVoltage()))
-                .angularPosition(Units.Degrees.of(getDeployAngleDeg()))
-                .angularVelocity(Units.DegreesPerSecond.of(getDeployVelocityDegPerSec()));
-          },
-          this));
 
   private final ArmFeedforward m_deployFeedforward =
       new ArmFeedforward(Constants.Intake.kDeployKS, Constants.Intake.kDeployKG, Constants.Intake.kDeployKV);
@@ -203,6 +189,21 @@ public class IntakeSub extends SubsystemBase {
   }
 
   ////////////////////////////// Deploy SysId and Test //////////////////////////////
+  private final SysIdRoutine m_deploySysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Seconds).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runDeploySysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("intakeDeploy")
+                .voltage(Units.Volts.of(m_deployMotorL.getAppliedOutput() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Degrees.of(getDeployAngleDeg()))
+                .angularVelocity(Units.DegreesPerSecond.of(getDeployVelocityDegPerSec()));
+          },
+          this));
+  
   public void runDeploySysIdVolts(double volts) {
     // Make sure we're not pushing past the limits
     if(((volts > 0) && isAtOutLimit()) || ((volts < 0) && isAtInLimit())) {
