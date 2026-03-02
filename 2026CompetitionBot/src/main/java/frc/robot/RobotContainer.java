@@ -46,8 +46,8 @@ public class RobotContainer {
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric m_drive = new SwerveRequest.FieldCentric()
-      .withDeadband(m_maxSpeed * 0.05).withRotationalDeadband(m_maxAngularRate * 0.1) // Add a 10% deadband
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+      .withDeadband(m_maxSpeed * 0.01).withRotationalDeadband(m_maxAngularRate * 0.05) // Add a 10% deadband
+      .withDriveRequestType(DriveRequestType.Velocity); // Use open-loop control for drive motors
 
   // Controllers
   private final CommandXboxController m_driverController =
@@ -113,13 +113,16 @@ public class RobotContainer {
 
     // Driver B
 
-    // Driver X
-    m_driverController.x()
-        .whileTrue(
-            new DriveToPoseCmd(new Pose2d(new Translation2d(15.23, 5.26), new Rotation2d(Math.toRadians(-90.0))),
-                m_drivetrainSub));
+    // // Driver X
+    // m_driverController.x()
+    //     .whileTrue(
+    //         new DriveToPoseCmd(new Pose2d(new Translation2d(15.23, 5.26), new Rotation2d(Math.toRadians(-90.0))),
+    //             m_drivetrainSub));
 
-    // Driver Y
+    // // Driver Y
+    // m_driverController.y()
+    //     .whileTrue(
+    //         m_drivetrainSub.applyRequest(() -> m_drive.withVelocityX(9999.9).withVelocityY(0).withRotationalRate(0)));
 
     // Driver Left Bumper
 
@@ -192,6 +195,7 @@ public class RobotContainer {
     m_operatorController.y()
         .whileTrue(new StartEndCommand(() -> m_intakeSub.setBeltPower(-0.1), () -> m_intakeSub.setBeltPower(0.0),
             m_intakeSub));
+
 
     // Operator Left Bumper
     m_operatorController.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(-0.1),
