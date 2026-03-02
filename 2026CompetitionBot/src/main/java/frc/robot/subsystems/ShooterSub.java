@@ -44,52 +44,7 @@ public class ShooterSub extends SubsystemBase {
   private final TalonFX m_flywheelMotorL = new TalonFX(Constants.CanIds.kShooterFlywheelMotorL); // Make ABSOLUTELY sure its left
   private final TalonFX m_flywheelMotorR = new TalonFX(Constants.CanIds.kShooterFlywheelMotorR);
 
-  private final SysIdRoutine m_yawSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(
-          Units.Volts.per(Units.Second).of(0.5),
-          Units.Volts.of(2.0),
-          Units.Seconds.of(8.0)),
-      new SysIdRoutine.Mechanism(
-          (voltage) -> runYawSysIdVolts(voltage.in(Units.Volts)),
-          (SysIdRoutineLog log) -> {
-            log.motor("shooterYaw")
-                .voltage(Units.Volts.of(m_yawMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
-                .angularPosition(Units.Degrees.of(getYawAngleDeg()))
-                .angularVelocity(Units.DegreesPerSecond.of(getYawVelocityDegPerSec()));
-          },
-          this));
 
-  private final SysIdRoutine m_pitchSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(
-          Units.Volts.per(Units.Second).of(0.5),
-          Units.Volts.of(2.0),
-          Units.Seconds.of(8.0)),
-      new SysIdRoutine.Mechanism(
-          (voltage) -> runPitchSysIdVolts(voltage.in(Units.Volts)),
-          (SysIdRoutineLog log) -> {
-            log.motor("shooterPtc")
-                .voltage(Units.Volts.of(m_pitchMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
-                .angularPosition(Units.Degrees.of(getPitchAngleDeg()))
-                .angularVelocity(Units.DegreesPerSecond.of(getPitchVelocityDegPerSec()));
-          },
-          this));
-
-
-  private final SysIdRoutine m_flywheelSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(
-          Units.Volts.per(Units.Second).of(0.5),
-          Units.Volts.of(2.0),
-          Units.Seconds.of(8.0)),
-      new SysIdRoutine.Mechanism(
-          (voltage) -> runFlywheelSysIdVolts(voltage.in(Units.Volts)),
-          (SysIdRoutineLog log) -> {
-            log.motor("shooterFlywheel")
-                .voltage(Units.Volts.of(m_flywheelMotorL.get() * RobotController.getBatteryVoltage()))
-                .angularPosition(Units.Rotations.of(getFlywheelPositionRot()))
-                .angularVelocity(Units.RotationsPerSecond.of(getFlywheelVelocityRotsPerSec()));
-          },
-          this //subsystem we are testing
-      ));
 
   private final SimpleMotorFeedforward m_yawFeedforward =
       new SimpleMotorFeedforward(Constants.Shooter.kYawKS, Constants.Shooter.kYawKV);
@@ -424,6 +379,21 @@ public class ShooterSub extends SubsystemBase {
 
 
   ////////////////////////////// Yaw SysId //////////////////////////////
+    private final SysIdRoutine m_yawSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runYawSysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("shooterYaw")
+                .voltage(Units.Volts.of(m_yawMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Degrees.of(getYawAngleDeg()))
+                .angularVelocity(Units.DegreesPerSecond.of(getYawVelocityDegPerSec()));
+          },
+          this));
+
   public void runYawSysIdVolts(double volts) {
     //if we hit a limit switch then don't set volts
     if(isAtYawAtCCWLimit() && volts > 0 || isAtYawAtCWLimit() && volts < 0) {
@@ -445,6 +415,22 @@ public class ShooterSub extends SubsystemBase {
 
 
   ////////////////////////////// Pitch SysId //////////////////////////////
+    private final SysIdRoutine m_pitchSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runPitchSysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("shooterPtc")
+                .voltage(Units.Volts.of(m_pitchMotor.getAppliedOutput() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Degrees.of(getPitchAngleDeg()))
+                .angularVelocity(Units.DegreesPerSecond.of(getPitchVelocityDegPerSec()));
+          },
+          this));
+
+
   public void runPitchSysIdVolts(double volts) {
     //if we hit a limit switch then don't set volts
     if(isAtPitchUpperLimit() && volts > 0 || isAtPitchLowerLimit() && volts < 0) {
@@ -466,6 +452,23 @@ public class ShooterSub extends SubsystemBase {
 
 
   ////////////////////////////// Flywheel SysId //////////////////////////////
+  
+  private final SysIdRoutine m_flywheelSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runFlywheelSysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("shooterFlywheel")
+                .voltage(Units.Volts.of(m_flywheelMotorL.get() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Rotations.of(getFlywheelPositionRot()))
+                .angularVelocity(Units.RotationsPerSecond.of(getFlywheelVelocityRotsPerSec()));
+          },
+          this //subsystem we are testing
+      ));
+  
   public void runFlywheelSysIdVolts(double volts) {
     // Make sure we don't exceed our maxiumum allowed power (relative to 12.0 volts)
 
