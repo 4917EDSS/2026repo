@@ -33,36 +33,6 @@ public class HopperSub extends SubsystemBase {
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kHopperSingulatorMotor);
   private final TalonFX m_escalatorMotor = new TalonFX(Constants.CanIds.kHopperEscalatorMotor);
 
-  private final SysIdRoutine m_singulatorSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(
-          Units.Volts.per(Units.Second).of(0.5),
-          Units.Volts.of(2.0),
-          Units.Seconds.of(8.0)),
-      new SysIdRoutine.Mechanism(
-          (voltage) -> runSingulatorSysIdVolts(voltage.in(Units.Volts)),
-          (SysIdRoutineLog log) -> {
-            log.motor("hopperSingulator")
-                .voltage(Units.Volts.of(m_singulatorMotor.get() * RobotController.getBatteryVoltage()))
-                .angularPosition(Units.Rotations.of(getSingulatorRot()))
-                .angularVelocity(Units.RotationsPerSecond.of(getSingulatorVelocityRotPerSec()));
-          },
-          this));
-
-  private final SysIdRoutine m_escalatorSysIdRoutine = new SysIdRoutine(
-      new SysIdRoutine.Config(
-          Units.Volts.per(Units.Second).of(0.5), // Ramp rate (V/s) is how fast the quasistatic test increases the voltage
-          Units.Volts.of(2.0), // Step voltage (V) is the voltage used for the dynamic test (0V right to this voltage)
-          Units.Seconds.of(8.0) //  Timeout (s) is the time at which the test quits (for safety purposes)
-      ),
-      new SysIdRoutine.Mechanism(
-          (voltage) -> runEscalatorSysIdVolts(voltage.in(Units.Volts)), // Voltage Consumer is a method that sets the motor voltage to use for the next test step
-          (SysIdRoutineLog log) -> { // Log consumer is a method that returns all of the data from the sensors that we need to collect
-            log.motor("Hopper Escalator")
-                .voltage(Units.Volts.of(m_escalatorMotor.get() * RobotController.getBatteryVoltage()))
-                .angularPosition(Units.Rotations.of(getEscalatorPositionRot()))
-                .angularVelocity(Units.RotationsPerSecond.of(getEscalatorVelocityRotPerSec()));
-          },
-          this));
 
 
   private final CanSub m_canSub;
@@ -278,6 +248,21 @@ public class HopperSub extends SubsystemBase {
     return m_escalatorSysIdRoutine.dynamic(dir);
   }
 
+  private final SysIdRoutine m_escalatorSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5), // Ramp rate (V/s) is how fast the quasistatic test increases the voltage
+          Units.Volts.of(2.0), // Step voltage (V) is the voltage used for the dynamic test (0V right to this voltage)
+          Units.Seconds.of(8.0) //  Timeout (s) is the time at which the test quits (for safety purposes)
+      ),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runEscalatorSysIdVolts(voltage.in(Units.Volts)), // Voltage Consumer is a method that sets the motor voltage to use for the next test step
+          (SysIdRoutineLog log) -> { // Log consumer is a method that returns all of the data from the sensors that we need to collect
+            log.motor("Hopper Escalator")
+                .voltage(Units.Volts.of(m_escalatorMotor.get() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Rotations.of(getEscalatorPositionRot()))
+                .angularVelocity(Units.RotationsPerSecond.of(getEscalatorVelocityRotPerSec()));
+          },
+          this))
   ////////////////////////////// Singulator SysId and Tests //////////////////////////////
   public void runSingulatorSysIdVolts(double volts) {
     //check if we're at max power
@@ -294,6 +279,21 @@ public class HopperSub extends SubsystemBase {
     return m_singulatorSysIdRoutine.dynamic(dir);
   }
 
+  private final SysIdRoutine m_singulatorSysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          Units.Volts.per(Units.Second).of(0.5),
+          Units.Volts.of(2.0),
+          Units.Seconds.of(8.0)),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> runSingulatorSysIdVolts(voltage.in(Units.Volts)),
+          (SysIdRoutineLog log) -> {
+            log.motor("hopperSingulator")
+                .voltage(Units.Volts.of(m_singulatorMotor.get() * RobotController.getBatteryVoltage()))
+                .angularPosition(Units.Rotations.of(getSingulatorRot()))
+                .angularVelocity(Units.RotationsPerSecond.of(getSingulatorVelocityRotPerSec()));
+          },
+          this));
+;
 
 }
 
