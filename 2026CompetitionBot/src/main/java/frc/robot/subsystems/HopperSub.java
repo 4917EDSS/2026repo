@@ -34,7 +34,6 @@ public class HopperSub extends SubsystemBase {
   private final TalonFX m_escalatorMotor = new TalonFX(Constants.CanIds.kHopperEscalatorMotor);
 
 
-
   private final CanSub m_canSub;
 
   // Request objects for velocity PID control
@@ -262,7 +261,8 @@ public class HopperSub extends SubsystemBase {
                 .angularPosition(Units.Rotations.of(getEscalatorPositionRot()))
                 .angularVelocity(Units.RotationsPerSecond.of(getEscalatorVelocityRotPerSec()));
           },
-          this))
+          this));
+
   ////////////////////////////// Singulator SysId and Tests //////////////////////////////
   public void runSingulatorSysIdVolts(double volts) {
     //check if we're at max power
@@ -293,7 +293,6 @@ public class HopperSub extends SubsystemBase {
                 .angularVelocity(Units.RotationsPerSecond.of(getSingulatorVelocityRotPerSec()));
           },
           this));
-;
 
 }
 

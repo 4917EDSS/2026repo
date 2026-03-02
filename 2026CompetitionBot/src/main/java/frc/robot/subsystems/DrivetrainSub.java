@@ -312,6 +312,10 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     SmartDashboard.putNumber("current y", getState().Pose.getY());
     SmartDashboard.putNumber("current rot", getState().Pose.getRotation().getDegrees());
     SmartDashboard.putNumber("Time", DriverStation.getMatchTime());
+    SmartDashboard.putNumber("Velocity fl", states[0].speedMetersPerSecond);
+    SmartDashboard.putNumber("Velocity fr", states[1].speedMetersPerSecond);
+    SmartDashboard.putNumber("Velocity bl", states[2].speedMetersPerSecond);
+    SmartDashboard.putNumber("Velocity br", states[3].speedMetersPerSecond);
     m_field.setRobotPose(getState().Pose);
     //m_field.allianceColor = 
   }
