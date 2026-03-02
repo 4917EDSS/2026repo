@@ -7,12 +7,15 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,7 +32,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
-import frc.robot.subsystems.FeedbackSub;
 import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
@@ -53,11 +55,12 @@ public class RobotContainer {
   private final CommandXboxController m_operatorController =
       new CommandXboxController(Constants.OperatorConstants.kOperatorControllerPort);
 
+  private Instant m_stopVibratingTime = null;
+
   // The robot's subsystems and commands are defined here
   public final CanSub m_canSub = new CanSub(1);
   public final ClimbSub m_climbSub = new ClimbSub();
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
-  public final FeedbackSub m_feedbackSub = new FeedbackSub(m_driverController);
   public final HopperSub m_hopperSub = new HopperSub(m_canSub);
   public final IntakeSub m_intakeSub = new IntakeSub();
   public final ShooterSub m_shooterSub = new ShooterSub();
@@ -258,10 +261,37 @@ public class RobotContainer {
     m_canSub.init();
     m_climbSub.init();
     m_drivetrainSub.init();
-    m_feedbackSub.init();
     m_hopperSub.init();
     m_intakeSub.init();
     m_shooterSub.init();
     m_visionSub.init();
+  }
+
+  public void vibrateFeedback(Integer seconds) {
+    m_stopVibratingTime = Instant.now().plus(seconds, ChronoUnit.SECONDS);
+    enableVibration();
+    //Rumble requires the Driver Station, it does not work in the simulator
+  }
+
+  private void enableVibration() {
+    m_driverController.getHID().setRumble(RumbleType.kBothRumble, 1.0);
+  }
+
+  private void disableVibration() {
+    m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0.0);
+  }
+
+  public Command vibrate(Integer duration) {
+    //return new Command(()-> vibrateFeedback(duration));
+    //return new StartEndCommand(null, null, null)
+    return m_drivetrainSub.run(() -> vibrateFeedback(duration)); //Maybe wrong subsystem for drivetrain
+  }
+
+  //Vibrations for Joysticks
+  public void vibrateIfNeeded() {
+    if(m_stopVibratingTime != null)
+      if(m_stopVibratingTime.isBefore(Instant.now())) {
+        disableVibration();
+      }
   }
 }
