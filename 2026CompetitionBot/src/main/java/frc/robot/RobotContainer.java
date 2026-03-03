@@ -255,9 +255,8 @@ public class RobotContainer {
    * Create a list of auto period action choices+
    */
   void autoChooserSetup() {
-    // TODO: Let's be more descriptive and say what the auto does rather than how much we think it will score
-    m_Chooser.addOption("70pt auto", new PathPlannerAuto("70 Point Auto"));
-    m_Chooser.addOption("test auto", new PathPlannerAuto("70 Point Test"));
+    m_Chooser.addOption("Straight 3m", new PathPlannerAuto("Go Straight"));
+    m_Chooser.addOption("Test Auto", new PathPlannerAuto("Test Auto"));
     SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 

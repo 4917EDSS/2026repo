@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Snowplow middle"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Move to alliance zone after snow or mess up and shoot "
+            "pathName": "Straight Test"
           }
         }
       ]
