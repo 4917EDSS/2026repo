@@ -288,7 +288,7 @@ public class RobotContainer {
   public Command vibrate(Integer duration) {
     //return new Command(()-> vibrateFeedback(duration));
     //return new StartEndCommand(null, null, null)
-    return m_drivetrainSub.run(() -> vibrateFeedback(duration)); //Maybe wrong subsystem for drivetrain
+    return new InstantCommand(() -> vibrateFeedback(duration)); //Maybe wrong subsystem for drivetrain
   }
 
   //Vibrations for Joysticks
