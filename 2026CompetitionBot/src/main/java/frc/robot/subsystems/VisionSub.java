@@ -25,6 +25,7 @@ public class VisionSub extends SubsystemBase {
    */
 
   private static String LEFT = "limelight-left";
+  private static String MIDDLE = "limelight-middle";
   private static String RIGHT = "limelight-right";
   private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
 
@@ -37,6 +38,7 @@ public class VisionSub extends SubsystemBase {
   DrivetrainSub m_drivetrainSub = null;
 
   NetworkTable m_networkTableL = NetworkTableInstance.getDefault().getTable(LEFT);
+  NetworkTable m_NetworkTableM = NetworkTableInstance.getDefault().getTable(MIDDLE);
   NetworkTable m_networkTableR = NetworkTableInstance.getDefault().getTable(RIGHT);
   NetworkTable m_mainNetworkTable;
 

@@ -52,25 +52,30 @@ public class IntakeSub extends SubsystemBase {
   /** Creates a new IntakeSub. */
   public IntakeSub() { // Motor Configs need to be tested
     m_deployPidController.setTolerance(Constants.Intake.kDeployToleranceDeg);
-    SparkMaxConfig motorConfig = new SparkMaxConfig();
-    motorConfig
+    SparkMaxConfig deployMotorConfig = new SparkMaxConfig();
+    deployMotorConfig
         .inverted(false) // Set to true to invert the forward motor direction
         .smartCurrentLimit(100) // Current limit in amps
-        .idleMode(IdleMode.kCoast).encoder
+        .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor)
             .velocityConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor); // Should not be reading deploy velocity (outside of possible kD)
 
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this
     // operation can be slow
-    m_deployMotorL.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_deployMotorL.configure(deployMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig followConfig = new SparkMaxConfig();
     followConfig.follow(Constants.CanIds.kIntakeDeployMotorL, false);
     m_deployMotorR.configure(followConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    motorConfig.encoder.positionConversionFactor(1.0); // Don't care about the belt position.  Vortex is 1:1 gearing.
-    m_beltMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    SparkMaxConfig beltMotorConfig = new SparkMaxConfig();
+    beltMotorConfig
+        .inverted(false) // Set to true to invert the forward motor direction
+        .smartCurrentLimit(100) // Current limit in amps
+        .idleMode(IdleMode.kCoast);
+
+    m_beltMotor.configure(beltMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public void init() {
@@ -203,7 +208,7 @@ public class IntakeSub extends SubsystemBase {
                 .angularVelocity(Units.DegreesPerSecond.of(getDeployVelocityDegPerSec()));
           },
           this));
-  
+
   public void runDeploySysIdVolts(double volts) {
     // Make sure we're not pushing past the limits
     if(((volts > 0) && isAtOutLimit()) || ((volts < 0) && isAtInLimit())) {
