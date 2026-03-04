@@ -45,7 +45,6 @@ public class ShooterSub extends SubsystemBase {
   private final TalonFX m_flywheelMotorR = new TalonFX(Constants.CanIds.kShooterFlywheelMotorR);
 
 
-
   private final SimpleMotorFeedforward m_yawFeedforward =
       new SimpleMotorFeedforward(Constants.Shooter.kYawKS, Constants.Shooter.kYawKV);
   private final TrapezoidProfile.Constraints m_yawProfileConstraints = new TrapezoidProfile.Constraints(
@@ -183,6 +182,18 @@ public class ShooterSub extends SubsystemBase {
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
     // flywheel control done on talonfx
+  }
+
+  public void setFlywheelTuningConstants(double kS, double kV, double kP, double kI, double kD) {
+    TalonFXConfigurator talonFXConfigurator1 = m_flywheelMotorL.getConfigurator();
+    Slot0Configs slot0FlywheelConfigs = new Slot0Configs();
+    slot0FlywheelConfigs.kS = kS;
+    slot0FlywheelConfigs.kV = kV;
+    slot0FlywheelConfigs.kP = kP;
+    slot0FlywheelConfigs.kI = kI;
+    slot0FlywheelConfigs.kD = kD;
+    talonFXConfigurator1.apply(slot0FlywheelConfigs);
+    System.out.println("Shooter" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
   }
 
   public void setYawPower(double power) {
@@ -379,7 +390,7 @@ public class ShooterSub extends SubsystemBase {
 
 
   ////////////////////////////// Yaw SysId //////////////////////////////
-    private final SysIdRoutine m_yawSysIdRoutine = new SysIdRoutine(
+  private final SysIdRoutine m_yawSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
           Units.Volts.per(Units.Second).of(0.5),
           Units.Volts.of(2.0),
@@ -415,7 +426,7 @@ public class ShooterSub extends SubsystemBase {
 
 
   ////////////////////////////// Pitch SysId //////////////////////////////
-    private final SysIdRoutine m_pitchSysIdRoutine = new SysIdRoutine(
+  private final SysIdRoutine m_pitchSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
           Units.Volts.per(Units.Second).of(0.5),
           Units.Volts.of(2.0),
@@ -452,7 +463,7 @@ public class ShooterSub extends SubsystemBase {
 
 
   ////////////////////////////// Flywheel SysId //////////////////////////////
-  
+
   private final SysIdRoutine m_flywheelSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
           Units.Volts.per(Units.Second).of(0.5),
@@ -468,7 +479,7 @@ public class ShooterSub extends SubsystemBase {
           },
           this //subsystem we are testing
       ));
-  
+
   public void runFlywheelSysIdVolts(double volts) {
     // Make sure we don't exceed our maxiumum allowed power (relative to 12.0 volts)
 

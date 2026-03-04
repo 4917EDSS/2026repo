@@ -74,7 +74,11 @@ public class RobotContainer {
     configureBindings();
     registerNameCommand();
     autoChooserSetup();
-
+    SmartDashboard.putNumber("kS", 0.0);
+    SmartDashboard.putNumber("kV", 0.0);
+    SmartDashboard.putNumber("kP", 0.0);
+    SmartDashboard.putNumber("kI", 0.0);
+    SmartDashboard.putNumber("kD", 0.0);
     // Note that X (coordinate) is defined as forward according to WPILib convention,
     // and Y (coordinate) is defined as to the left according to WPILib convention.
     m_drivetrainSub.setDefaultCommand(
@@ -138,8 +142,8 @@ public class RobotContainer {
     m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
 
     // Driver Right Trigger
-    m_driverController.rightTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorTargetVelocity(3),
-        () -> m_hopperSub.setSingulatorTargetVelocity(0))); // Should be 9 balls per second
+    m_driverController.rightTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setShooting(),
+        () -> m_hopperSub.disableShooting())); // Should be 9 balls per second
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading
@@ -231,9 +235,12 @@ public class RobotContainer {
     // Operator POV Right
 
     // Operator POV Down
-    m_operatorController.povDown().whileTrue(
-        new StartEndCommand(() -> m_climbSub.setTargetDeployDistance(0.1),
-            () -> m_climbSub.setTargetDeployDistance(0.0), m_climbSub));
+    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_hopperSub.setSingulatorTuningConstants( //this is just for tuning, delete for competitions
+        SmartDashboard.getNumber("kS", 0.0),
+        SmartDashboard.getNumber("kV", 0.0),
+        SmartDashboard.getNumber("kP", 0.0),
+        SmartDashboard.getNumber("kI", 0.0),
+        SmartDashboard.getNumber("kD", 0.0))));
 
     // Operator POV Left
 

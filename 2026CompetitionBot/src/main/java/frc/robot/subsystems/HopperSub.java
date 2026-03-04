@@ -124,6 +124,42 @@ public class HopperSub extends SubsystemBase {
 
   }
 
+  public void setShooting() {
+    setSingulatorTargetVelocity(Constants.Hopper.kSingulatorMaxVelocityRotPerSec);
+    setEscalatorTargetVelocity(Constants.Hopper.kEscalatorMaxVelocityRotPerSec);
+    enableSingulatorAutomation();
+    enableEscalatorAutomation();
+  }
+
+  public void disableShooting() {
+    disableSingulatorAutomation();
+    disableEscalatorAutomation();
+  }
+
+  public void setSingulatorTuningConstants(double kS, double kV, double kP, double kI, double kD) {
+    TalonFXConfigurator talonFxSingulatorConfigurator = m_singulatorMotor.getConfigurator();
+    Slot0Configs slot0SingulatorConfigs = new Slot0Configs();
+    slot0SingulatorConfigs.kS = kS; // Add voltage to overcome static friction
+    slot0SingulatorConfigs.kV = kV; // A velocity target of 1 rps results in X volts
+    slot0SingulatorConfigs.kP = kP;
+    slot0SingulatorConfigs.kI = kI;
+    slot0SingulatorConfigs.kD = kD;
+    talonFxSingulatorConfigurator.apply(slot0SingulatorConfigs);
+    System.out.println("Singulator" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
+  }
+
+  public void setEscalatorTuningConstants(double kS, double kV, double kP, double kI, double kD) {
+    TalonFXConfigurator talonFxEscalatorConfigurator = m_escalatorMotor.getConfigurator();
+    Slot0Configs slot0EscalatorConfigs = new Slot0Configs();
+    slot0EscalatorConfigs.kS = Constants.Hopper.kEscalatorKS;
+    slot0EscalatorConfigs.kV = Constants.Hopper.kEscalatorKV;
+    slot0EscalatorConfigs.kP = Constants.Hopper.kEscalatorKP;
+    slot0EscalatorConfigs.kI = Constants.Hopper.kEscalatorKI;
+    slot0EscalatorConfigs.kD = Constants.Hopper.kEscalatorKD;
+    talonFxEscalatorConfigurator.apply(slot0EscalatorConfigs);
+    System.out.println("Escalator" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
+  }
+
   public void setSingulatorPower(double power) {
     // Disable TalonFX velocity control to stop interferring 
     disableSingulatorAutomation();
@@ -141,7 +177,7 @@ public class HopperSub extends SubsystemBase {
 
   public void setEscalatorVoltage(double volts) {
     SmartDashboard.putNumber("Hop Esc Volts", volts);
-    m_escalatorMotor.set(volts);
+    m_escalatorMotor.setVoltage(volts);
   }
 
   public double getSingulatorRot() {
@@ -151,7 +187,6 @@ public class HopperSub extends SubsystemBase {
   public double getSingulatorVelocityRotPerSec() {
     return m_singulatorMotor.getVelocity().getValueAsDouble();
   }
-
 
   public double getEscalatorPositionRot() {
     return m_escalatorMotor.getPosition().getValueAsDouble();
@@ -178,14 +213,14 @@ public class HopperSub extends SubsystemBase {
   }
 
   ////////////////////////////// Singulator automation //////////////////////////////
-  public void enableSingulatorAutomation() {
+  private void enableSingulatorAutomation() {
     m_singulatorAutomationEnabled = true;
     // Use TalonFX's PID control to set velocity
     m_singulatorMotor.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetSingulatorVelocityRps)
         .withFeedForward(Constants.Hopper.kSingulatorKV));
   }
 
-  public void disableSingulatorAutomation() {
+  private void disableSingulatorAutomation() {
     m_singulatorAutomationEnabled = false;
     m_singulatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
   }
@@ -196,7 +231,7 @@ public class HopperSub extends SubsystemBase {
     enableSingulatorAutomation();
   }
 
-  public boolean isSingulatorAtTargetVelocity() {
+  private boolean isSingulatorAtTargetVelocity() {
     if(Math.abs(m_targetSingulatorVelocityRps
         - getSingulatorVelocityRotPerSec()) < Constants.Hopper.kSingulatorVelocityToleranceRotPerSec) {
       return true;
@@ -205,24 +240,24 @@ public class HopperSub extends SubsystemBase {
   }
 
   ////////////////////////////// Escalator automation //////////////////////////////
-  public void enableEscalatorAutomation() {
+  private void enableEscalatorAutomation() {
     m_escalatorAutomationEnabled = true;
     // Use TalonFX's PID control to set velocity
     m_escalatorMotor.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetEscalatorVelocityRps));
   }
 
-  public void disableEscalatorAutomation() {
+  private void disableEscalatorAutomation() {
     m_escalatorAutomationEnabled = false;
     m_escalatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
   }
 
   // Set Escalator velocity with PID in RPS
-  public void setEscalatorVelocity(double velocityRps) {
+  private void setEscalatorTargetVelocity(double velocityRps) {
     m_targetEscalatorVelocityRps = velocityRps;
     enableEscalatorAutomation();
   }
 
-  public boolean isEscalatorAtTargetVelocity() {
+  private boolean isEscalatorAtTargetVelocity() {
     if(Math
         .abs(m_targetEscalatorVelocityRps
             - getEscalatorVelocityRotPerSec()) < Constants.Hopper.kEscalatorVelocityToleranceRotPerSec) {
@@ -232,18 +267,18 @@ public class HopperSub extends SubsystemBase {
   }
 
   ////////////////////////////// Escalator SysId and Tests //////////////////////////////
-  public void runEscalatorSysIdVolts(double volts) {
+  private void runEscalatorSysIdVolts(double volts) {
     volts = MathUtil.clamp(volts, -(Constants.Hopper.kEscalatorMaxPower * 12.0),
         (Constants.Hopper.kEscalatorMaxPower * 12.0));
     setEscalatorVoltage(volts);
     // TODO: Implement this
   }
 
-  public Command escalatorSysIdQuasistaticCmd(SysIdRoutine.Direction dir) {
+  private Command escalatorSysIdQuasistaticCmd(SysIdRoutine.Direction dir) {
     return m_escalatorSysIdRoutine.quasistatic(dir);
   }
 
-  public Command escalatorSysIdDynamicCmd(SysIdRoutine.Direction dir) {
+  private Command escalatorSysIdDynamicCmd(SysIdRoutine.Direction dir) {
     return m_escalatorSysIdRoutine.dynamic(dir);
   }
 
@@ -293,6 +328,7 @@ public class HopperSub extends SubsystemBase {
                 .angularVelocity(Units.RotationsPerSecond.of(getSingulatorVelocityRotPerSec()));
           },
           this));
+
 
 }
 
