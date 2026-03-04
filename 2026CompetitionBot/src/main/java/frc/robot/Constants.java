@@ -134,6 +134,8 @@ public final class Constants {
     public static final double kBeltPower = 1.0;
 
     public static final double kHoldPositionPidPower = 0.001;
+    public static final double kDeploySafetyZoneSize = 10;
+    public static final double kDeploySafetyPower = 0.15;
   }
 
   public static class Shooter {

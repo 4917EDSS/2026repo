@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveToPoseCmd;
-import frc.robot.commands.IntakeDeployCmd;
+import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
@@ -102,6 +103,9 @@ public class RobotContainer {
 
   private void registerNameCommand() {
     // TODO: Add commands that PathPlanner needs access to here
+    NamedCommands.registerCommand("IntakeDeployCmd", new IntakeToggleCmd(m_hopperSub, m_intakeSub, true));
+
+    NamedCommands.registerCommand("IntakeRetractCmd", new IntakeToggleCmd(m_hopperSub, m_intakeSub, false));
   }
 
   /*
@@ -139,7 +143,7 @@ public class RobotContainer {
                     () -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationFinalAngleDeg), m_climbSub)));
 
     // Driver Left Trigger
-    m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
+    m_driverController.leftTrigger().whileTrue(new IntakeToggleCmd(m_hopperSub, m_intakeSub));
 
     // Driver Right Trigger
     m_driverController.rightTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setShooting(),
