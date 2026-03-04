@@ -133,7 +133,8 @@ public class RobotContainer {
     //         m_drivetrainSub.applyRequest(() -> m_drive.withVelocityX(9999.9).withVelocityY(0).withRotationalRate(0)));
 
     // Driver Left Bumper
-
+    m_driverController.leftBumper().whileTrue(new StartEndCommand(() -> m_shooterSub.enableFlyhweelAutomation(),
+        () -> m_shooterSub.disableFlywheelAutomation()));
     // Driver Right Bumper
     m_driverController.rightBumper()
         .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceM),
@@ -147,7 +148,7 @@ public class RobotContainer {
 
     // Driver Right Trigger
     m_driverController.rightTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setShooting(),
-        () -> m_hopperSub.disableShooting())); // Should be 9 balls per second
+        () -> m_hopperSub.disableShooting()));
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading
