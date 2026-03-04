@@ -133,8 +133,9 @@ public class RobotContainer {
     //         m_drivetrainSub.applyRequest(() -> m_drive.withVelocityX(9999.9).withVelocityY(0).withRotationalRate(0)));
 
     // Driver Left Bumper
-    m_driverController.leftBumper().whileTrue(new StartEndCommand(() -> m_shooterSub.enableFlyhweelAutomation(),
-        () -> m_shooterSub.disableFlywheelAutomation()));
+    m_driverController.leftBumper().whileTrue(new StartEndCommand(() -> {
+      m_shooterSub.setTargetFlywheelVelocity(100);
+    }, () -> m_shooterSub.disableFlywheelAutomation()));
     // Driver Right Bumper
     m_driverController.rightBumper()
         .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceM),
@@ -240,7 +241,7 @@ public class RobotContainer {
     // Operator POV Right
 
     // Operator POV Down
-    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_hopperSub.setSingulatorTuningConstants( //this is just for tuning, delete for competitions
+    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setFlywheelTuningConstants( //this is just for tuning, delete for competitions
         SmartDashboard.getNumber("kS", 0.0),
         SmartDashboard.getNumber("kV", 0.0),
         SmartDashboard.getNumber("kP", 0.0),

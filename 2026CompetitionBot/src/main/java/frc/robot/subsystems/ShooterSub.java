@@ -364,7 +364,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   ////////////////////////////// Flywheel automation //////////////////////////////
-  public void enableFlyhweelAutomation() {
+  private void enableFlyhweelAutomation() {
     m_flywheelAutomationEnabled = true;
     m_flywheelMotorL.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetFlywheelVelocityRotsPerSec));
   }

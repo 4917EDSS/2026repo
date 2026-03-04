@@ -169,7 +169,7 @@ public final class Constants {
     public static final double kPitchKI = 0.0;
     public static final double kPitchKD = 0.0;
 
-    public static final double kFlywheelEncoderToRotsPerSecConversionFactor = 3.41; // Gearing is 3.41 (overdriven 3.41:1)
+    public static final double kFlywheelEncoderToRotsPerSecConversionFactor = 0.667;
     public static final double kFlywheelMaxVelocityRotsPerSec = 25.0;
     public static final double kFlywheelMaxAccelerationRotsPerSec = 100.0;
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
