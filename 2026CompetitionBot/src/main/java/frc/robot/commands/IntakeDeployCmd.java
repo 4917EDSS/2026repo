@@ -42,12 +42,8 @@ public class IntakeDeployCmd extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployInAngleDeg);
-    if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployInAngleDeg) {
-      m_intakeSub.setBeltPower(Constants.Intake.kBeltPower); // Keeps our belts running while we retract the intake in order to prevent getting fuel stuck in them
-    } else {
-      m_intakeSub.setBeltPower(0.0); // Turns off the belts once the intake is all the way in
-    }
+    m_intakeSub.setTargetDeployAngle(25);//(Constants.Intake.kDeployInAngleDeg);
+    m_intakeSub.setBeltPower(0.0); // Turns off the belts once the intake is all the way in
   }
 
   // Returns true when the command should end.

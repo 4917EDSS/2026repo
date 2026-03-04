@@ -221,7 +221,7 @@ public class RobotContainer {
 
     // Operator Start
     m_operatorController.start().whileTrue(
-        new StartEndCommand(() -> m_climbSub.setRotatePower(0.1), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
+        new StartEndCommand(() -> m_climbSub.setRotatePower(-0.1), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
 
     // Operator POV Up
     m_operatorController.povUp().whileTrue(

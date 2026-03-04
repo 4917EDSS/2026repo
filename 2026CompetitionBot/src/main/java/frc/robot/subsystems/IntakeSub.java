@@ -58,7 +58,7 @@ public class IntakeSub extends SubsystemBase {
         .smartCurrentLimit(100) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor)
-            .velocityConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor); // Should not be reading deploy velocity (outside of possible kD)
+            .velocityConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor / 60);
 
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this
@@ -66,7 +66,7 @@ public class IntakeSub extends SubsystemBase {
     m_deployMotorL.configure(deployMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig followConfig = new SparkMaxConfig();
-    followConfig.follow(Constants.CanIds.kIntakeDeployMotorL, false);
+    followConfig.follow(Constants.CanIds.kIntakeDeployMotorL, false).idleMode(IdleMode.kBrake);
     m_deployMotorR.configure(followConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig beltMotorConfig = new SparkMaxConfig();
@@ -126,7 +126,7 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public double getDeployAngleDeg() {
-    return m_deployMotorL.getEncoder().getPosition() * 360;
+    return m_deployMotorL.getEncoder().getPosition();
   }
 
   public double getDeployVelocityDegPerSec() {
@@ -157,6 +157,7 @@ public class IntakeSub extends SubsystemBase {
 
   public void setTargetDeployAngle(double angleDeg) {
     m_targetDeployAngleDeg = angleDeg;
+    m_deployPidController.reset(getDeployAngleDeg());
     m_deployPidController.setGoal(angleDeg);
     runDeployAngleControl(true);
     enableDeployAutomation();
@@ -178,7 +179,8 @@ public class IntakeSub extends SubsystemBase {
     double pidVolts = m_deployPidController.calculate(currentAngle);
     TrapezoidProfile.State setPoint = m_deployPidController.getSetpoint();
     double ffVolts =
-        m_deployFeedforward.calculate(0, setPoint.velocity);
+        m_deployFeedforward.calculate((Constants.Intake.kDeployOutAngleDeg - currentAngle) / 360 * 2 * Math.PI,
+            setPoint.velocity);
     double totalVolts = pidVolts + ffVolts;
     SmartDashboard.putNumber("totalVolts", totalVolts);
     SmartDashboard.putNumber("SETPOINT VELO", setPoint.velocity);
