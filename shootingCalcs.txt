@@ -1,0 +1,430 @@
+//shootercalcs
+import java.util.HashMap;
+
+
+
+public class ShooterAimingCalcs {
+  private double targetYawAngle;
+  private double robotYawAngle;
+  private double relativeTargetYawAngle;
+  
+  public double interpolateValue(HashMap<Double, Double> map, double interpValue){
+      double interpLow = map.get(Math.floor(interpValue));
+      double interpHigh = map.get(Math.ceil(interpValue));
+      double interpNorm = (interpValue-Math.floor(interpValue))*(1/(Math.ceil(interpValue)-Math.floor(interpValue))); //between 0-1 where zero is interplow 1 is interphigh and value is interp parameter
+      return interpLow*(1-interpNorm) + interpHigh*interpNorm;
+  }
+  
+  public String getCurrentFieldPosition(){
+      return "Shoot";
+  }
+  
+  public String getPreviousFieldPosition(){
+      return "RightLob";
+  }
+  
+  public boolean isLobbing(){
+       if(getCurrentFieldPosition() == "RightLob"||getCurrentFieldPosition() == "LeftLob"){
+          return true;
+      }
+      return false;
+  }
+  
+  public boolean isShooting(){
+      if(getCurrentFieldPosition() == "Shoot"){
+          return true;
+      }
+      return false;
+  }
+  
+  public boolean wasLobbing() {
+      if(getPreviousFieldPosition() == "RightLob"||getPreviousFieldPosition() == "LeftLob"){
+          return true;
+      }
+      return false;
+  }
+  
+  public boolean wasShooting() {
+      if(getPreviousFieldPosition() == "Shoot"){
+          return true;
+      }
+      return false;
+  }
+  
+  public Alliance getAlliance() {
+      return new Alliance("Red");
+  }
+  
+  
+ ////////////////////////// 
+
+  public double calculateShooterFlywheelRps(Pose2d robot) {
+    double rps;
+    HashMap<Double, Double> velocityInterpolation = new HashMap<Double, Double>();
+    //This will need to be derived experementally, currentlty based on theoretical values
+    velocityInterpolation.put(0.0, 0.0);
+    velocityInterpolation.put(1.0, 10.0);
+    velocityInterpolation.put(2.0, 10.0);
+    velocityInterpolation.put(3.0, 10.0);
+    velocityInterpolation.put(4.0, 11.0);
+    velocityInterpolation.put(5.0, 11.5);
+    velocityInterpolation.put(6.0, 12.0);
+    velocityInterpolation.put(7.0, 12.5);
+    velocityInterpolation.put(8.0, 13.0);
+    velocityInterpolation.put(9.0, 13.0);
+    velocityInterpolation.put(10.0, 13.0);
+    if(isLobbing()) {
+      if(getCurrentFieldPosition() == "RightLob") {
+        rps = interpolateValue(velocityInterpolation, getDistanceFromRightLob(robot));
+      } else {
+        rps = interpolateValue(velocityInterpolation, getDistanceFromLeftLob(robot));
+      }
+    } else if(isShooting()) {
+      rps = interpolateValue(velocityInterpolation, Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY()));
+    } else {
+      if(wasLobbing()) {
+        if(getPreviousFieldPosition() == "RightLob") {
+          rps = interpolateValue(velocityInterpolation, getDistanceFromRightLob(robot));
+        } else {
+          rps = interpolateValue(velocityInterpolation, getDistanceFromLeftLob(robot));
+        }
+      } else if(wasShooting()) {
+        rps = interpolateValue(velocityInterpolation, Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY()));
+      } else {
+        rps = 0.0;
+      }
+    }
+    return rps;
+  }
+
+  public double calculateShooterYawDegrees(Pose2d robot) {
+    robotYawAngle = robot.getRotation() + 180; //robot angle 0 to 360
+    targetYawAngle =
+        Math.toDegrees(Math.atan2(getDistanceFromHub(robot).getY(), getDistanceFromHub(robot).getX())) + 180;
+    relativeTargetYawAngle = (360 + (targetYawAngle - robotYawAngle)) % 360;
+    return relativeTargetYawAngle;
+  }
+
+  public double calculateTimeOfFlight(Pose2d robot) {
+    double distanceX = getDistanceFromHub(robot).getX();
+    double velocityX =
+        flywheelRpsToVelocity(calculateShooterFlywheelRps(robot)) * Math.cos(calculateShooterPitchDegrees(robot));
+    return distanceX / velocityX;
+  }
+
+  public double flywheelRpsToVelocity(double rps) {
+    return rps;
+  }
+
+  public Translation2d getDistanceFromHub(Pose2d robot) {
+    Alliance alliance = getAlliance();
+    Translation2d distToHub;
+    Pose2d turretPos = robot.plus(new Transform2d(-0.1, 0.1, new Rotation2d(0.0)));
+
+    if(alliance == Alliance.Blue) {
+      distToHub = new Translation2d(Constants.FieldElements.kBlueHubX - turretPos.getX(),
+          Constants.FieldElements.kBlueHubY - turretPos.getY());
+    } else {
+      distToHub = new Translation2d(Constants.FieldElements.kRedHubX - turretPos.getX(),
+          Constants.FieldElements.kRedHubY - turretPos.getY());
+    }
+    return distToHub;
+  }
+
+  public double getDistanceFromLeftLob(Pose2d robot) {
+    return Math.hypot(robot.getX() - Constants.TrajectoryCalculations.kLobX,
+        robot.getY() - Constants.TrajectoryCalculations.kLeftLobY);
+  }
+
+  public double getDistanceFromRightLob(Pose2d robot) {
+    return Math.hypot(robot.getX() - Constants.TrajectoryCalculations.kLobX,
+        robot.getY() - Constants.TrajectoryCalculations.kRightLobY);
+  }
+
+  public double calculateShooterPitchDegrees(Pose2d robot) {
+    // link to the visual trajectory calculation desmos graph
+    // desmos.com/calculator/kd3svmcurr
+    // link to the proof for each equation
+    // desmos.com/calculator/er6sltycq6
+    // 0 degrees output is horizontal, 90 is vertical pointing up
+
+    double dx;
+    double dy;
+    double g = Constants.Shooter.kGravity;
+    double v = flywheelRpsToVelocity(calculateShooterFlywheelRps(robot));
+    double pitch;
+
+    double uShoot = Constants.TrajectoryCalculations.interpolationShoot;
+    double uLob = Constants.TrajectoryCalculations.interpolationLobber;
+
+    if(isLobbing()) {
+      if(getCurrentFieldPosition() == "RightLob") {
+        dy = Constants.TrajectoryCalculations.kRightLobY;
+        dx = Constants.TrajectoryCalculations.kLobX;
+      } else {
+        dy = Constants.TrajectoryCalculations.kLeftLobY;
+        dx = Constants.TrajectoryCalculations.kLobX;
+      }
+    } else if(isShooting()) {
+      dy = Constants.TrajectoryCalculations.shooterToHubHeight;
+      dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
+    } else {
+      if(wasLobbing()) {
+        if(getPreviousFieldPosition() == "RightLob") {
+          dy = Constants.TrajectoryCalculations.kRightLobY;
+          dx = Constants.TrajectoryCalculations.kLobX;
+        } else {
+          dy = Constants.TrajectoryCalculations.kLeftLobY;
+          dx = Constants.TrajectoryCalculations.kLobX;
+        }
+      } else if(wasShooting()) {
+        dy = Constants.TrajectoryCalculations.shooterToHubHeight;
+        dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
+      } else {
+        dx = 0.0;
+        dy = 0.0;
+      }
+    }
+
+
+    double D = 1 - (2 * g * dy) / Math.pow(v, 2) - (Math.pow(g, 2) * Math.pow(dx, 2)) / Math.pow(v, 4);
+    double T1 = (Math.pow(v, 2) / (g * dx)) * (1 + Math.sqrt(D)); // Higher angle
+    double T2 = (Math.pow(v, 2) / (g * dx)) * (1 - Math.sqrt(D)); // Lower angle
+
+    double vMin = Math.sqrt(g * (dy + Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))));
+    double TMin = Math.pow(vMin, 2) / (g * dx);
+
+    double angleLow = Math.toDegrees(Math.atan(T2));
+    double anleHigh = Math.toDegrees(Math.atan(T1));
+    double angleInterpShoot = Math.toDegrees(Math.atan(uShoot * T1 + (1 - uShoot) * T2));
+    double angleInterpLob = Math.toDegrees(Math.atan(uLob * T1 + (1 - uLob) * T2));
+    double angleVMin = Math.toDegrees(Math.atan(TMin));
+
+    if(isLobbing()) {
+      pitch = angleInterpLob;
+    } else if(isShooting()) {
+      pitch =
+          (dx < Constants.TrajectoryCalculations.piecewiseSwapCalculationDistance) ? angleInterpShoot : angleVMin;
+    } else {
+      pitch = 0.0;
+    }
+
+    if(D < 0) {
+      pitch = angleVMin;
+    }
+
+    return pitch;
+  }
+
+  public double[] calculationsInMotion(Pose2d robot, ChassisSpeeds velocity) {
+    double velocityX = velocity.vxMetersPerSecond;
+    double velocityY = velocity.vyMetersPerSecond;
+    double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
+    double offsetX = velocityX * calculateTimeOfFlight(robot); //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
+    double offsetY = velocityY * calculateTimeOfFlight(robot);
+    double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
+    Pose2d offsetPos = new Pose2d(robot.getX() + offsetX, robot.getY() + offsetY,
+        robot.getRotation() + offsetRot);
+    calculateShooterPitchDegrees(offsetPos);
+    calculateShooterYawDegrees(offsetPos);
+    calculateShooterFlywheelRps(offsetPos);
+    double[] trajectoriesArray = {calculateShooterPitchDegrees(offsetPos), calculateShooterYawDegrees(offsetPos),
+        calculateShooterFlywheelRps(offsetPos)};
+    return trajectoriesArray;
+  }
+
+  public static void main(String args[]) {
+      ShooterAimingCalcs aiming = new ShooterAimingCalcs();
+      Pose2d robotPos = new Pose2d(1.0, 1.0, 0.0);
+      ChassisSpeeds speeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+      double[] calcsArray = aiming.calculationsInMotion(robotPos, speeds);
+      System.out.println("pitch degrees: " + calcsArray[0] + ", yaw degrees: " + calcsArray[1] + ", ball velocity: " + calcsArray[2]);
+  }
+}
+
+
+
+///////////////////////////////////
+
+
+
+class Transform2d {
+    private double x;
+    private double y;
+    private double rot;
+    
+    public Transform2d(Translation2d xy, double rot){
+        x = xy.getX();
+        y = xy.getY();
+        this.rot = rot;
+    }
+    
+    public Transform2d(double x, double y, Rotation2d rot){
+        this.x = x;
+        this.y = y;
+        this.rot = rot.getRotation();
+    }
+    
+    public Transform2d(double x, double y, double rot){
+        this.x = x;
+        this.y = y;
+        this.rot = rot;
+    }
+    
+    public double getX() {
+        return x;
+    }
+    
+    public double getY() {
+        return y;
+    }
+    
+    public double getRotation() {
+        return rot;
+    }
+}
+
+class Translation2d {
+    private double x;
+    private double y;
+    
+    public Translation2d(double x, double y){
+        this.x = x;
+        this.y = y;
+    }
+    
+    public double getX() {
+        return x;
+    }
+    
+    public double getY() {
+        return y;
+    }
+    
+}
+
+class Rotation2d {
+    private double rot;
+    
+    public Rotation2d(double rot){
+        this.rot = rot;
+    }
+    
+    public double getRotation(){
+        return rot;
+    }
+}
+
+class Pose2d {
+    private double x;
+    private double y;
+    private double rot;
+    
+    public Pose2d(Translation2d xy, double rot){
+        x = xy.getX();
+        y = xy.getY();
+        this.rot = rot;
+    }
+    
+    public Pose2d(double x, double y, Rotation2d rot){
+        this.x = x;
+        this.y = y;
+        this.rot = rot.getRotation();
+    }
+    
+    public Pose2d(double x, double y, double rot){
+        this.x = x;
+        this.y = y;
+        this.rot = rot;
+    }
+    
+    public double getX() {
+        return x;
+    }
+    
+    public double getY() {
+        return y;
+    }
+    
+    public double getRotation() {
+        return rot;
+    }
+    
+    public Pose2d plus(Transform2d transform) {
+        return new Pose2d(x+transform.getX(), y+transform.getY(), rot+transform.getRotation());
+    }
+}
+
+class ChassisSpeeds {
+    public double vxMetersPerSecond;
+    public double vyMetersPerSecond;
+    public double omegaRadiansPerSecond;
+    
+    public ChassisSpeeds(double vx, double vy, double vrot){
+        vxMetersPerSecond = vx;
+        vyMetersPerSecond = vy;
+        omegaRadiansPerSecond = vrot;
+    }
+}
+
+class Alliance {
+    private String colour;
+    public static Alliance Red = new Alliance("Red");
+    public static Alliance Blue = new Alliance("Blue");
+    
+    public Alliance(String colour) {
+        this.colour  = colour;
+    }
+}
+
+class Constants {
+    public static class Shooter {
+        public static final double kGravity = 9.80665;
+    }
+    
+    public static class FieldElements {
+        public static final double kRedHubX = 4.675; // coordinates of the hub on the field
+        public static final double kRedHubY = 4.035;
+        public static final double kBlueHubX = 11.856;
+        public static final double kBlueHubY = 4.035;
+    
+        public static final double kNeutralZoneX = 0.0;
+        public static final double kAllianceZoneX = 0.0;
+        public static final double kLeftSideY = 0.0;
+        public static final double kRightSideY = 0.0;
+    }
+
+    public static class TrajectoryCalculations {
+        public static final double interpolationShoot = 0.3;
+        public static final double interpolationLobber = 0.5;
+        public static final double piecewiseSwapCalculationDistance = 3.5;
+        public static final double shooterToHubHeight = 1.0668; // 42 in, not exactly measured
+        public static final double kShooterToFloorHeight = 0.762;
+        public static final double kLeftLobY = 0.0;
+        public static final double kRightLobY = 0.0;
+        public static final double kLobX = 0.0;
+    }
+}
+
+//////////////////////
+
+class checkCalcs {
+    private double pitch;
+    private double yaw;
+    private double velocity;
+    
+    public checkCalcs(double pitch, double yaw, double velocity) {
+        this.pitch = pitch;
+        this.yaw = yaw;
+        this.velocity = velocity;
+    }
+    
+    public void landsInHub(Pose2d currentPose, Pose2d hubPose) {
+        double dx = Math.hypot(hubPose.getX()-currentPose.getX(), hubPose.getX()-currentPose.getX());
+        double vx = velocity*Math.cos(yaw);
+        double t = dx/vx;
+        
+        double vy = velocity*Math.sin(yaw);
+        double dy;
+    }
+}
