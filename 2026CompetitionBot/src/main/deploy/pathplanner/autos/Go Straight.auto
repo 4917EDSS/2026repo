@@ -9,6 +9,12 @@
           "data": {
             "pathName": "Straight Test"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeRetractCmd"
+          }
         }
       ]
     }

@@ -56,7 +56,7 @@ public class IntakeSub extends SubsystemBase {
     deployMotorConfig
         .inverted(false) // Set to true to invert the forward motor direction
         .smartCurrentLimit(100) // Current limit in amps
-        .idleMode(IdleMode.kBrake).encoder
+        .idleMode(IdleMode.kCoast).encoder
             .positionConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor)
             .velocityConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor / 60);
 
@@ -66,7 +66,7 @@ public class IntakeSub extends SubsystemBase {
     m_deployMotorL.configure(deployMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig followConfig = new SparkMaxConfig();
-    followConfig.follow(Constants.CanIds.kIntakeDeployMotorL, false).idleMode(IdleMode.kBrake);
+    followConfig.follow(Constants.CanIds.kIntakeDeployMotorL, false).idleMode(IdleMode.kCoast);
     m_deployMotorR.configure(followConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig beltMotorConfig = new SparkMaxConfig();
@@ -129,6 +129,10 @@ public class IntakeSub extends SubsystemBase {
     return m_deployMotorL.getEncoder().getPosition();
   }
 
+  public double getTargetDeployAngleDeg() {
+    return m_targetDeployAngleDeg;
+  }
+
   public double getDeployVelocityDegPerSec() {
     return m_deployMotorL.getEncoder().getVelocity();
   }
@@ -187,6 +191,20 @@ public class IntakeSub extends SubsystemBase {
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
     MathUtil.clamp(totalVolts, -Constants.Intake.kDeployMaxPower * 12, Constants.Intake.kDeployMaxPower * 12);
+
+    // Sets 'safety zones' so that we don't bash into our limits
+    if(currentAngle <= Constants.Intake.kDeployInAngleDeg + Constants.Intake.kDeploySafetyZoneSize
+        && totalVolts < -Constants.Intake.kDeploySafetyPower) {
+      totalVolts = -Constants.Intake.kDeploySafetyPower * 12;
+    } else if(currentAngle >= Constants.Intake.kDeployOutAngleDeg - Constants.Intake.kDeploySafetyZoneSize
+        && totalVolts > Constants.Intake.kDeploySafetyPower) {
+      totalVolts = Constants.Intake.kDeploySafetyPower * 12;
+    }
+
+    // If our power is negative and we are at the in limit, set the voltage to 0
+    if(isAtInLimit() && totalVolts < 0.0) {
+      totalVolts = 0.0;
+    }
 
     // We may need to apply a small amount of power to hold the intake in and out
 

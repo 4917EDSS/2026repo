@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveToPoseCmd;
-import frc.robot.commands.IntakeDeployCmd;
+import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
@@ -74,7 +75,11 @@ public class RobotContainer {
     configureBindings();
     registerNameCommand();
     autoChooserSetup();
-
+    SmartDashboard.putNumber("kS", 0.0);
+    SmartDashboard.putNumber("kV", 0.0);
+    SmartDashboard.putNumber("kP", 0.0);
+    SmartDashboard.putNumber("kI", 0.0);
+    SmartDashboard.putNumber("kD", 0.0);
     // Note that X (coordinate) is defined as forward according to WPILib convention,
     // and Y (coordinate) is defined as to the left according to WPILib convention.
     m_drivetrainSub.setDefaultCommand(
@@ -98,6 +103,9 @@ public class RobotContainer {
 
   private void registerNameCommand() {
     // TODO: Add commands that PathPlanner needs access to here
+    NamedCommands.registerCommand("IntakeDeployCmd", new IntakeToggleCmd(m_hopperSub, m_intakeSub, true));
+
+    NamedCommands.registerCommand("IntakeRetractCmd", new IntakeToggleCmd(m_hopperSub, m_intakeSub, false));
   }
 
   /*
@@ -125,7 +133,8 @@ public class RobotContainer {
     //         m_drivetrainSub.applyRequest(() -> m_drive.withVelocityX(9999.9).withVelocityY(0).withRotationalRate(0)));
 
     // Driver Left Bumper
-
+    m_driverController.leftBumper().whileTrue(new StartEndCommand(() -> m_shooterSub.enableFlyhweelAutomation(),
+        () -> m_shooterSub.disableFlywheelAutomation()));
     // Driver Right Bumper
     m_driverController.rightBumper()
         .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceM),
@@ -135,11 +144,11 @@ public class RobotContainer {
                     () -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationFinalAngleDeg), m_climbSub)));
 
     // Driver Left Trigger
-    m_driverController.leftTrigger().whileTrue(new IntakeDeployCmd(m_hopperSub, m_intakeSub));
+    m_driverController.leftTrigger().whileTrue(new IntakeToggleCmd(m_hopperSub, m_intakeSub));
 
     // Driver Right Trigger
-    m_driverController.rightTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorTargetVelocity(3),
-        () -> m_hopperSub.setSingulatorTargetVelocity(0))); // Should be 9 balls per second
+    m_driverController.rightTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setShooting(),
+        () -> m_hopperSub.disableShooting()));
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading
@@ -231,9 +240,12 @@ public class RobotContainer {
     // Operator POV Right
 
     // Operator POV Down
-    m_operatorController.povDown().whileTrue(
-        new StartEndCommand(() -> m_climbSub.setTargetDeployDistance(0.1),
-            () -> m_climbSub.setTargetDeployDistance(0.0), m_climbSub));
+    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_hopperSub.setSingulatorTuningConstants( //this is just for tuning, delete for competitions
+        SmartDashboard.getNumber("kS", 0.0),
+        SmartDashboard.getNumber("kV", 0.0),
+        SmartDashboard.getNumber("kP", 0.0),
+        SmartDashboard.getNumber("kI", 0.0),
+        SmartDashboard.getNumber("kD", 0.0))));
 
     // Operator POV Left
 
