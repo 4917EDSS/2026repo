@@ -137,7 +137,7 @@ public class RobotContainer {
     // Driver Left Bumper
     m_driverController.leftBumper().whileTrue(new StartEndCommand(() -> {
       m_shooterSub.setTargetFlywheelVelocity(100);
-    }, () -> m_shooterSub.disableFlywheelAutomation()));
+    }, () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
     // Driver Right Bumper
     m_driverController.rightBumper()
         .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceM),
@@ -151,7 +151,7 @@ public class RobotContainer {
 
     // Driver Right Trigger
     m_driverController.rightTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setShooting(),
-        () -> m_hopperSub.disableShooting()));
+        () -> m_hopperSub.disableShooting(), m_hopperSub));
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading
@@ -165,17 +165,20 @@ public class RobotContainer {
 
     // Driver POV Right
     m_driverController.povRight()
-        .onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(Constants.Shooter.kYawMaxAngleDeg)));
+        .onTrue(
+            new InstantCommand(() -> m_shooterSub.setTargetYawAngle(Constants.Shooter.kYawMaxAngleDeg), m_shooterSub));
     // Driver POV Down
     m_driverController.povDown()
         .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployInDistanceM))
             .andThen(new WaitUntilCommand(() -> m_climbSub.isAtDeployInLimit()))
             .andThen(
-                new InstantCommand(() -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationInitialAngleDeg))));
+                new InstantCommand(() -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationInitialAngleDeg),
+                    m_climbSub)));
 
     // Driver POV Left
     m_driverController.povLeft()
-        .onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(Constants.Shooter.kYawMaxAngleDeg)));
+        .onTrue(
+            new InstantCommand(() -> m_shooterSub.setTargetYawAngle(Constants.Shooter.kYawMaxAngleDeg), m_shooterSub));
     // Driver Left Stick
     m_driverController.leftStick()
         .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
