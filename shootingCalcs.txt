@@ -229,7 +229,7 @@ public class ShooterAimingCalcs {
     calculateShooterYawDegrees(offsetPos);
     calculateShooterFlywheelRps(offsetPos);
     double[] trajectoriesArray = {calculateShooterPitchDegrees(offsetPos), calculateShooterYawDegrees(offsetPos),
-        calculateShooterFlywheelRps(offsetPos)};
+        calculateShooterFlywheelRps(offsetPos), offsetPos.getX(), offsetPos.getY(), offsetPos.getRotation()};
     return trajectoriesArray;
   }
 
@@ -239,6 +239,9 @@ public class ShooterAimingCalcs {
       ChassisSpeeds speeds = new ChassisSpeeds(0.0, 0.0, 0.0);
       double[] calcsArray = aiming.calculationsInMotion(robotPos, speeds);
       System.out.println("pitch degrees: " + calcsArray[0] + ", yaw degrees: " + calcsArray[1] + ", ball velocity: " + calcsArray[2]);
+      Pose2d offsetPos = new Pose2d(calcsArray[3], calcsArray[4], calcsArray[5]);
+      CheckCalcs checkCalcs = new CheckCalcs(calcsArray[0], calcsArray[1], calcsArray[2]);
+      checkCalcs.landsInHub(robotPos, offsetPos);
   }
 }
 
@@ -408,23 +411,24 @@ class Constants {
 
 //////////////////////
 
-class checkCalcs {
+class CheckCalcs {
     private double pitch;
     private double yaw;
     private double velocity;
     
-    public checkCalcs(double pitch, double yaw, double velocity) {
+    public CheckCalcs(double pitch, double yaw, double velocity) {
         this.pitch = pitch;
         this.yaw = yaw;
         this.velocity = velocity;
     }
     
-    public void landsInHub(Pose2d currentPose, Pose2d hubPose) {
-        double dx = Math.hypot(hubPose.getX()-currentPose.getX(), hubPose.getX()-currentPose.getX());
-        double vx = velocity*Math.cos(yaw);
+    public void landsInHub(Pose2d currentPose, Pose2d targetPose) {
+        double dx = Math.hypot(targetPose.getX()-currentPose.getX(), targetPose.getY()-currentPose.getY());
+        double vx = velocity*Math.cos(pitch);
         double t = dx/vx;
         
-        double vy = velocity*Math.sin(yaw);
-        double dy;
+        double vy = velocity*Math.sin(pitch);
+        double dy = vy*t+(1/2)*(-Constants.Shooter.kGravity)*Math.pow(t, 2);
+        System.out.println("Shot Horizontal Dist: " + dx + ", Shot Vertical Dist: " + dy + ", Time:, " + vx);
     }
 }

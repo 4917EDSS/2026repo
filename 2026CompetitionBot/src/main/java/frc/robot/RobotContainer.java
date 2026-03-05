@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.ManualShooterTestingCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
@@ -118,6 +119,7 @@ public class RobotContainer {
     // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
     // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)),
     // m_calculateShooterAiming.getLobbingMode()));
+    m_driverController.a().onTrue(new ManualShooterTestingCmd(m_shooterSub));
 
     // Driver B
 
