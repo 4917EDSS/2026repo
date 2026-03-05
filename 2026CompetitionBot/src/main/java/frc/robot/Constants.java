@@ -175,8 +175,8 @@ public final class Constants {
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
     public static final double kFlywheelMaxCurrent = 120.0;
     public static final double kFlywheelMaxPower = 0.20;
-    public static final double kFlywheelKS = 0.25;
-    public static final double kFlywheelKV = 0.12;
+    public static final double kFlywheelKS = 0.55;
+    public static final double kFlywheelKV = 0.08;
     public static final double kFlywheelKP = 0.1;
     public static final double kFlywheelKI = 0.0;
     public static final double kFlywheelKD = 0.0;
