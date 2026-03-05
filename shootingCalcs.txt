@@ -108,7 +108,7 @@ public class ShooterAimingCalcs {
   public double calculateTimeOfFlight(Pose2d robot) {
     double distanceX = getDistanceFromHub(robot).getX();
     double velocityX =
-        flywheelRpsToVelocity(calculateShooterFlywheelRps(robot)) * Math.cos(calculateShooterPitchDegrees(robot));
+        flywheelRpsToVelocity(calculateShooterFlywheelRps(robot)) * Math.cos(Math.toRadians(calculateShooterPitchDegrees(robot)[0]));
     return distanceX / velocityX;
   }
 
@@ -141,7 +141,7 @@ public class ShooterAimingCalcs {
         robot.getY() - Constants.TrajectoryCalculations.kRightLobY);
   }
 
-  public double calculateShooterPitchDegrees(Pose2d robot) {
+  public double[] calculateShooterPitchDegrees(Pose2d robot) {
     // link to the visual trajectory calculation desmos graph
     // desmos.com/calculator/kd3svmcurr
     // link to the proof for each equation
@@ -195,25 +195,34 @@ public class ShooterAimingCalcs {
     double TMin = Math.pow(vMin, 2) / (g * dx);
 
     double angleLow = Math.toDegrees(Math.atan(T2));
-    double anleHigh = Math.toDegrees(Math.atan(T1));
+    double angleHigh = Math.toDegrees(Math.atan(T1));
     double angleInterpShoot = Math.toDegrees(Math.atan(uShoot * T1 + (1 - uShoot) * T2));
     double angleInterpLob = Math.toDegrees(Math.atan(uLob * T1 + (1 - uLob) * T2));
     double angleVMin = Math.toDegrees(Math.atan(TMin));
+    
+    System.out.println(angleLow + ", " + angleHigh + ", " + angleInterpShoot + ", " + angleInterpLob + ", " + angleVMin  + ", " + vMin + ", " + isShooting());
 
+    double finalVelocity = 0.0;
+    
     if(isLobbing()) {
       pitch = angleInterpLob;
     } else if(isShooting()) {
       pitch =
           (dx < Constants.TrajectoryCalculations.piecewiseSwapCalculationDistance) ? angleInterpShoot : angleVMin;
+      finalVelocity = (dx < Constants.TrajectoryCalculations.piecewiseSwapCalculationDistance) ? 0.0 : vMin;
     } else {
       pitch = 0.0;
     }
 
     if(D < 0) {
       pitch = angleVMin;
+      finalVelocity = vMin;
     }
+    
+    double[] returns = {pitch, finalVelocity};
 
-    return pitch;
+    //System.out.println(dx);
+    return returns;
   }
 
   public double[] calculationsInMotion(Pose2d robot, ChassisSpeeds velocity) {
@@ -225,23 +234,28 @@ public class ShooterAimingCalcs {
     double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
     Pose2d offsetPos = new Pose2d(robot.getX() + offsetX, robot.getY() + offsetY,
         robot.getRotation() + offsetRot);
-    calculateShooterPitchDegrees(offsetPos);
-    calculateShooterYawDegrees(offsetPos);
-    calculateShooterFlywheelRps(offsetPos);
-    double[] trajectoriesArray = {calculateShooterPitchDegrees(offsetPos), calculateShooterYawDegrees(offsetPos),
-        calculateShooterFlywheelRps(offsetPos), offsetPos.getX(), offsetPos.getY(), offsetPos.getRotation()};
+    double[] pitchAndVelocity = calculateShooterPitchDegrees(offsetPos);
+    double[] trajectoriesArray = {pitchAndVelocity[0], calculateShooterYawDegrees(offsetPos),
+        pitchAndVelocity[1], offsetPos.getX(), offsetPos.getY(), offsetPos.getRotation()};
+    System.out.println(pitchAndVelocity[1]);
+    if(pitchAndVelocity[1] == 0.0) {
+        trajectoriesArray[2] = calculateShooterFlywheelRps(offsetPos);
+        System.out.println(trajectoriesArray[2]);
+    }
+    
     return trajectoriesArray;
   }
 
   public static void main(String args[]) {
       ShooterAimingCalcs aiming = new ShooterAimingCalcs();
-      Pose2d robotPos = new Pose2d(1.0, 1.0, 0.0);
+      Pose2d robotPos = new Pose2d(1, 1, 0.0);
       ChassisSpeeds speeds = new ChassisSpeeds(0.0, 0.0, 0.0);
       double[] calcsArray = aiming.calculationsInMotion(robotPos, speeds);
       System.out.println("pitch degrees: " + calcsArray[0] + ", yaw degrees: " + calcsArray[1] + ", ball velocity: " + calcsArray[2]);
-      Pose2d offsetPos = new Pose2d(calcsArray[3], calcsArray[4], calcsArray[5]);
       CheckCalcs checkCalcs = new CheckCalcs(calcsArray[0], calcsArray[1], calcsArray[2]);
-      checkCalcs.landsInHub(robotPos, offsetPos);
+      Pose2d targetPos = new Pose2d(Constants.FieldElements.kRedHubX, Constants.FieldElements.kRedHubY, 0.0);
+      Pose2d offsetPos = new Pose2d(calcsArray[3], calcsArray[4], calcsArray[5]);
+      checkCalcs.landsInHub(offsetPos, targetPos);
   }
 }
 
@@ -424,11 +438,13 @@ class CheckCalcs {
     
     public void landsInHub(Pose2d currentPose, Pose2d targetPose) {
         double dx = Math.hypot(targetPose.getX()-currentPose.getX(), targetPose.getY()-currentPose.getY());
-        double vx = velocity*Math.cos(pitch);
+        double vx = velocity*Math.cos(Math.toRadians(pitch));
         double t = dx/vx;
         
-        double vy = velocity*Math.sin(pitch);
-        double dy = vy*t+(1/2)*(-Constants.Shooter.kGravity)*Math.pow(t, 2);
-        System.out.println("Shot Horizontal Dist: " + dx + ", Shot Vertical Dist: " + dy + ", Time:, " + vx);
+        double vy = velocity*Math.sin(Math.toRadians(pitch));
+        double dy = (vy*t)+((0.5)*(((-1)*Constants.Shooter.kGravity)*Math.pow(t, 2)));
+        System.out.println("Shot Horizontal Dist: " + dx + ", Shot Vertical Dist: " + dy + ", Time:, " + t);
+        System.out.println(dx + ", " + vx + ", " + t + ", " + vy + ", " + dy + ", " + pitch + ", " + yaw + ", " + velocity);
+        //System.out.println(currentPose.getX() + ", " + currentPose.getY() + ", " + targetPose.getX() + ", " + targetPose.getY());
     }
 }
