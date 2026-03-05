@@ -168,6 +168,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Sht Fly Velocity", getFlywheelVelocityRotsPerSec());
     SmartDashboard.putNumber("Sht Fly Power", m_flywheelMotorL.get());
     SmartDashboard.putNumber("Sht Fly Pos", getFlywheelPositionRot());
+    SmartDashboard.putNumber("Sht Fly Voltage", m_flywheelMotorL.getMotorVoltage().getValueAsDouble());
 
     if(!m_pitchHasBeenReset && isAtPitchLowerLimit()) {
       resetPitchEncoder();
