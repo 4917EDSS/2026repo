@@ -44,7 +44,7 @@ public class ManualShooterTestingCmd extends Command {
     m_shooterSub.setTargetYawAngle(SmartDashboard.getNumber("turret angle", 0.0));
     m_shooterSub.setTargetFlywheelVelocity(SmartDashboard.getNumber("flywheel rps", 0.0));
     m_hopperSub.setEscalatorTargetVelocity(SmartDashboard.getNumber("escalator rps", 0.0));
-    m_hopperSub.setSingulatorPower(0.75);
+    // m_hopperSub.setSingulatorPower(0.75);
     m_kill = SmartDashboard.getBoolean("kill", m_kill);
   }
 
@@ -54,7 +54,12 @@ public class ManualShooterTestingCmd extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_shooterSub.disableFlywheelAutomation();
+    m_shooterSub.disablePitchAutomation();
+    m_shooterSub.disableYawAutomation();
+    m_hopperSub.disableShooting();
+  }
 
   // Returns true when the command should end.
   @Override
