@@ -70,7 +70,8 @@ public class ShooterAimingCalcs {
   public double calculateTimeOfFlight(Pose2d robot) {
     double distanceX = getDistanceFromHub(robot).getX();
     double velocityX =
-        flywheelRpsToVelocity(calculateShooterFlywheelRps(robot)) * Math.cos(calculateShooterPitchDegrees(robot));
+        flywheelRpsToVelocity(calculateShooterFlywheelRps(robot))
+            * Math.cos(Math.toRadians(calculateShooterPitchDegrees(robot)[0]));
     return distanceX / velocityX;
   }
 
@@ -103,7 +104,7 @@ public class ShooterAimingCalcs {
         robot.getY() - Constants.TrajectoryCalculations.kRightLobY);
   }
 
-  public double calculateShooterPitchDegrees(Pose2d robot) {
+  public double[] calculateShooterPitchDegrees(Pose2d robot) {
     // link to the visual trajectory calculation desmos graph
     // desmos.com/calculator/kd3svmcurr
     // link to the proof for each equation
@@ -157,25 +158,30 @@ public class ShooterAimingCalcs {
     double TMin = Math.pow(vMin, 2) / (g * dx);
 
     double angleLow = Math.toDegrees(Math.atan(T2));
-    double anleHigh = Math.toDegrees(Math.atan(T1));
+    double angleHigh = Math.toDegrees(Math.atan(T1));
     double angleInterpShoot = Math.toDegrees(Math.atan(uShoot * T1 + (1 - uShoot) * T2));
     double angleInterpLob = Math.toDegrees(Math.atan(uLob * T1 + (1 - uLob) * T2));
     double angleVMin = Math.toDegrees(Math.atan(TMin));
+
+    double finalVelocity = 0.0;
 
     if(RobotStatus.isLobbing()) {
       pitch = angleInterpLob;
     } else if(RobotStatus.isShooting()) {
       pitch =
           (dx < Constants.TrajectoryCalculations.piecewiseSwapCalculationDistance) ? angleInterpShoot : angleVMin;
+      finalVelocity = (dx < Constants.TrajectoryCalculations.piecewiseSwapCalculationDistance) ? 0.0 : vMin;
     } else {
       pitch = 0.0;
     }
 
     if(D < 0) {
       pitch = angleVMin;
+      finalVelocity = vMin;
     }
 
-    return pitch;
+    double[] returns = {pitch, finalVelocity};
+    return returns;
   }
 
   public double[] calculationsInMotion(Pose2d robot, ChassisSpeeds velocity) {
@@ -187,11 +193,15 @@ public class ShooterAimingCalcs {
     double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
     Pose2d offsetPos = new Pose2d(robot.getX() + offsetX, robot.getY() + offsetY,
         robot.getRotation().plus(new Rotation2d(Math.toRadians(offsetRot))));
-    calculateShooterPitchDegrees(offsetPos);
-    calculateShooterYawDegrees(offsetPos);
-    calculateShooterFlywheelRps(offsetPos);
-    double[] trajectoriesArray = {calculateShooterPitchDegrees(offsetPos), calculateShooterYawDegrees(offsetPos),
-        calculateShooterFlywheelRps(offsetPos)};
+    double[] pitchAndVelocity = calculateShooterPitchDegrees(offsetPos);
+    double[] trajectoriesArray = {pitchAndVelocity[0], calculateShooterYawDegrees(offsetPos),
+        pitchAndVelocity[1], offsetPos.getX(), offsetPos.getY(), offsetPos.getRotation().getDegrees()};
+    System.out.println(pitchAndVelocity[1]);
+    if(pitchAndVelocity[1] == 0.0) {
+      trajectoriesArray[2] = calculateShooterFlywheelRps(offsetPos);
+      System.out.println(trajectoriesArray[2]);
+    }
+
     return trajectoriesArray;
   }
 }
