@@ -204,13 +204,37 @@ public class RobotContainer {
         }, m_intakeSub));
 
     // Operator X
-    m_operatorController.x().whileTrue(
-        new StartEndCommand(() -> m_intakeSub.setBeltPower(0.10), () -> m_intakeSub.setBeltPower(0.0), m_intakeSub));
+    m_operatorController.x()
+        .whileTrue(new StartEndCommand(() -> m_shooterSub.setPitchPower(0.1), () -> {
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          m_shooterSub.setPitchPower(0.0);
+        },
+            m_shooterSub));
 
     // Operator Y
     m_operatorController.y()
-        .whileTrue(new StartEndCommand(() -> m_intakeSub.setBeltPower(-0.1), () -> m_intakeSub.setBeltPower(0.0),
-            m_intakeSub));
+        .whileTrue(new StartEndCommand(() -> m_shooterSub.setPitchPower(-0.1), () -> m_shooterSub.setPitchPower(0.0),
+            m_shooterSub));
 
 
     // Operator Left Bumper

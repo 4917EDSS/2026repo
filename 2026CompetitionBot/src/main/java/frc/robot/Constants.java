@@ -154,15 +154,15 @@ public final class Constants {
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.0;
 
-    public static final double kPitchEncoderToDegConversionFactor = 1.0; // Gearing is 0.0616 (approx 1:16.2)
-    public static final double kPitchMinAngleDeg = 0.0;
-    public static final double kPitchMaxAngleDeg = 45.0;
+    public static final double kPitchEncoderToDegConversionFactor = 18.0 / 9.857; // Gearing is 0.0616 (approx 1:16.2)
+    public static final double kPitchMinAngleDeg = 24.0;
+    public static final double kPitchMaxAngleDeg = 42.0;
     public static final double kPitchMaxCurrent = 120.0;
     public static final double kPitchMaxPower = 0.10;
     public static final double kPitchTolerance = 1.0;
-    public static final double kPitchMaxVelocityDegPerSec = 60.0;
+    public static final double kPitchMaxVelocityDegPerSec = 5.0;
     public static final double kPitchMaxAccelerationDegPerSec = 120.0;
-    public static final double kPitchKS = 0.25;
+    public static final double kPitchKS = 0.65;
     public static final double kPitchKG = 0.0;
     public static final double kPitchKV = 0.12;
     public static final double kPitchKP = 0.1;

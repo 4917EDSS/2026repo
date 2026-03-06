@@ -284,7 +284,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void resetPitchEncoder() {
-    m_pitchMotor.getEncoder().setPosition(0);
+    m_pitchMotor.getEncoder().setPosition(Constants.Shooter.kPitchMinAngleDeg);
   }
 
   public boolean isAtYawAtCCWLimit() {
