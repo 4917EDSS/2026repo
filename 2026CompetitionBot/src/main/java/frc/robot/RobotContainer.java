@@ -81,6 +81,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("kP", 0.0);
     SmartDashboard.putNumber("kI", 0.0);
     SmartDashboard.putNumber("kD", 0.0);
+    SmartDashboard.putNumber("kG", 0.0);
     // Note that X (coordinate) is defined as forward according to WPILib convention,
     // and Y (coordinate) is defined as to the left according to WPILib convention.
     m_drivetrainSub.setDefaultCommand(
@@ -119,7 +120,7 @@ public class RobotContainer {
     // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
     // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)),
     // m_calculateShooterAiming.getLobbingMode()));
-    m_driverController.a().onTrue(new ManualShooterTestingCmd(m_shooterSub));
+    m_driverController.a().onTrue(new ManualShooterTestingCmd(m_shooterSub, m_hopperSub));
 
     // Driver B
 
@@ -246,12 +247,13 @@ public class RobotContainer {
     // Operator POV Right
 
     // Operator POV Down
-    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setFlywheelTuningConstants( //this is just for tuning, delete for competitions
+    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setPitchTuningConstants( //this is just for tuning, delete for competitions
         SmartDashboard.getNumber("kS", 0.0),
         SmartDashboard.getNumber("kV", 0.0),
         SmartDashboard.getNumber("kP", 0.0),
         SmartDashboard.getNumber("kI", 0.0),
-        SmartDashboard.getNumber("kD", 0.0))));
+        SmartDashboard.getNumber("kD", 0.0),
+        SmartDashboard.getNumber("kG", 0.0))));
 
     // Operator POV Left
 
@@ -294,11 +296,11 @@ public class RobotContainer {
     //Rumble requires the Driver Station, it does not work in the simulator
   }
 
-  private void enableVibration() {
+  public void enableVibration() {
     m_driverController.getHID().setRumble(RumbleType.kBothRumble, 1.0);
   }
 
-  private void disableVibration() {
+  public void disableVibration() {
     m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0.0);
   }
 

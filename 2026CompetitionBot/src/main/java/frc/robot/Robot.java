@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.utils.GameData;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -94,7 +95,13 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if(GameData.scoringSoon()) {
+      m_robotContainer.enableVibration();
+    } else {
+      m_robotContainer.disableVibration();
+    }
+  }
 
   @Override
   public void testInit() {

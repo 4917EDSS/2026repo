@@ -20,24 +20,39 @@ public class GameData {
     }
   }
 
+  public static boolean scoringSoon() {
+    if(s_amIDefendingFirst == DefendFirst.UNKNOWN) {
+      processGameData();
+      if(s_amIDefendingFirst == DefendFirst.UNKNOWN) {
+        return false;
+      }
+    }
+    Double timer = DriverStation.getMatchTime();
+    if((timer <= 135 && timer > 130) || (timer <= 85 && timer > 80)) {
+      return (s_amIDefendingFirst == DefendFirst.YES) ? false : true;
+    } else if((timer <= 110 && timer > 105) || (timer <= 60 && timer > 55)) {
+      return (s_amIDefendingFirst == DefendFirst.YES) ? true : false;
+    } else if(timer <= 35 && timer > 30) {
+      return true;
+    }
+    return false;
+  }
 
-  public static Boolean canScoreNow() {
+  public static boolean canScoreNow() {
     if(s_amIDefendingFirst == DefendFirst.UNKNOWN) {
       processGameData();
       if(s_amIDefendingFirst == DefendFirst.UNKNOWN) {
         return true;
-      } else {
-        Double timer = DriverStation.getMatchTime();
-        if((timer <= 130 && timer > 105) || (timer <= 80 && timer > 55)) {
-          return (s_amIDefendingFirst == DefendFirst.YES) ? false : true;
-        } else if((timer <= 105 && timer > 80) || (timer <= 55 && timer > 30)) {
-          return (s_amIDefendingFirst == DefendFirst.YES) ? true : false;
-        } else {
-          return true;
-        }
       }
     }
-    return true;
+    Double timer = DriverStation.getMatchTime();
+    if((timer <= 130 && timer > 105) || (timer <= 80 && timer > 55)) {
+      return (s_amIDefendingFirst == DefendFirst.YES) ? false : true;
+    } else if((timer <= 105 && timer > 80) || (timer <= 55 && timer > 30)) {
+      return (s_amIDefendingFirst == DefendFirst.YES) ? true : false;
+    } else {
+      return true;
+    }
   }
 
 

@@ -20,7 +20,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -80,6 +82,8 @@ public class ShooterSub extends SubsystemBase {
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor)
             .velocityConversionFactor(1.0);
+    motorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
+        .reverseLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor));
     m_yawMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
 
@@ -89,6 +93,9 @@ public class ShooterSub extends SubsystemBase {
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Shooter.kPitchEncoderToDegConversionFactor)
             .velocityConversionFactor(1.0);
+    motorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
+        .reverseLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor));
+
     m_pitchMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
 
@@ -169,6 +176,8 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Sht Fly Power", m_flywheelMotorL.get());
     SmartDashboard.putNumber("Sht Fly Pos", getFlywheelPositionRot());
     SmartDashboard.putNumber("Sht Fly Voltage", m_flywheelMotorL.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putNumber("Sht Fly TCurr", m_flywheelMotorL.getTorqueCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Sht Fly SupCurr", m_flywheelMotorL.getSupplyCurrent().getValueAsDouble());
 
     if(!m_pitchHasBeenReset && isAtPitchLowerLimit()) {
       resetPitchEncoder();
@@ -195,6 +204,22 @@ public class ShooterSub extends SubsystemBase {
     slot0FlywheelConfigs.kD = kD;
     talonFXConfigurator1.apply(slot0FlywheelConfigs);
     System.out.println("Shooter" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
+
+  }
+
+  public void setPitchTuningConstants(double kS, double kV, double kP, double kI, double kD, double kG) {
+    m_pitchFeedforward.setKg(kG);
+    m_pitchFeedforward.setKv(kV);
+    m_pitchFeedforward.setKs(kS);
+    m_pitchPidController.setPID(kP, kI, kD);
+    System.out.println("pitch" + kS + "," + kV + "," + kP + "," + kI + "," + kD + "," + kG);
+  }
+
+  public void setYawTuningConstants(double kS, double kV, double kP, double kI, double kD) {
+    m_yawFeedforward.setKv(kV);
+    m_yawFeedforward.setKs(kS);
+    m_yawPidController.setPID(kP, kI, kD);
+    System.out.println("yaw" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
   }
 
   public void setYawPower(double power) {
@@ -290,6 +315,7 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetYawAngle(double angleDeg) {
     m_targetYawAngleDeg = angleDeg;
+    m_yawPidController.reset(getYawAngleDeg());
     m_yawPidController.setGoal(angleDeg);
     runYawControl(true);
     enableYawAutomation();
@@ -333,6 +359,7 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetPitchAngle(double angleDeg) {
     m_targetPitchAngleDeg = angleDeg;
+    m_pitchPidController.reset(getPitchAngleDeg());
     m_pitchPidController.setGoal(angleDeg);
     runPitchControl(true);
     enablePitchAutomation();
@@ -502,8 +529,8 @@ public class ShooterSub extends SubsystemBase {
 
   //RUN ALL CONTROL ALGORTHMS
   public void setPitchYawFlywheelPower(double[] trajectoriesArray) {
-    setPitchPower(trajectoriesArray[0]);
-    setYawPower(trajectoriesArray[1]);
-    setFlywheelPower(trajectoriesArray[2]);
+    //setTargetPitchAngle(trajectoriesArray[0]);
+    //setTargetYawAngle(trajectoriesArray[1]);
+    // setTargetFlywheelVelocity(trajectoriesArray[2]);
   }
 }

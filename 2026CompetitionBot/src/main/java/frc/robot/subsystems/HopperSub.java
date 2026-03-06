@@ -81,6 +81,9 @@ public class HopperSub extends SubsystemBase {
     // Motor configs
 
     TalonFXConfigurator talonFxEscalatorConfigurator = m_escalatorMotor.getConfigurator();
+    FeedbackConfigs escalatorFeedbackConfigs = new FeedbackConfigs();
+    escalatorFeedbackConfigs.SensorToMechanismRatio = Constants.Hopper.kEscalatorEncoderToRpsConversionFactor;
+    talonFxEscalatorConfigurator.apply(escalatorFeedbackConfigs);
 
     CurrentLimitsConfigs limitEscalatorConfigs = new CurrentLimitsConfigs();
     limitEscalatorConfigs.StatorCurrentLimit = Constants.Hopper.kEscalatorMaxCurrent;
@@ -151,11 +154,11 @@ public class HopperSub extends SubsystemBase {
   public void setEscalatorTuningConstants(double kS, double kV, double kP, double kI, double kD) {
     TalonFXConfigurator talonFxEscalatorConfigurator = m_escalatorMotor.getConfigurator();
     Slot0Configs slot0EscalatorConfigs = new Slot0Configs();
-    slot0EscalatorConfigs.kS = Constants.Hopper.kEscalatorKS;
-    slot0EscalatorConfigs.kV = Constants.Hopper.kEscalatorKV;
-    slot0EscalatorConfigs.kP = Constants.Hopper.kEscalatorKP;
-    slot0EscalatorConfigs.kI = Constants.Hopper.kEscalatorKI;
-    slot0EscalatorConfigs.kD = Constants.Hopper.kEscalatorKD;
+    slot0EscalatorConfigs.kS = kS;
+    slot0EscalatorConfigs.kV = kV;
+    slot0EscalatorConfigs.kP = kP;
+    slot0EscalatorConfigs.kI = kI;
+    slot0EscalatorConfigs.kD = kD;
     talonFxEscalatorConfigurator.apply(slot0EscalatorConfigs);
     System.out.println("Escalator" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
   }
@@ -252,7 +255,7 @@ public class HopperSub extends SubsystemBase {
   }
 
   // Set Escalator velocity with PID in RPS
-  private void setEscalatorTargetVelocity(double velocityRps) {
+  public void setEscalatorTargetVelocity(double velocityRps) {
     m_targetEscalatorVelocityRps = velocityRps;
     enableEscalatorAutomation();
   }

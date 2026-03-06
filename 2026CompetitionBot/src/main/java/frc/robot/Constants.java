@@ -96,8 +96,8 @@ public final class Constants {
     public static final double kSingulatorMaxCurrent = 120.0;
     public static final double kSingulatorMaxPower = 1.0;
     public static final double kSingulatorKS = 0.25;
-    public static final double kSingulatorKV = 0.12;
-    public static final double kSingulatorKP = 0.1;
+    public static final double kSingulatorKV = 0.04;
+    public static final double kSingulatorKP = 0.0;
     public static final double kSingulatorKI = 0.0;
     public static final double kSingulatorKD = 0.0;
 
@@ -107,9 +107,9 @@ public final class Constants {
     public static final double kEscalatorMaxCurrent = 120.0;
     public static final double kEscalatorMaxPower = 1.0;
     public static final double kEscalatorKS = 0.25;
-    public static final double kEscalatorKV = 0.12;
+    public static final double kEscalatorKV = 0.34;
     public static final double kEscalatorKP = 0.1;
-    public static final double kEscalatorKI = 0.0;
+    public static final double kEscalatorKI = 0.2;
     public static final double kEscalatorKD = 0.0;
   }
 
@@ -159,7 +159,7 @@ public final class Constants {
     public static final double kPitchMaxAngleDeg = 45.0;
     public static final double kPitchMaxCurrent = 120.0;
     public static final double kPitchMaxPower = 0.10;
-    public static final double kPitchTolerance = 2.0;
+    public static final double kPitchTolerance = 1.0;
     public static final double kPitchMaxVelocityDegPerSec = 60.0;
     public static final double kPitchMaxAccelerationDegPerSec = 120.0;
     public static final double kPitchKS = 0.25;
@@ -175,10 +175,10 @@ public final class Constants {
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
     public static final double kFlywheelMaxCurrent = 120.0;
     public static final double kFlywheelMaxPower = 0.20;
-    public static final double kFlywheelKS = 0.55;
-    public static final double kFlywheelKV = 0.08;
+    public static final double kFlywheelKS = 0.055;
+    public static final double kFlywheelKV = 0.076;
     public static final double kFlywheelKP = 0.1;
-    public static final double kFlywheelKI = 0.0;
+    public static final double kFlywheelKI = 0.1;
     public static final double kFlywheelKD = 0.0;
 
     public static final double kGravity = 9.80665;
