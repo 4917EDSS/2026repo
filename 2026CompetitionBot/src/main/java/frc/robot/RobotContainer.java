@@ -245,18 +245,20 @@ public class RobotContainer {
             () -> m_climbSub.setTargetDeployDistance(0.0), m_climbSub));
 
     // Operator POV Right
-
+    m_operatorController.povRight().whileTrue(
+        new StartEndCommand(() -> m_shooterSub.setYawPower(-0.2), () -> m_shooterSub.setYawPower(0.0), m_shooterSub));
     // Operator POV Down
-    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setPitchTuningConstants( //this is just for tuning, delete for competitions
+    m_operatorController.povDown().onTrue(new InstantCommand(() -> {
+    }, m_shooterSub).andThen(new InstantCommand(() -> m_shooterSub.setYawTuningConstants( //this is just for tuning, delete for competitions
         SmartDashboard.getNumber("kS", 0.0),
         SmartDashboard.getNumber("kV", 0.0),
         SmartDashboard.getNumber("kP", 0.0),
         SmartDashboard.getNumber("kI", 0.0),
-        SmartDashboard.getNumber("kD", 0.0),
-        SmartDashboard.getNumber("kG", 0.0))));
+        SmartDashboard.getNumber("kD", 0.0)))));
 
     // Operator POV Left
-
+    m_operatorController.povLeft().whileTrue(
+        new StartEndCommand(() -> m_shooterSub.setYawPower(0.2), () -> m_shooterSub.setYawPower(0.0), m_shooterSub));
     // Operator Left Stick
     m_operatorController.leftStick()
         .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));

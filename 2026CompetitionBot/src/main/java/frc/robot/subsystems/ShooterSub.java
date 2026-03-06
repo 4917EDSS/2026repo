@@ -77,7 +77,7 @@ public class ShooterSub extends SubsystemBase {
   public ShooterSub() { // Motor Configs need to be tested
     SparkMaxConfig motorConfig = new SparkMaxConfig();
     motorConfig
-        .inverted(true) // Set to true to invert the forward motor direction
+        .inverted(false) // Set to true to invert the forward motor direction
         .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor)
@@ -92,7 +92,7 @@ public class ShooterSub extends SubsystemBase {
         .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Shooter.kPitchEncoderToDegConversionFactor)
-            .velocityConversionFactor(1.0);
+            .velocityConversionFactor(Constants.Shooter.kPitchEncoderToDegConversionFactor);
     motorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
         .reverseLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor));
 
@@ -207,7 +207,7 @@ public class ShooterSub extends SubsystemBase {
 
   }
 
-  public void setPitchTuningConstants(double kS, double kV, double kP, double kI, double kD, double kG) {
+  public void setYawTuningConstants(double kS, double kV, double kP, double kI, double kD, double kG) {
     m_pitchFeedforward.setKg(kG);
     m_pitchFeedforward.setKv(kV);
     m_pitchFeedforward.setKs(kS);
@@ -337,6 +337,7 @@ public class ShooterSub extends SubsystemBase {
     double pidVolts = m_yawPidController.calculate(currentAngle);
     TrapezoidProfile.State setPoint = m_yawPidController.getSetpoint();
     double ffVolts = m_yawFeedforward.calculate(setPoint.velocity);
+    SmartDashboard.putNumber("Sht Yaw T Vel", setPoint.velocity);
     double totalVolts = pidVolts + ffVolts;
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
