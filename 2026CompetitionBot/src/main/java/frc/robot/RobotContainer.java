@@ -206,27 +206,6 @@ public class RobotContainer {
     // Operator X
     m_operatorController.x()
         .whileTrue(new StartEndCommand(() -> m_shooterSub.setPitchPower(0.1), () -> {
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
           m_shooterSub.setPitchPower(0.0);
         },
             m_shooterSub));
