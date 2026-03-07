@@ -12,14 +12,14 @@ import frc.robot.subsystems.ShooterSub;
  * You should consider using the more terse Command factories API instead
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
-public class ZeroAllSubsystemsCmd extends Command {
+public class HitLimitSwitchesCmd extends Command {
   IntakeSub m_intakeSub;
   ShooterSub m_shooterSub;
   Boolean m_isAtIntakeLimit = false;
   Boolean m_isAtPitchLimit = false;
   Boolean m_isAtYawLimit = false;
 
-  public ZeroAllSubsystemsCmd(IntakeSub intakeSub, ShooterSub shooterSub) {
+  public HitLimitSwitchesCmd(IntakeSub intakeSub, ShooterSub shooterSub) {
     m_intakeSub = intakeSub;
     m_shooterSub = shooterSub;
 
@@ -49,12 +49,12 @@ public class ZeroAllSubsystemsCmd extends Command {
       m_isAtIntakeLimit = true;
     }
 
-    if(m_shooterSub.isAtPitchLowerLimit() || m_shooterSub.isAtPitchUpperLimit()) {
+    if(m_shooterSub.isAtPitchLowerLimit()) {
       m_shooterSub.setPitchPower(0.0);
       m_isAtPitchLimit = true;
     }
-    if(m_shooterSub.isAtYawAtCCWLimit() || m_shooterSub.isAtYawAtCWLimit()) {
-      m_shooterSub.setPitchPower(0.0);
+    if(m_shooterSub.isAtYawAtCWLimit()) {
+      m_shooterSub.setYawPower(0.0);
       m_isAtYawLimit = true;
     }
   }
