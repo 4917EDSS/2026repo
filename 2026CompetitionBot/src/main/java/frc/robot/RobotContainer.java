@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
@@ -114,13 +115,18 @@ public class RobotContainer {
    * Use this method to define your trigger->command mappings.
    */
   private void configureBindings() {
+    m_driverController.a().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    m_driverController.b().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    m_driverController.x().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kForward));
+    m_driverController.y().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     // Driver A
     // m_driverController.a()
     //     .onTrue(new ConditionalCommand(
     // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
     // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)),
     // m_calculateShooterAiming.getLobbingMode()));
-    m_driverController.a().onTrue(new ManualShooterTestingCmd(m_shooterSub, m_hopperSub));
+    //m_driverController.a().onTrue(new ManualShooterTestingCmd(m_shooterSub, m_hopperSub));
 
     // Driver B
 
@@ -163,6 +169,8 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_drivetrainSub.resetPose((m_visionSub.getEstimatedPose()))));
 
     // Driver POV Up
+    m_driverController.povUp().whileTrue(
+        new StartEndCommand(() -> m_shooterSub.setYawPower(-0.25), () -> m_shooterSub.setYawPower(0.0), m_shooterSub));
 
     // Driver POV Right
     m_driverController.povRight()
@@ -206,27 +214,6 @@ public class RobotContainer {
     // Operator X
     m_operatorController.x()
         .whileTrue(new StartEndCommand(() -> m_shooterSub.setPitchPower(0.1), () -> {
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
           m_shooterSub.setPitchPower(0.0);
         },
             m_shooterSub));

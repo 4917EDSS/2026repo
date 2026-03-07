@@ -422,7 +422,7 @@ public class ShooterSub extends SubsystemBase {
   private final SysIdRoutine m_yawSysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
           Units.Volts.per(Units.Second).of(0.5),
-          Units.Volts.of(2.0),
+          Units.Volts.of(3.0),
           Units.Seconds.of(8.0)),
       new SysIdRoutine.Mechanism(
           (voltage) -> runYawSysIdVolts(voltage.in(Units.Volts)),
