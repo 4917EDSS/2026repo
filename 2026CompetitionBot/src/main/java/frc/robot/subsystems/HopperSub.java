@@ -223,7 +223,7 @@ public class HopperSub extends SubsystemBase {
         .withFeedForward(Constants.Hopper.kSingulatorKV));
   }
 
-  private void disableSingulatorAutomation() {
+  public void disableSingulatorAutomation() {
     m_singulatorAutomationEnabled = false;
     m_singulatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
   }
@@ -249,7 +249,7 @@ public class HopperSub extends SubsystemBase {
     m_escalatorMotor.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetEscalatorVelocityRps));
   }
 
-  private void disableEscalatorAutomation() {
+  public void disableEscalatorAutomation() {
     m_escalatorAutomationEnabled = false;
     m_escalatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
   }

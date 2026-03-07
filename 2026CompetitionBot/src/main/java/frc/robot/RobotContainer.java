@@ -225,22 +225,28 @@ public class RobotContainer {
 
 
     // Operator Left Bumper
-    m_operatorController.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(-0.1),
-        () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub));
+    m_operatorController.leftBumper()
+        .whileTrue(new InstantCommand(() -> m_hopperSub.disableSingulatorAutomation())
+            .andThen(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(-0.1),
+                () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub)));
 
     // Operator Right Bumper
     m_operatorController.rightBumper()
-        .whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(0.1),
-            () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub));
+        .whileTrue(new InstantCommand(() -> m_hopperSub.disableSingulatorAutomation())
+            .andThen(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(0.1),
+                () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub)));
 
     // Operator Left Trigger
-    m_operatorController.leftTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setEscalatorPower(0.10),
-        () -> m_hopperSub.setEscalatorPower(0.0), m_hopperSub));
+    m_operatorController.leftTrigger()
+        .whileTrue(new InstantCommand(() -> m_hopperSub.disableEscalatorAutomation())
+            .andThen(new StartEndCommand(() -> m_hopperSub.setEscalatorPower(0.10),
+                () -> m_hopperSub.setEscalatorPower(0.0), m_hopperSub)));
 
     // Operator Right Trigger
     m_operatorController.rightTrigger()
-        .whileTrue(new StartEndCommand(() -> m_shooterSub.setFlywheelPower(0.1),
-            () -> m_shooterSub.setFlywheelPower(0.0), m_shooterSub));
+        .whileTrue(new InstantCommand(() -> m_hopperSub.disableEscalatorAutomation())
+            .andThen(new StartEndCommand(() -> m_shooterSub.setFlywheelPower(0.1),
+                () -> m_shooterSub.setFlywheelPower(0.0), m_shooterSub)));
 
     // Operator Back
     m_operatorController.back().whileTrue(
