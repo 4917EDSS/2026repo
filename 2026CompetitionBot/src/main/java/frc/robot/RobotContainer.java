@@ -220,8 +220,8 @@ public class RobotContainer {
 
     // Operator Y
     m_operatorController.y().whileTrue(new StartEndCommand(() -> m_intakeSub.setBeltPower(-0.1), () -> {
-          m_intakeSub.setBeltPower(0.0);
-        }, m_intakeSub));
+      m_intakeSub.setBeltPower(0.0);
+    }, m_intakeSub));
 
 
     // Operator Left Bumper
