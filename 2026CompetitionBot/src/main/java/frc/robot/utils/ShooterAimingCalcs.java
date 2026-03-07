@@ -196,10 +196,8 @@ public class ShooterAimingCalcs {
     double[] pitchAndVelocity = calculateShooterPitchDegrees(offsetPos);
     double[] trajectoriesArray = {pitchAndVelocity[0], calculateShooterYawDegrees(offsetPos),
         pitchAndVelocity[1], offsetPos.getX(), offsetPos.getY(), offsetPos.getRotation().getDegrees()};
-    System.out.println(pitchAndVelocity[1]);
     if(pitchAndVelocity[1] == 0.0) {
       trajectoriesArray[2] = calculateShooterFlywheelRps(offsetPos);
-      System.out.println(trajectoriesArray[2]);
     }
 
     return trajectoriesArray;
