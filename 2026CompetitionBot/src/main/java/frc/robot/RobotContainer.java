@@ -120,9 +120,20 @@ public class RobotContainer {
     // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
     // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)),
     // m_calculateShooterAiming.getLobbingMode()));
-    m_driverController.a().onTrue(new ManualShooterTestingCmd(m_shooterSub, m_hopperSub));
+    //m_driverController.a().onTrue(new ManualShooterTestingCmd(m_shooterSub, m_hopperSub));
+    //m_driverController.a().onTrue(new)
+    m_driverController.a().whileTrue(
+        new StartEndCommand(() -> m_intakeSub.setDeployPower(0.1), () -> {
+          m_intakeSub.setDeployPower(0.0);
+          m_intakeSub.disableDeployAutomation();
+        }, m_intakeSub));
 
     // Driver B
+    m_driverController.b().whileTrue(
+        new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1), () -> {
+          m_intakeSub.setDeployPower(0.0);
+          m_intakeSub.disableDeployAutomation();
+        }, m_intakeSub));
 
     // // Driver X
     // m_driverController.x()
@@ -137,7 +148,7 @@ public class RobotContainer {
 
     // Driver Left Bumper
     m_driverController.leftBumper().whileTrue(new StartEndCommand(() -> {
-      m_shooterSub.setTargetFlywheelVelocity(100);
+      m_shooterSub.setTargetFlywheelVelocity(1300.0);
     }, () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
     // Driver Right Bumper
     m_driverController.rightBumper()
@@ -167,7 +178,11 @@ public class RobotContainer {
     // Driver POV Right
     m_driverController.povRight()
         .onTrue(
-            new InstantCommand(() -> m_shooterSub.setTargetYawAngle(Constants.Shooter.kYawMaxAngleDeg), m_shooterSub));
+            new StartEndCommand(() -> m_shooterSub.setTargetYawAngle(45.0), () -> m_shooterSub.setTargetYawAngle(0.0),
+                m_shooterSub));
+    // .onTrue(
+    //     new InstantCommand(() -> m_shooterSub.setTargetYawAngle(SmartDashboard.getNumber("turret angle", 0.0)),
+    //         m_shooterSub));
     // Driver POV Down
     m_driverController.povDown()
         .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployInDistanceM))
@@ -206,27 +221,6 @@ public class RobotContainer {
     // Operator X
     m_operatorController.x()
         .whileTrue(new StartEndCommand(() -> m_shooterSub.setPitchPower(0.1), () -> {
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          // System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
           m_shooterSub.setPitchPower(0.0);
         },
             m_shooterSub));
@@ -272,13 +266,12 @@ public class RobotContainer {
     m_operatorController.povRight().whileTrue(
         new StartEndCommand(() -> m_shooterSub.setYawPower(-0.2), () -> m_shooterSub.setYawPower(0.0), m_shooterSub));
     // Operator POV Down
-    m_operatorController.povDown().onTrue(new InstantCommand(() -> {
-    }, m_shooterSub).andThen(new InstantCommand(() -> m_shooterSub.setYawTuningConstants( //this is just for tuning, delete for competitions
+    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setYawTuningConstants( //this is just for tuning, delete for competitions
         SmartDashboard.getNumber("kS", 0.0),
         SmartDashboard.getNumber("kV", 0.0),
         SmartDashboard.getNumber("kP", 0.0),
         SmartDashboard.getNumber("kI", 0.0),
-        SmartDashboard.getNumber("kD", 0.0)))));
+        SmartDashboard.getNumber("kD", 0.0)), m_shooterSub));
 
     // Operator POV Left
     m_operatorController.povLeft().whileTrue(

@@ -207,7 +207,7 @@ public class ShooterSub extends SubsystemBase {
 
   }
 
-  public void setYawTuningConstants(double kS, double kV, double kP, double kI, double kD, double kG) {
+  public void setPitchTuningConstants(double kS, double kV, double kP, double kI, double kD, double kG) {
     m_pitchFeedforward.setKg(kG);
     m_pitchFeedforward.setKv(kV);
     m_pitchFeedforward.setKs(kS);

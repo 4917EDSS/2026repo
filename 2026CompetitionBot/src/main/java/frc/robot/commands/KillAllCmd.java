@@ -22,6 +22,7 @@ public class KillAllCmd extends Command {
   ClimbSub m_climbSub;
   ShooterSub m_shooterSub;
   IntakeSub m_intakeSub;
+  HopperSub m_hopperSub;
 
   /** Creates a new KillAllCmd. */
   public KillAllCmd(CanSub canSub, ClimbSub climbSub, DrivetrainSub drivetrainSub, HopperSub hopperSub,
@@ -30,6 +31,7 @@ public class KillAllCmd extends Command {
     m_climbSub = climbSub;
     m_shooterSub = shooterSub;
     m_intakeSub = intakeSub;
+    m_hopperSub = hopperSub;
 
     addRequirements(canSub, climbSub, drivetrainSub, hopperSub, intakeSub, shooterSub);
   }
@@ -44,6 +46,9 @@ public class KillAllCmd extends Command {
     m_intakeSub.setTargetDeployAngle(m_intakeSub.getDeployAngleDeg());
     m_shooterSub.setTargetPitchAngle(m_shooterSub.getPitchAngleDeg());
     m_shooterSub.setTargetYawAngle(m_shooterSub.getYawAngleDeg());
+    m_hopperSub.setSingulatorPower(0.0);
+    m_intakeSub.setBeltPower(0.0);
+
 
   }
 
@@ -60,6 +65,6 @@ public class KillAllCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

@@ -66,7 +66,7 @@ public class IntakeSub extends SubsystemBase {
     m_deployMotorL.configure(deployMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig followConfig = new SparkMaxConfig();
-    followConfig.follow(Constants.CanIds.kIntakeDeployMotorL, false).idleMode(IdleMode.kCoast);
+    followConfig.follow(Constants.CanIds.kIntakeDeployMotorL, true).idleMode(IdleMode.kCoast);
     m_deployMotorR.configure(followConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig beltMotorConfig = new SparkMaxConfig();

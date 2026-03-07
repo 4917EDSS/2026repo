@@ -91,18 +91,18 @@ public final class Constants {
   public static class Hopper {
     // TODO:  Set all the values correctly
     public static final double kSingulatorEncoderToRpsConversionFactor = 2.5; // Gearing TBD
-    public static final double kSingulatorMaxVelocityRotPerSec = 2.0; // Throughput must be slower than Escalator to avoid jams
+    public static final double kSingulatorMaxVelocityRotPerSec = 200.0; // Throughput must be slower than Escalator to avoid jams
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 120.0;
     public static final double kSingulatorMaxPower = 1.0;
     public static final double kSingulatorKS = 0.25;
     public static final double kSingulatorKV = 0.04;
-    public static final double kSingulatorKP = 0.0;
+    public static final double kSingulatorKP = 0.5;
     public static final double kSingulatorKI = 0.0;
     public static final double kSingulatorKD = 0.0;
 
     public static final double kEscalatorEncoderToRpsConversionFactor = 3.0; // Gearing TBD
-    public static final double kEscalatorMaxVelocityRotPerSec = 4.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
+    public static final double kEscalatorMaxVelocityRotPerSec = 300.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
     public static final double kEscalatorVelocityToleranceRotPerSec = 0.1;
     public static final double kEscalatorMaxCurrent = 120.0;
     public static final double kEscalatorMaxPower = 1.0;
@@ -131,7 +131,7 @@ public final class Constants {
     public static final double kDeployKD = 0.0;
 
     public static final double kBeltMaxCurrent = 120.0;
-    public static final double kBeltPower = 1.0;
+    public static final double kBeltPower = 0.35;
 
     public static final double kHoldPositionPidPower = 0.001;
     public static final double kDeploySafetyZoneSize = 10;
@@ -170,11 +170,11 @@ public final class Constants {
     public static final double kPitchKD = 0.0;
 
     public static final double kFlywheelEncoderToRotsPerSecConversionFactor = 0.667;
-    public static final double kFlywheelMaxVelocityRotsPerSec = 25.0;
+    public static final double kFlywheelMaxVelocityRotsPerSec = 200.0;
     public static final double kFlywheelMaxAccelerationRotsPerSec = 100.0;
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
     public static final double kFlywheelMaxCurrent = 120.0;
-    public static final double kFlywheelMaxPower = 0.20;
+    public static final double kFlywheelMaxPower = 1.0;
     public static final double kFlywheelKS = 0.055;
     public static final double kFlywheelKV = 0.076;
     public static final double kFlywheelKP = 0.1;
