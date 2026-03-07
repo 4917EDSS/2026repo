@@ -115,10 +115,10 @@ public class RobotContainer {
    * Use this method to define your trigger->command mappings.
    */
   private void configureBindings() {
-    m_driverController.a().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    m_driverController.b().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    m_driverController.x().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kForward));
-    m_driverController.y().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // m_driverController.a().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // m_driverController.b().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // m_driverController.x().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kForward));
+    // m_driverController.y().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Driver A
     // m_driverController.a()
@@ -126,7 +126,7 @@ public class RobotContainer {
     // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
     // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)),
     // m_calculateShooterAiming.getLobbingMode()));
-    //m_driverController.a().onTrue(new ManualShooterTestingCmd(m_shooterSub, m_hopperSub));
+    m_driverController.a().onTrue(new ManualShooterTestingCmd(m_shooterSub, m_hopperSub));
 
     // Driver B
 
