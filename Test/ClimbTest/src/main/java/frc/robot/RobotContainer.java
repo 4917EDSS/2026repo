@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -70,7 +71,10 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+    m_driverController.a().whileTrue(
+        new StartEndCommand(() -> m_climbSub.setRotatePower(0.4), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
+    m_driverController.x().whileTrue(
+        new StartEndCommand(() -> m_climbSub.setRotatePower(-0.4), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
 
   }
-
 }
