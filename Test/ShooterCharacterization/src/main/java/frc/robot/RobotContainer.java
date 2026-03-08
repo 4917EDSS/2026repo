@@ -79,15 +79,15 @@ public class RobotContainer {
     // Run mechanism backwards until at lower limit switch (or cancelled) to reset the encoder
     m_driverController.back().whileTrue(
         new InstantCommand(() -> {
-          m_currentTest = "Min Find";
+          m_currentTest = "find-min";
           m_shooterSub.setYawVoltage(m_minPosFindVolts);
         }, m_shooterSub)
             .andThen(new WaitUntilCommand(() -> m_shooterSub.isAtYawAtCWLimit()))
             .finallyDo(interrupted -> {
               m_shooterSub.setYawVoltage(0.0);
               m_minPosition = m_shooterSub.getYawAngleDeg();
-              SmartDashboard.putNumber("Test Min Pos", m_minPosition);
               m_minTestPosition = m_minPosition * m_percentMargin; // Stop tests X% from end
+              SmartDashboard.putNumber("Test Min Pos", m_minPosition);
               SmartDashboard.putNumber("Test Min Test Pos", m_minTestPosition);
               m_currentTest = "None";
             }));
@@ -95,15 +95,15 @@ public class RobotContainer {
     // Run mechanism forwards until at upper limit switch (or cancelled) to get the max encoder value
     m_driverController.start().whileTrue(
         new InstantCommand(() -> {
-          m_currentTest = "Max Find";
+          m_currentTest = "find-max";
           m_shooterSub.setYawPower(m_maxPosFindVolts);
         }, m_shooterSub)
             .andThen(new WaitUntilCommand(() -> m_shooterSub.isAtYawAtCCWLimit()))
             .finallyDo(interrupted -> {
               m_shooterSub.setYawVoltage(0.0);
               m_maxPosition = m_shooterSub.getYawAngleDeg();
-              SmartDashboard.putNumber("Test Max Pos", m_maxPosition);
               m_maxTestPosition = m_maxPosition * (1 - m_percentMargin); // Stop tests X% from end
+              SmartDashboard.putNumber("Test Max Pos", m_maxPosition);
               SmartDashboard.putNumber("Test Max Test Pos", m_maxTestPosition);
             }));
 
