@@ -148,9 +148,9 @@ public final class Constants {
     public static final double kYawTolerance = 2.0;
     public static final double kYawMaxVelocityDegPerSec = 180.0;
     public static final double kYawMaxAccelerationDegPerSec = 360.0;
-    public static final double kYawKS = 0.002;
-    public static final double kYawKV = 0.0079803;
-    public static final double kYawKP = 0.1;
+    public static final double kYawKS = 3.0;
+    public static final double kYawKV = 0.0; //0.0079803;
+    public static final double kYawKP = 0.0; //0.1;
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.0;
 
@@ -163,7 +163,7 @@ public final class Constants {
     public static final double kPitchMaxVelocityDegPerSec = 5.0;
     public static final double kPitchMaxAccelerationDegPerSec = 120.0;
     public static final double kPitchKS = 0.65;
-    public static final double kPitchKG = 0.0;
+    public static final double kPitchKG = 100.0;
     public static final double kPitchKV = 0.12;
     public static final double kPitchKP = 0.1;
     public static final double kPitchKI = 0.0;
