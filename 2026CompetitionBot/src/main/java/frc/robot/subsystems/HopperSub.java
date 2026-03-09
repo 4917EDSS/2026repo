@@ -304,9 +304,8 @@ public class HopperSub extends SubsystemBase {
   ////////////////////////////// Singulator SysId and Tests //////////////////////////////
   public void runSingulatorSysIdVolts(double volts) {
     //check if we're at max power
-    MathUtil.clamp(volts, -(Constants.Hopper.kSingulatorMaxPower * 12.0),
-        (Constants.Hopper.kSingulatorMaxPower * 12.0));
-    setSingulatorVoltage(volts);
+    setSingulatorVoltage(MathUtil.clamp(volts, -(Constants.Hopper.kSingulatorMaxPower * 12.0),
+        (Constants.Hopper.kSingulatorMaxPower * 12.0)));
   }
 
   public Command singulatorSysIdQuasistaticCmd(SysIdRoutine.Direction dir) {

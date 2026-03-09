@@ -81,7 +81,7 @@ public class ShooterSub extends SubsystemBase {
         .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor)
-            .velocityConversionFactor(1.0);
+            .velocityConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor);
     motorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
         .reverseLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor));
     m_yawMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
@@ -439,10 +439,9 @@ public class ShooterSub extends SubsystemBase {
     if(isAtYawAtCCWLimit() && volts > 0 || isAtYawAtCWLimit() && volts < 0) {
       return;
     }
-    //make sure voltage doesn't go between min and max
-    MathUtil.clamp(volts, -(Constants.Shooter.kYawMaxPower * 12.0), (Constants.Shooter.kYawMaxPower * 12.0));
     //set the volts
-    setYawVoltage(volts);
+    setYawVoltage(
+        MathUtil.clamp(volts, -(Constants.Shooter.kYawMaxPower * 12.0), (Constants.Shooter.kYawMaxPower * 12.0)));
   }
 
   public Command yawSysIdQuasistatic(SysIdRoutine.Direction dir) {
@@ -476,10 +475,9 @@ public class ShooterSub extends SubsystemBase {
     if(isAtPitchUpperLimit() && volts > 0 || isAtPitchLowerLimit() && volts < 0) {
       return;
     }
-    //make sure voltage doesn't go between min and max
-    MathUtil.clamp(volts, -(Constants.Shooter.kPitchMaxPower * 12.0), (Constants.Shooter.kPitchMaxPower * 12.0));
     //set the volts
-    setPitchVoltage(volts);
+    setPitchVoltage(
+        MathUtil.clamp(volts, -(Constants.Shooter.kPitchMaxPower * 12.0), (Constants.Shooter.kPitchMaxPower * 12.0)));
   }
 
   public Command pitchSysIdQuasistatic(SysIdRoutine.Direction dir) {
@@ -517,7 +515,7 @@ public class ShooterSub extends SubsystemBase {
     volts =
         MathUtil.clamp(volts, -(Constants.Shooter.kFlywheelMaxPower * 12.0),
             (Constants.Shooter.kFlywheelMaxPower * 12.0));
-    setFlywheelPower(volts);
+    setFlywheelVoltage(volts);
   }
 
   public Command flywheelSysIdQuasistaticCmd(SysIdRoutine.Direction dir) {
