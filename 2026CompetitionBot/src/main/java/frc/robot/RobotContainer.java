@@ -92,15 +92,15 @@ public class RobotContainer {
             .withRotationalRate(-m_driverController.getRightX() * m_maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    // m_shooterSub.setDefaultCommand(new RunCommand(
-    //     () -> m_shooterSub.setPitchAndYawPower(-m_operatorController.getRightY() * 0.15,
-    //         m_operatorController.getLeftX() * 0.15),
-    //     m_shooterSub));
-
     m_shooterSub.setDefaultCommand(new RunCommand(
-        () -> m_shooterSub.setPitchYawFlywheelPower(m_shooterAimingCalcs.calculationsInMotion(m_drivetrainSub.getPose(),
-            m_drivetrainSub.getRobotRelativeSpeeds())),
+        () -> m_shooterSub.setPitchAndYawPower(-m_operatorController.getRightY() * 1.0,
+            m_operatorController.getLeftX() * 1.0),
         m_shooterSub));
+
+    // m_shooterSub.setDefaultCommand(new RunCommand(
+    //     () -> m_shooterSub.setPitchYawFlywheelPower(m_shooterAimingCalcs.calculationsInMotion(m_drivetrainSub.getPose(),
+    //         m_drivetrainSub.getRobotRelativeSpeeds())),
+    //     m_shooterSub));
   }
 
 
@@ -183,11 +183,11 @@ public class RobotContainer {
     m_driverController.povUp().whileTrue(
         new StartEndCommand(() -> m_shooterSub.setYawPower(-0.25), () -> m_shooterSub.setYawPower(0.0), m_shooterSub));
 
-    // Driver POV Right
-    m_driverController.povRight()
-        .onTrue(
-            new StartEndCommand(() -> m_shooterSub.setTargetYawAngle(45.0), () -> m_shooterSub.setTargetYawAngle(0.0),
-                m_shooterSub));
+    // // Driver POV Right
+    m_driverController.povRight().onTrue(new InstantCommand(() -> m_shooterSub.setTargetYawAngle(45.0)));
+    //     .whileTrue(
+    //         new StartEndCommand(() -> m_shooterSub.setTargetYawAngle(45.0), () -> m_shooterSub.setTargetYawAngle(0.0),
+    //             m_shooterSub));
     // .onTrue(
     //     new InstantCommand(() -> m_shooterSub.setTargetYawAngle(SmartDashboard.getNumber("turret angle", 0.0)),
     //         m_shooterSub));
@@ -282,12 +282,12 @@ public class RobotContainer {
     m_operatorController.povRight().whileTrue(
         new StartEndCommand(() -> m_shooterSub.setYawPower(-0.2), () -> m_shooterSub.setYawPower(0.0), m_shooterSub));
     // Operator POV Down
-    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setYawTuningConstants( //this is just for tuning, delete for competitions
-        SmartDashboard.getNumber("kS", 0.0),
-        SmartDashboard.getNumber("kV", 0.0),
-        SmartDashboard.getNumber("kP", 0.0),
-        SmartDashboard.getNumber("kI", 0.0),
-        SmartDashboard.getNumber("kD", 0.0)), m_shooterSub));
+    // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setYawTuningConstants( //this is just for tuning, delete for competitions
+    //     SmartDashboard.getNumber("kS", 0.0),
+    //     SmartDashboard.getNumber("kV", 0.0),
+    //     SmartDashboard.getNumber("kP", 0.0),
+    //     SmartDashboard.getNumber("kI", 0.0),
+    //     SmartDashboard.getNumber("kD", 0.0)), m_shooterSub));
 
     // Operator POV Left
     m_operatorController.povLeft().whileTrue(
