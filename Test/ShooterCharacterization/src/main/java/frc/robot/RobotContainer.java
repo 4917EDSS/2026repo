@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -28,10 +29,10 @@ public class RobotContainer {
   private double m_percentMargin = 0.05; // How far from the min/max to run the text
   private double m_minTestPosition = 999; // Min position * percent buffer space
   private double m_maxTestPosition = -999; // Max position * (1 - percent buffer space)
-  private double m_minPosFindVolts = -2.4; // Voltage to run when finding the min position
-  private double m_maxPosFindVolts = 2.4; // Voltage to run when finding the max position
-  private double m_dynamicFwdVolts = 2.5; // Voltage to run for the constant-voltage (aka "dynamic" test), forward direction
-  private double m_dynamicRevVolts = -2.5; // Voltage to run for the constant-voltage (aka "dynamic" test), reverse direction
+  private double m_minPosFindVolts = -3.5; // Voltage to run when finding the min position
+  private double m_maxPosFindVolts = 3.5; // Voltage to run when finding the max position
+  private double m_dynamicFwdVolts = 3.5; // Voltage to run for the constant-voltage (aka "dynamic" test), forward direction
+  private double m_dynamicRevVolts = -3.5; // Voltage to run for the constant-voltage (aka "dynamic" test), reverse direction
   private double m_quasistaticStepTime = 0.5; // How many seconds between each step up of 1 volt
 
   // The robot's subsystems and commands are defined here...
@@ -61,6 +62,10 @@ public class RobotContainer {
     SmartDashboard.putNumber("kI", 0.0);
     SmartDashboard.putNumber("kD", 0.0);
     SmartDashboard.putNumber("kG", 0.0);
+
+    m_shooterSub.setDefaultCommand(new RunCommand(
+        () -> m_shooterSub.setYawVoltage(m_driverController.getLeftX() * 12.0),
+        m_shooterSub));
 
     // Configure the trigger bindings
     configureBindings();
@@ -96,7 +101,7 @@ public class RobotContainer {
     m_driverController.start().whileTrue(
         new InstantCommand(() -> {
           m_currentTest = "find-max";
-          m_shooterSub.setYawPower(m_maxPosFindVolts);
+          m_shooterSub.setYawVoltage(m_maxPosFindVolts);
         }, m_shooterSub)
             .andThen(new WaitUntilCommand(() -> m_shooterSub.isAtYawAtCCWLimit()))
             .finallyDo(interrupted -> {
@@ -111,7 +116,7 @@ public class RobotContainer {
     m_driverController.a().whileTrue(
         new InstantCommand(() -> {
           m_currentTest = "dynamic-forward";
-          m_shooterSub.setYawPower(m_dynamicFwdVolts);
+          m_shooterSub.setYawVoltage(m_dynamicFwdVolts);
         }, m_shooterSub)
             .andThen(new WaitUntilCommand(() -> (m_shooterSub.getYawAngleDeg() >= m_maxTestPosition) ? true : false))
             .finallyDo(interrupted -> {
@@ -123,7 +128,7 @@ public class RobotContainer {
     m_driverController.b().whileTrue(
         new InstantCommand(() -> {
           m_currentTest = "dynamic-reverse";
-          m_shooterSub.setYawPower(m_dynamicRevVolts);
+          m_shooterSub.setYawVoltage(m_dynamicRevVolts);
         }, m_shooterSub)
             .andThen(new WaitUntilCommand(() -> (m_shooterSub.getYawAngleDeg() <= m_minTestPosition) ? true : false))
             .finallyDo(interrupted -> {
@@ -153,6 +158,7 @@ public class RobotContainer {
 
     // Get any new user values for tests from dashboard
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> {
+      System.out.println("Updating test values");
       m_minPosition = SmartDashboard.getNumber("Test Min Pos", m_minPosition);
       m_maxPosition = SmartDashboard.getNumber("Test Max Pos", m_maxPosition);
       m_percentMargin = SmartDashboard.getNumber("Test % Margin", m_percentMargin);
