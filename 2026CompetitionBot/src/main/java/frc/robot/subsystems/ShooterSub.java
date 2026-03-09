@@ -194,33 +194,33 @@ public class ShooterSub extends SubsystemBase {
     // flywheel control done on talonfx
   }
 
-  public void setFlywheelTuningConstants(double kS, double kV, double kP, double kI, double kD) {
-    TalonFXConfigurator talonFXConfigurator1 = m_flywheelMotorL.getConfigurator();
-    Slot0Configs slot0FlywheelConfigs = new Slot0Configs();
-    slot0FlywheelConfigs.kS = kS;
-    slot0FlywheelConfigs.kV = kV;
-    slot0FlywheelConfigs.kP = kP;
-    slot0FlywheelConfigs.kI = kI;
-    slot0FlywheelConfigs.kD = kD;
-    talonFXConfigurator1.apply(slot0FlywheelConfigs);
-    System.out.println("Shooter" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
+  // public void setFlywheelTuningConstants(double kS, double kV, double kP, double kI, double kD) {
+  //   TalonFXConfigurator talonFXConfigurator1 = m_flywheelMotorL.getConfigurator();
+  //   Slot0Configs slot0FlywheelConfigs = new Slot0Configs();
+  //   slot0FlywheelConfigs.kS = kS;
+  //   slot0FlywheelConfigs.kV = kV;
+  //   slot0FlywheelConfigs.kP = kP;
+  //   slot0FlywheelConfigs.kI = kI;
+  //   slot0FlywheelConfigs.kD = kD;
+  //   talonFXConfigurator1.apply(slot0FlywheelConfigs);
+  //   System.out.println("Shooter" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
 
-  }
+  // }
 
-  public void setPitchTuningConstants(double kS, double kV, double kP, double kI, double kD, double kG) {
-    m_pitchFeedforward.setKg(kG);
-    m_pitchFeedforward.setKv(kV);
-    m_pitchFeedforward.setKs(kS);
-    m_pitchPidController.setPID(kP, kI, kD);
-    System.out.println("pitch" + kS + "," + kV + "," + kP + "," + kI + "," + kD + "," + kG);
-  }
+  // public void setPitchTuningConstants(double kS, double kV, double kP, double kI, double kD, double kG) {
+  //   m_pitchFeedforward.setKg(kG);
+  //   m_pitchFeedforward.setKv(kV);
+  //   m_pitchFeedforward.setKs(kS);
+  //   m_pitchPidController.setPID(kP, kI, kD);
+  //   System.out.println("pitch" + kS + "," + kV + "," + kP + "," + kI + "," + kD + "," + kG);
+  // }
 
-  public void setYawTuningConstants(double kS, double kV, double kP, double kI, double kD) {
-    m_yawFeedforward.setKv(kV);
-    m_yawFeedforward.setKs(kS);
-    m_yawPidController.setPID(kP, kI, kD);
-    System.out.println("yaw" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
-  }
+  // public void setYawTuningConstants(double kS, double kV, double kP, double kI, double kD) {
+  //   m_yawFeedforward.setKv(kV);
+  //   m_yawFeedforward.setKs(kS);
+  //   m_yawPidController.setPID(kP, kI, kD);
+  //   System.out.println("yaw" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
+  // }
 
   public void setYawPower(double power) {
     SmartDashboard.putNumber("Sht Yaw Power", power);
