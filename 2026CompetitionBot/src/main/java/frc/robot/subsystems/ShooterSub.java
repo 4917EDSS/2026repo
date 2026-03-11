@@ -25,6 +25,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -49,19 +50,17 @@ public class ShooterSub extends SubsystemBase {
 
   private final SimpleMotorFeedforward m_yawFeedforward =
       new SimpleMotorFeedforward(Constants.Shooter.kYawKS, Constants.Shooter.kYawKV);
-  private final TrapezoidProfile.Constraints m_yawProfileConstraints = new TrapezoidProfile.Constraints(
-      Constants.Shooter.kYawMaxVelocityDegPerSec, Constants.Shooter.kYawMaxAccelerationDegPerSec);
-  private final ProfiledPIDController m_yawPidController =
-      new ProfiledPIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD,
-          m_yawProfileConstraints);
+  // private final TrapezoidProfile.Constraints m_yawProfileConstraints = new TrapezoidProfile.Constraints(
+  //     Constants.Shooter.kYawMaxVelocityDegPerSec, Constants.Shooter.kYawMaxAccelerationDegPerSec);
+  private final PIDController m_yawPidController =
+      new PIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD);
 
   private final ArmFeedforward m_pitchFeedforward =
       new ArmFeedforward(Constants.Shooter.kPitchKS, Constants.Shooter.kPitchKG, Constants.Shooter.kPitchKV);
-  private final TrapezoidProfile.Constraints m_pitchProfileConstraints = new TrapezoidProfile.Constraints(
-      Constants.Shooter.kPitchMaxVelocityDegPerSec, Constants.Shooter.kPitchMaxAccelerationDegPerSec);
-  private final ProfiledPIDController m_pitchPidController =
-      new ProfiledPIDController(Constants.Shooter.kPitchKP, Constants.Shooter.kPitchKI, Constants.Shooter.kPitchKD,
-          m_pitchProfileConstraints);
+  // private final TrapezoidProfile.Constraints m_pitchProfileConstraints = new TrapezoidProfile.Constraints(
+  //     Constants.Shooter.kPitchMaxVelocityDegPerSec, Constants.Shooter.kPitchMaxAccelerationDegPerSec);
+  private final PIDController m_pitchPidController =
+      new PIDController(Constants.Shooter.kPitchKP, Constants.Shooter.kPitchKI, Constants.Shooter.kPitchKD);
 
   private boolean m_flywheelAutomationEnabled = false;
   private boolean m_yawAutomationEnabled = false;
@@ -80,8 +79,7 @@ public class ShooterSub extends SubsystemBase {
         .inverted(false) // Set to true to invert the forward motor direction
         .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor)
-            .velocityConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor);
+            .positionConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor);
     motorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
         .reverseLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor));
     m_yawMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
@@ -89,10 +87,9 @@ public class ShooterSub extends SubsystemBase {
 
     motorConfig
         .inverted(true) // Set to true to invert the forward motor direction
-        .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
+        .smartCurrentLimit((int) Constants.Shooter.kPitchMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(Constants.Shooter.kPitchEncoderToDegConversionFactor)
-            .velocityConversionFactor(Constants.Shooter.kPitchEncoderToDegConversionFactor);
+            .positionConversionFactor(Constants.Shooter.kPitchEncoderToDegConversionFactor);
     motorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
         .reverseLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor));
 
@@ -247,6 +244,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setPitchVoltage(double volts) {
+    SmartDashboard.putNumber("Sht Ptc Vlt", volts);
     m_pitchMotor.setVoltage(volts);
   }
 
@@ -314,16 +312,20 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setTargetYawAngle(double angleDeg) {
+    angleDeg %= 360;
+    if(angleDeg > Constants.Shooter.kYawMaxAngleDeg) {
+      angleDeg = 155.0;
+    }
     m_targetYawAngleDeg = angleDeg;
-    m_yawPidController.reset(getYawAngleDeg());
-    m_yawPidController.setGoal(angleDeg);
+    m_yawPidController.reset();
+    m_yawPidController.setSetpoint(angleDeg);
     runYawControl(true);
     enableYawAutomation();
   }
 
   public boolean isAtTargetYawAngle() {
     // If the yaw encoder isn't reset, then we can never be at our goal since we don't know where we are
-    return m_yawHasBeenReset && m_yawPidController.atGoal();
+    return m_yawHasBeenReset && m_yawPidController.atSetpoint();
   }
 
   // Set power based on difference between target and current yaw
@@ -335,13 +337,23 @@ public class ShooterSub extends SubsystemBase {
 
     double currentAngle = getYawAngleDeg();
     double pidVolts = m_yawPidController.calculate(currentAngle);
-    TrapezoidProfile.State setPoint = m_yawPidController.getSetpoint();
-    double ffVolts = m_yawFeedforward.calculate(setPoint.velocity);
-    SmartDashboard.putNumber("Sht Yaw T Vel", setPoint.velocity);
-    double totalVolts = pidVolts + ffVolts;
+    double ffVolts = Constants.Shooter.kYawKS * Math.signum(pidVolts);
+    double totalVolts = pidVolts;
+    if(!m_yawPidController.atSetpoint()) {
+      totalVolts += ffVolts;
+    }
+    SmartDashboard.putNumber("pidvolts", pidVolts);
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
     totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower * 12, Constants.Shooter.kYawMaxPower * 12);
+
+    if(Constants.Shooter.kYawMaxAngleDeg - currentAngle < 10.0 && totalVolts > 2.0) {
+      totalVolts = 2;
+    }
+
+    if(currentAngle - Constants.Shooter.kYawMinAngleDeg < 10.0 && totalVolts < (-2.0)) {
+      totalVolts = -2.0;
+    }
 
     if(setPower) {
       setYawVoltage(totalVolts);
@@ -360,14 +372,14 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetPitchAngle(double angleDeg) {
     m_targetPitchAngleDeg = angleDeg;
-    m_pitchPidController.reset(getPitchAngleDeg());
-    m_pitchPidController.setGoal(angleDeg);
+    m_pitchPidController.reset();
+    m_pitchPidController.setSetpoint(angleDeg);
     runPitchControl(true);
     enablePitchAutomation();
   }
 
   public boolean isAtTargetPitchAngle() {
-    return m_pitchHasBeenReset && m_pitchPidController.atGoal();
+    return m_pitchHasBeenReset && m_pitchPidController.atSetpoint();
   }
 
   // Set power based on difference between target and current pitch
@@ -379,9 +391,9 @@ public class ShooterSub extends SubsystemBase {
 
     double currentAngle = getPitchAngleDeg();
     double pidVolts = m_pitchPidController.calculate(currentAngle);
-    TrapezoidProfile.State setPoint = m_pitchPidController.getSetpoint();
-    double ffVolts = m_pitchFeedforward.calculate(Math.toRadians(setPoint.position), setPoint.velocity);
+    double ffVolts = Constants.Shooter.kPitchKS * Math.signum(pidVolts) + Constants.Shooter.kPitchKG;
     double totalVolts = pidVolts + ffVolts;
+
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
     totalVolts =
