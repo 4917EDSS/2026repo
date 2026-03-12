@@ -5,11 +5,17 @@
 package frc.robot.subsystems;
 
 import java.util.logging.Logger;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
@@ -30,8 +36,7 @@ public class IntakeSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
 
   private final SparkFlex m_beltMotor = new SparkFlex(Constants.CanIds.kIntakeBeltMotor, MotorType.kBrushless);
-  private final SparkMax m_deployMotorL = new SparkMax(Constants.CanIds.kIntakeDeployMotorL, MotorType.kBrushless);
-  private final SparkMax m_deployMotorR = new SparkMax(Constants.CanIds.kIntakeDeployMotorR, MotorType.kBrushless); // Run in tandem
+  private final TalonFX m_deployMotor = new TalonFX(Constants.CanIds.kIntakeDeployMotor);
   private final DigitalInput m_deployInLimit = new DigitalInput(Constants.DioIds.kIntakeDeployInLimit);
   private final DigitalInput m_deployOutLimit = new DigitalInput(Constants.DioIds.kIntakeDeployOtherInLimit);
 
@@ -51,23 +56,40 @@ public class IntakeSub extends SubsystemBase {
 
   /** Creates a new IntakeSub. */
   public IntakeSub() { // Motor Configs need to be tested
-    m_deployPidController.setTolerance(Constants.Intake.kDeployToleranceDeg);
-    SparkMaxConfig deployMotorConfig = new SparkMaxConfig();
-    deployMotorConfig
-        .inverted(false) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(100) // Current limit in amps
-        .idleMode(IdleMode.kCoast).encoder
-            .positionConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor)
-            .velocityConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor / 60);
+    // m_deployPidController.setTolerance(Constants.Intake.kDeployToleranceDeg);
+    // SparkMaxConfig deployMotorConfig = new SparkMaxConfig();
+    // deployMotorConfig
+    //     .inverted(false) // Set to true to invert the forward motor direction
+    //     .smartCurrentLimit(100) // Current limit in amps
+    //     .idleMode(IdleMode.kCoast).encoder
+    //         .positionConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor)
+    //         .velocityConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor / 60);
+
+
+    TalonFXConfigurator talonFXConfigurator = m_deployMotor.getConfigurator();
+    //This is how you set a current limit inside the motor (vs on the input power supply)
+    //subject to change
+    CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
+    limitConfigs.StatorCurrentLimit = Constants.Intake.kDeployMaxCurrent;
+    limitConfigs.StatorCurrentLimitEnable = true;
+    talonFXConfigurator.apply(limitConfigs);
+
+    FeedbackConfigs DeployFeedbackConfigs = new FeedbackConfigs();
+    DeployFeedbackConfigs.SensorToMechanismRatio = Constants.Intake.kDeployEncoderToDegConversionFactor;
+    talonFXConfigurator.apply(DeployFeedbackConfigs);
+
+    // This is how you can set a deadband, invert the motor rotoation and set brake/coast
+    MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
+    outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
+    outputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Invert = Clockwise
+    outputConfigs.NeutralMode = NeutralModeValue.Coast;
+    talonFXConfigurator.apply(outputConfigs);
+
+    outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
 
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this
     // operation can be slow
-    m_deployMotorL.configure(deployMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    SparkMaxConfig followConfig = new SparkMaxConfig();
-    followConfig.follow(Constants.CanIds.kIntakeDeployMotorL, true).idleMode(IdleMode.kCoast);
-    m_deployMotorR.configure(followConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig beltMotorConfig = new SparkMaxConfig();
     beltMotorConfig
@@ -116,17 +138,17 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public void setDeployPower(double power) {
-    SmartDashboard.putNumber("Intake Deploy Power", m_deployMotorL.get());
-    m_deployMotorL.set(power);
+    SmartDashboard.putNumber("Intake Deploy Power", m_deployMotor.get());
+    m_deployMotor.set(power);
   }
 
   public void setDeployVoltage(double volts) {
     SmartDashboard.putNumber("Int Dep Volts", volts);
-    m_deployMotorL.setVoltage(volts);
+    m_deployMotor.setVoltage(volts);
   }
 
   public double getDeployAngleDeg() {
-    return m_deployMotorL.getEncoder().getPosition();
+    return m_deployMotor.getPosition().getValueAsDouble();
   }
 
   public double getTargetDeployAngleDeg() {
@@ -134,11 +156,11 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public double getDeployVelocityDegPerSec() {
-    return m_deployMotorL.getEncoder().getVelocity();
+    return m_deployMotor.getVelocity().getValueAsDouble();
   }
 
   public void resetDeployEncoder(double resetAngleDeg) {
-    m_deployMotorL.getEncoder().setPosition(resetAngleDeg);
+    m_deployMotor.setPosition(resetAngleDeg);
   }
 
   public boolean isAtInLimit() {
@@ -223,7 +245,7 @@ public class IntakeSub extends SubsystemBase {
           (voltage) -> runDeploySysIdVolts(voltage.in(Units.Volts)),
           (SysIdRoutineLog log) -> {
             log.motor("intakeDeploy")
-                .voltage(Units.Volts.of(m_deployMotorL.getAppliedOutput() * RobotController.getBatteryVoltage()))
+                .voltage(Units.Volts.of(m_deployMotor.get() * RobotController.getBatteryVoltage()))
                 .angularPosition(Units.Degrees.of(getDeployAngleDeg()))
                 .angularVelocity(Units.DegreesPerSecond.of(getDeployVelocityDegPerSec()));
           },

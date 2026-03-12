@@ -24,8 +24,8 @@ public final class Constants {
     public static final int kHopperEscalatorMotor = 3;
     public static final int kHopperSingulatorMotor = 4;
     public static final int kIntakeBeltMotor = 5;
-    public static final int kIntakeDeployMotorL = 6;
-    public static final int kIntakeDeployMotorR = 7;
+    public static final int kIntakeDeployMotor = 6;
+    // Used to be kIntakeDeployMotorR = 7
     public static final int kShooterFlywheelMotorL = 8;
     public static final int kShooterFlywheelMotorR = 9;
     public static final int kShooterPitchMotor = 10;
