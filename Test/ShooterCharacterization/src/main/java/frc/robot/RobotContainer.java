@@ -29,8 +29,8 @@ public class RobotContainer {
   private double m_percentMargin = 0.05; // How far from the min/max to run the text
   private double m_minTestPosition = 999; // Min position * percent buffer space
   private double m_maxTestPosition = -999; // Max position * (1 - percent buffer space)
-  private double m_minPosFindVolts = -3.5; // Voltage to run when finding the min position
-  private double m_maxPosFindVolts = 3.5; // Voltage to run when finding the max position
+  private double m_minPosFindVolts = -2.0; // Voltage to run when finding the min position
+  private double m_maxPosFindVolts = 2.0; // Voltage to run when finding the max position
   private double m_dynamicFwdVolts = 3.5; // Voltage to run for the constant-voltage (aka "dynamic" test), forward direction
   private double m_dynamicRevVolts = -3.5; // Voltage to run for the constant-voltage (aka "dynamic" test), reverse direction
   private double m_quasistaticStepTime = 0.5; // How many seconds between each step up of 1 volt

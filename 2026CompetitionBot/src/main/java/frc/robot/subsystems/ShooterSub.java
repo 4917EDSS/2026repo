@@ -312,6 +312,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setTargetYawAngle(double angleDeg) {
+    System.out.println(angleDeg);
     angleDeg %= 360;
     if(angleDeg > Constants.Shooter.kYawMaxAngleDeg) {
       angleDeg = 155.0;
@@ -356,7 +357,7 @@ public class ShooterSub extends SubsystemBase {
     }
 
     if(setPower) {
-      setYawVoltage(totalVolts);
+      setYawVoltage(0.0);
     }
   }
 

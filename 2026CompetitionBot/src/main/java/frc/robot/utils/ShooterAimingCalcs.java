@@ -4,6 +4,7 @@
 
 package frc.robot.utils;
 
+import java.util.Arrays;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -71,11 +72,16 @@ public class ShooterAimingCalcs {
     double velocityX =
         flywheelRpsToVelocity(calculateShooterFlywheelRps(robot))
             * Math.cos(Math.toRadians(calculateShooterPitchDegrees(robot)[0]));
+    if(velocityX == 0.0) {
+      System.out.println("DIVISION BY ZERO AHHHHH");
+      return 0.0;
+    }
+    System.out.println(calculateShooterPitchDegrees(robot)[0]);
     return distanceX / velocityX;
   }
 
   public double flywheelRpsToVelocity(double rps) {
-    return 0.0;
+    return 1.0;
   }
 
   public Translation2d getDistanceFromHub(Pose2d robot) {
@@ -180,6 +186,7 @@ public class ShooterAimingCalcs {
     }
 
     double[] returns = {pitch, finalVelocity};
+    System.out.println(pitch + ", " + finalVelocity);
     return returns;
   }
 
@@ -199,6 +206,8 @@ public class ShooterAimingCalcs {
       trajectoriesArray[2] = calculateShooterFlywheelRps(offsetPos);
     }
 
+    System.out.println(Arrays.toString(trajectoriesArray));
+    System.out.println(calculateTimeOfFlight(robot));
     return trajectoriesArray;
   }
 }

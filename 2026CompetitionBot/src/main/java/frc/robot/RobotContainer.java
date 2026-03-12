@@ -287,11 +287,13 @@ public class RobotContainer {
 
     // Operator POV Right
     m_operatorController.povRight().whileTrue(
-        new StartEndCommand(() -> m_shooterSub.setYawPower(-0.2), () -> m_shooterSub.setYawPower(0.0), m_shooterSub));
+        new StartEndCommand(() -> m_shooterSub.setYawVoltage(-2.0), () -> m_shooterSub.setYawVoltage(0.0),
+            m_shooterSub));
     // Operator POV Down
     m_operatorController.povDown()
         .whileTrue(new RunCommand(
-            () -> m_shooterSub.setTargetYawAngle(360.0 - m_drivetrainSub.getState().Pose.getRotation().getDegrees()),
+            () -> m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.calculationsInMotion(m_drivetrainSub.getPose(),
+                m_drivetrainSub.getRobotRelativeSpeeds())[1]),
             m_shooterSub));
     // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setYawTuningConstants( //this is just for tuning, delete for competitions
     //     SmartDashboard.getNumber("kS", 0.0),
@@ -302,7 +304,8 @@ public class RobotContainer {
 
     // Operator POV Left
     m_operatorController.povLeft().whileTrue(
-        new StartEndCommand(() -> m_shooterSub.setYawPower(0.2), () -> m_shooterSub.setYawPower(0.0), m_shooterSub));
+        new StartEndCommand(() -> m_shooterSub.setYawVoltage(2.0), () -> m_shooterSub.setYawVoltage(0.0),
+            m_shooterSub));
     // Operator Left Stick
     m_operatorController.leftStick()
         .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
