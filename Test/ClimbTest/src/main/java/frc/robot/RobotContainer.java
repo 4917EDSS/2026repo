@@ -41,6 +41,7 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -75,6 +76,10 @@ public class RobotContainer {
         new StartEndCommand(() -> m_climbSub.setRotatePower(0.4), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
     m_driverController.x().whileTrue(
         new StartEndCommand(() -> m_climbSub.setRotatePower(-0.4), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
+
+    // Driver Back
+    m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading
+    //m_driverController.back().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric())); 
 
   }
 }
