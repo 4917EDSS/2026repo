@@ -115,10 +115,10 @@ public class RobotContainer {
    * Use this method to define your trigger->command mappings.
    */
   private void configureBindings() {
-    m_driverController.a().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    m_driverController.b().whileTrue(m_shooterSub.yawSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    m_driverController.x().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kForward));
-    m_driverController.y().whileTrue(m_shooterSub.yawSysIdDynamic(SysIdRoutine.Direction.kReverse));
+    m_driverController.a().whileTrue(m_shooterSub.pitchSysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    m_driverController.b().whileTrue(m_shooterSub.pitchSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    m_driverController.x().whileTrue(m_shooterSub.pitchSysIdDynamic(SysIdRoutine.Direction.kForward));
+    m_driverController.y().whileTrue(m_shooterSub.pitchSysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Driver A
     // m_driverController.a()
@@ -198,11 +198,7 @@ public class RobotContainer {
     //         m_shooterSub));
     // Driver POV Down
     m_driverController.povDown()
-        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployInDistanceM))
-            .andThen(new WaitUntilCommand(() -> m_climbSub.isAtDeployInLimit()))
-            .andThen(
-                new InstantCommand(() -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationInitialAngleDeg),
-                    m_climbSub)));
+        .onTrue(new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(5.0), m_shooterSub));
 
     // Driver POV Left
     m_driverController.povLeft()
@@ -235,17 +231,19 @@ public class RobotContainer {
 
     // Operator X
     m_operatorController.x()
-        .whileTrue(new StartEndCommand(() -> m_shooterSub.setPitchPower(0.12), () -> {
-          m_shooterSub.setPitchPower(0.0);
-        },
-            m_shooterSub));
+        .whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation())
+            .andThen(new StartEndCommand(() -> m_shooterSub.setPitchPower(0.12), () -> {
+              m_shooterSub.setPitchPower(0.0);
+            },
+                m_shooterSub)));
 
     // Operator Y
     m_operatorController.y()
-        .whileTrue(new StartEndCommand(() -> m_shooterSub.setPitchPower(-0.01), () -> {
-          m_shooterSub.setPitchPower(0.0);
-        },
-            m_shooterSub));
+        .whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation())
+            .andThen(new StartEndCommand(() -> m_shooterSub.setPitchPower(-0.12), () -> {
+              m_shooterSub.setPitchPower(0.0);
+            },
+                m_shooterSub)));
 
 
     // Operator Left Bumper

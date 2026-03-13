@@ -154,9 +154,9 @@ public final class Constants {
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.0;
 
-    public static final double kPitchEncoderToDegConversionFactor = 28.0 / 6.0; // Gearing is 0.0616 (approx 1:16.2)
-    public static final double kPitchMinAngleDeg = 19.0;
-    public static final double kPitchMaxAngleDeg = 47.0;
+    public static final double kPitchEncoderToDegConversionFactor = 29.0 / 39.29; // Difference between min and max / motor rotations
+    public static final double kPitchMinAngleDeg = 20.7;
+    public static final double kPitchMaxAngleDeg = 49.6;
     public static final double kPitchMaxCurrent = 12.0;
     public static final double kPitchMaxPower = 0.3;
     public static final double kPitchTolerance = 1.0;
