@@ -277,6 +277,12 @@ public class ShooterSub extends SubsystemBase {
     return m_flywheelMotorL.getVelocity().getValueAsDouble();
   }
 
+  public double getFlywheelVelocityMetersPerSec() {
+    return m_flywheelMotorL.getVelocity().getValueAsDouble()
+        * Constants.Shooter.kFlywheelRotsPerSecToMpsConversionFactor;
+  }
+
+
   public void resetYawEncoder() {
     m_yawMotor.getEncoder().setPosition(0);
   }
