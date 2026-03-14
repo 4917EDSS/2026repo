@@ -155,8 +155,8 @@ public class RobotContainer {
     // Driver Left Bumper
     m_driverController.leftBumper().whileTrue(new StartEndCommand(() -> {
       m_shooterSub.setTargetFlywheelVelocity(100.0);
-      m_shooterSub.setTargetYawAngle(100.0);
-      m_shooterSub.setTargetPitchAngle(35.0);
+      //m_shooterSub.setTargetYawAngle(100.0);
+      //m_shooterSub.setTargetPitchAngle(35.0);
       m_hopperSub.setEscalatorTargetVelocity(30.0);
       m_hopperSub.setSingulatorPower(1.0);
     }, () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub, m_hopperSub));
