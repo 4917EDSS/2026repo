@@ -118,10 +118,13 @@ public class HopperSub extends SubsystemBase {
     SmartDashboard.putBoolean("Singulator Auto", m_singulatorAutomationEnabled);
     SmartDashboard.putNumber("Singulator Target", m_targetSingulatorVelocityRps);
     SmartDashboard.putNumber("Singulator Velocity", getSingulatorVelocityRotPerSec());
+    SmartDashboard.putNumber("Singulator Vel Mps", getSingulatorVelocityMetersPerSec());
     SmartDashboard.putNumber("Singulator Power", m_singulatorMotor.get());
     SmartDashboard.putBoolean("Escalator Auto", m_escalatorAutomationEnabled);
     SmartDashboard.putNumber("Escalator Target", m_targetEscalatorVelocityRps);
     SmartDashboard.putNumber("Escalator Velocity", getEscalatorVelocityRotPerSec());
+    SmartDashboard.putNumber("Escalator In Mps", getInputEscalatorVelocityMetersPerSec());
+    SmartDashboard.putNumber("Escalator Out Mps", getOutputEscalatorVelocityMetersPerSec());
     SmartDashboard.putNumber("Escalator Power", m_escalatorMotor.get());
     SmartDashboard.putBoolean("isFull", isFull());
 

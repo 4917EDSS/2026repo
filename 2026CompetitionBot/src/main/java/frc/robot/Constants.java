@@ -92,7 +92,7 @@ public final class Constants {
     // TODO:  Set all the values correctly
     public static final double kSingulatorEncoderToRpsConversionFactor = 2.5; // Gearing TBD
     public static final double kSingulatorMaxVelocityRotPerSec = 200.0; // Throughput must be slower than Escalator to avoid jams
-    public static final double kSinglatorRpsToMpsConversionFactor = 0.63403070014; //  // 4 inches diamater to metters / 2
+    public static final double kSinglatorRpsToMpsConversionFactor = 0.63403070014 * 0.6; //  // 4 inches diamater to metters / 2
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 120.0;
     public static final double kSingulatorMaxPower = 1.0;
@@ -102,10 +102,10 @@ public final class Constants {
     public static final double kSingulatorKI = 0.0;
     public static final double kSingulatorKD = 0.0;
 
-    public static final double kEscalatorEncoderToRpsConversionFactor = 1.0; // Gearing 1:1
+    public static final double kEscalatorEncoderToRpsConversionFactor = 0.333; // Gearing 1:1
     public static final double kEscalatorMaxVelocityRotPerSec = 300.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
-    public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795; //  inches diamater to metters / 2
-    public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795; //  inches diamater to metters / 2
+    public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795 / 2; //  inches diamater to meters / 2
+    public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2
     public static final double kEscalatorVelocityToleranceRotPerSec = 0.1;
     public static final double kEscalatorMaxCurrent = 120.0;
     public static final double kEscalatorMaxPower = 1.0;
@@ -172,7 +172,7 @@ public final class Constants {
     public static final double kPitchKI = 0.0;
     public static final double kPitchKD = 0.0;
 
-    public static final double kFlywheelEncoderToRotsPerSecConversionFactor = 0.667;
+    public static final double kFlywheelEncoderToRotsPerSecConversionFactor = 1 / (36 / 28 * 30 / 18); // 0.467;
     public static final double kFlywheelRotsPerSecToMpsConversionFactor = 0.3164 / 2; // 4 inches diamater to metters / 2
     public static final double kFlywheelMaxVelocityRotsPerSec = 200.0;
     public static final double kFlywheelMaxAccelerationRotsPerSec = 100.0;

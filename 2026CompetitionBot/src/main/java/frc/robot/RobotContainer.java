@@ -255,20 +255,20 @@ public class RobotContainer {
     // Operator Right Bumper
     m_operatorController.rightBumper()
         .whileTrue(new InstantCommand(() -> m_hopperSub.disableSingulatorAutomation())
-            .andThen(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(0.1),
+            .andThen(new StartEndCommand(() -> m_hopperSub.setSingulatorTargetVelocity(10.0),
                 () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub)));
 
     // Operator Left Trigger
     m_operatorController.leftTrigger()
         .whileTrue(new InstantCommand(() -> m_hopperSub.disableEscalatorAutomation())
-            .andThen(new StartEndCommand(() -> m_hopperSub.setEscalatorPower(0.10),
-                () -> m_hopperSub.setEscalatorPower(0.0), m_hopperSub)));
+            .andThen(new StartEndCommand(() -> m_hopperSub.setEscalatorTargetVelocity(10.0),
+                () -> m_hopperSub.setEscalatorTargetVelocity(0.0), m_hopperSub)));
 
     // Operator Right Trigger
     m_operatorController.rightTrigger()
         .whileTrue(new InstantCommand(() -> m_hopperSub.disableEscalatorAutomation())
-            .andThen(new StartEndCommand(() -> m_shooterSub.setFlywheelPower(0.1),
-                () -> m_shooterSub.setFlywheelPower(0.0), m_shooterSub)));
+            .andThen(new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(10.0),
+                () -> m_shooterSub.setTargetFlywheelVelocity(0.0), m_shooterSub)));
 
     // Operator Back
     m_operatorController.back().whileTrue(

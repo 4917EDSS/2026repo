@@ -34,7 +34,7 @@ void setup() {
   }
 
   Serial.print("VL53L0X driver loaded.\n");
-  range_sensor.startRangeContinuous();
+  range_sensor.startRangeContinuous(); 
 }
 
 void loop() {
