@@ -181,7 +181,7 @@ public final class Constants {
     public static final double kFlywheelMaxPower = 1.0;
     public static final double kFlywheelKS = 0.055;
     public static final double kFlywheelKV = 0.076;
-    public static final double kFlywheelKP = 0.0;
+    public static final double kFlywheelKP = 0.0;//ADD FLYWHELL PID
     public static final double kFlywheelKI = 0.0;
     public static final double kFlywheelKD = 0.0;
 
