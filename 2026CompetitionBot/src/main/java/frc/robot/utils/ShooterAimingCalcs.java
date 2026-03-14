@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.interpolation.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Constants;
@@ -72,16 +73,12 @@ public class ShooterAimingCalcs {
     double velocityX =
         flywheelRpsToVelocity(calculateShooterFlywheelRps(robot))
             * Math.cos(Math.toRadians(calculateShooterPitchDegrees(robot)[0]));
-    if(velocityX == 0.0) {
-      System.out.println("DIVISION BY ZERO AHHHHH");
-      return 0.0;
-    }
-    System.out.println(calculateShooterPitchDegrees(robot)[0]);
+    //System.out.println(calculateShooterPitchDegrees(robot)[0]);
     return distanceX / velocityX;
   }
 
   public double flywheelRpsToVelocity(double rps) {
-    return 1.0;
+    return rps * 1.0;
   }
 
   public Translation2d getDistanceFromHub(Pose2d robot) {
@@ -127,37 +124,47 @@ public class ShooterAimingCalcs {
 
     if(RobotStatus.isLobbing()) {
       if(RobotStatus.getCurrentFieldPosition() == "RightLob") {
-        dy = Constants.TrajectoryCalculations.kRightLobY;
-        dx = Constants.TrajectoryCalculations.kLobX;
+        System.out.println("rl");
+        dy = -Constants.TrajectoryCalculations.kShooterToFloorHeight;
+        dx = getDistanceFromRightLob(robot);
       } else {
-        dy = Constants.TrajectoryCalculations.kLeftLobY;
-        dx = Constants.TrajectoryCalculations.kLobX;
+        System.out.println("ll");
+        dy = -Constants.TrajectoryCalculations.kShooterToFloorHeight;
+        dx = getDistanceFromLeftLob(robot);
       }
     } else if(RobotStatus.isShooting()) {
+      System.out.println("s");
       dy = Constants.TrajectoryCalculations.shooterToHubHeight;
       dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
     } else {
       if(RobotStatus.wasLobbing()) {
         if(RobotStatus.getPreviousFieldPosition() == "RightLob") {
-          dy = Constants.TrajectoryCalculations.kRightLobY;
-          dx = Constants.TrajectoryCalculations.kLobX;
+          System.out.println("rl");
+          dy = -Constants.TrajectoryCalculations.kShooterToFloorHeight;
+          dx = getDistanceFromRightLob(robot);
         } else {
-          dy = Constants.TrajectoryCalculations.kLeftLobY;
-          dx = Constants.TrajectoryCalculations.kLobX;
+          System.out.println("ll");
+          dy = -Constants.TrajectoryCalculations.kShooterToFloorHeight;
+          dx = getDistanceFromLeftLob(robot);
         }
       } else if(RobotStatus.wasShooting()) {
+        System.out.println("s");
         dy = Constants.TrajectoryCalculations.shooterToHubHeight;
         dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
       } else {
+        System.out.println("bad :(");
         dx = 0.0;
         dy = 0.0;
       }
     }
 
 
+    //dx, dy, g, v, pitch
+
     double D = 1 - (2 * g * dy) / Math.pow(v, 2) - (Math.pow(g, 2) * Math.pow(dx, 2)) / Math.pow(v, 4);
     double T1 = (Math.pow(v, 2) / (g * dx)) * (1 + Math.sqrt(D)); // Higher angle
     double T2 = (Math.pow(v, 2) / (g * dx)) * (1 - Math.sqrt(D)); // Lower angle
+    //System.out.println("T1: " + T1 + ", T2: " + T2 + ", D: " + D);
 
     double vMin = Math.sqrt(g * (dy + Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))));
     double TMin = Math.pow(vMin, 2) / (g * dx);
@@ -172,21 +179,26 @@ public class ShooterAimingCalcs {
 
     if(RobotStatus.isLobbing()) {
       pitch = angleInterpLob;
+      //System.out.println("angleInterplob:" + pitch);
     } else if(RobotStatus.isShooting()) {
       pitch =
           (dx < Constants.TrajectoryCalculations.piecewiseSwapCalculationDistance) ? angleInterpShoot : angleVMin;
+      //System.out.println("shootOrVmin:" + pitch);
       finalVelocity = (dx < Constants.TrajectoryCalculations.piecewiseSwapCalculationDistance) ? 0.0 : vMin;
     } else {
       pitch = 0.0;
+      //System.out.println("zero:" + pitch);
     }
 
     if(D < 0) {
       pitch = angleVMin;
+      //System.out.println("vmin:" + vMin);
       finalVelocity = vMin;
     }
 
     double[] returns = {pitch, finalVelocity};
-    System.out.println(pitch + ", " + finalVelocity);
+    //System.out.println(pitch + ", " + finalVelocity);
+    //System.out.println(dx + ", " + dy + ", " + g + ", " + v + ", " + pitch);
     return returns;
   }
 
@@ -207,7 +219,7 @@ public class ShooterAimingCalcs {
     }
 
     System.out.println(Arrays.toString(trajectoriesArray));
-    System.out.println(calculateTimeOfFlight(robot));
+    //System.out.println(calculateTimeOfFlight(robot));
     return trajectoriesArray;
   }
 }
