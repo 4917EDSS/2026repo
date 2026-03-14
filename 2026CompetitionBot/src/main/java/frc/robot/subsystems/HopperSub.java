@@ -191,12 +191,25 @@ public class HopperSub extends SubsystemBase {
     return m_singulatorMotor.getVelocity().getValueAsDouble();
   }
 
+  public double getSingulatorVelocityMetersPerSec() {
+    return m_singulatorMotor.getVelocity().getValueAsDouble() * Constants.Hopper.kSinglatorRpsToMpsConversionFactor;
+  }
+
   public double getEscalatorPositionRot() {
     return m_escalatorMotor.getPosition().getValueAsDouble();
   }
 
   public double getEscalatorVelocityRotPerSec() {
     return m_escalatorMotor.getVelocity().getValueAsDouble();
+  }
+
+  public double getInputEscalatorVelocityMetersPerSec() {
+    return m_escalatorMotor.getVelocity().getValueAsDouble() * Constants.Hopper.kInputEscalatorRpsToMpsConversionFactor;
+  }
+
+  public double getOutputEscalatorVelocityMetersPerSec() {
+    return m_escalatorMotor.getVelocity().getValueAsDouble()
+        * Constants.Hopper.kOutputEscalatorRpsToMpsConversionFactor;
   }
 
   public double getEscalatorVelocityRps() {

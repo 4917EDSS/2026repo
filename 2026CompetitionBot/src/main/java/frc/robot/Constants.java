@@ -92,6 +92,7 @@ public final class Constants {
     // TODO:  Set all the values correctly
     public static final double kSingulatorEncoderToRpsConversionFactor = 2.5; // Gearing TBD
     public static final double kSingulatorMaxVelocityRotPerSec = 200.0; // Throughput must be slower than Escalator to avoid jams
+    public static final double kSinglatorRpsToMpsConversionFactor = 0.63403070014; //  // 4 inches diamater to metters / 2
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 120.0;
     public static final double kSingulatorMaxPower = 1.0;
@@ -101,8 +102,10 @@ public final class Constants {
     public static final double kSingulatorKI = 0.0;
     public static final double kSingulatorKD = 0.0;
 
-    public static final double kEscalatorEncoderToRpsConversionFactor = 3.0; // Gearing TBD
+    public static final double kEscalatorEncoderToRpsConversionFactor = 1.0; // Gearing 1:1
     public static final double kEscalatorMaxVelocityRotPerSec = 300.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
+    public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795; //  inches diamater to metters / 2
+    public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795; //  inches diamater to metters / 2
     public static final double kEscalatorVelocityToleranceRotPerSec = 0.1;
     public static final double kEscalatorMaxCurrent = 120.0;
     public static final double kEscalatorMaxPower = 1.0;
@@ -154,9 +157,9 @@ public final class Constants {
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.0;
 
-    public static final double kPitchEncoderToDegConversionFactor = 28.0 / 6.0; // Gearing is 0.0616 (approx 1:16.2)
-    public static final double kPitchMinAngleDeg = 19.0;
-    public static final double kPitchMaxAngleDeg = 47.0;
+    public static final double kPitchEncoderToDegConversionFactor = 29.0 / 39.29; // Difference between min and max / motor rotations
+    public static final double kPitchMinAngleDeg = 20.7;
+    public static final double kPitchMaxAngleDeg = 49.6;
     public static final double kPitchMaxCurrent = 12.0;
     public static final double kPitchMaxPower = 0.3;
     public static final double kPitchTolerance = 1.0;
@@ -170,6 +173,7 @@ public final class Constants {
     public static final double kPitchKD = 0.0;
 
     public static final double kFlywheelEncoderToRotsPerSecConversionFactor = 0.667;
+    public static final double kFlywheelRotsPerSecToMpsConversionFactor = 0.3164 / 2; // 4 inches diamater to metters / 2
     public static final double kFlywheelMaxVelocityRotsPerSec = 200.0;
     public static final double kFlywheelMaxAccelerationRotsPerSec = 100.0;
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
@@ -177,7 +181,7 @@ public final class Constants {
     public static final double kFlywheelMaxPower = 1.0;
     public static final double kFlywheelKS = 0.055;
     public static final double kFlywheelKV = 0.076;
-    public static final double kFlywheelKP = 0.0;
+    public static final double kFlywheelKP = 0.0;//ADD FLYWHELL PID
     public static final double kFlywheelKI = 0.0;
     public static final double kFlywheelKD = 0.0;
 
