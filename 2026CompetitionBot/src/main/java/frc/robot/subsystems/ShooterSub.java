@@ -349,15 +349,15 @@ public class ShooterSub extends SubsystemBase {
     totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower * 12, Constants.Shooter.kYawMaxPower * 12);
 
     if(Constants.Shooter.kYawMaxAngleDeg - currentAngle < 10.0 && totalVolts > 2.0) {
-      totalVolts = 2;
+      totalVolts = 2.0;
     }
 
     if(currentAngle - Constants.Shooter.kYawMinAngleDeg < 10.0 && totalVolts < (-2.0)) {
       totalVolts = -2.0;
     }
 
-    if(setPower) {
-      setYawVoltage(0.0);
+    if(setPower && !Double.isNaN(totalVolts)) {
+      setYawVoltage(totalVolts);
     }
   }
 
