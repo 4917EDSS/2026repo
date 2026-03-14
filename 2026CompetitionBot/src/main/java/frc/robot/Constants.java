@@ -109,11 +109,11 @@ public final class Constants {
     public static final double kEscalatorVelocityToleranceRotPerSec = 0.1;
     public static final double kEscalatorMaxCurrent = 120.0;
     public static final double kEscalatorMaxPower = 1.0;
-    public static final double kEscalatorKS = 0.25;
-    public static final double kEscalatorKV = 0.34;
-    public static final double kEscalatorKP = 0.1;
-    public static final double kEscalatorKI = 0.2;
-    public static final double kEscalatorKD = 0.0;
+    public static final double kEscalatorKS = 0.37;
+    public static final double kEscalatorKV = 0.04;
+    public static final double kEscalatorKP = 0.25;
+    public static final double kEscalatorKI = 0.0;
+    public static final double kEscalatorKD = 0.00125;
   }
 
   public static class Intake {
@@ -181,8 +181,8 @@ public final class Constants {
     public static final double kFlywheelMaxPower = 1.0;
     public static final double kFlywheelKS = 0.055;
     public static final double kFlywheelKV = 0.076;
-    public static final double kFlywheelKP = 0.0;//ADD FLYWHELL PID
-    public static final double kFlywheelKI = 0.0;
+    public static final double kFlywheelKP = 0.65;//ADD FLYWHELL PID
+    public static final double kFlywheelKI = 1.0;
     public static final double kFlywheelKD = 0.0;
 
     public static final double kGravity = 9.80665;

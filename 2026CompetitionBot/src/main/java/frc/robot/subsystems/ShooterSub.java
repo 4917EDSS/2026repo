@@ -192,18 +192,18 @@ public class ShooterSub extends SubsystemBase {
     // flywheel control done on talonfx
   }
 
-  // public void setFlywheelTuningConstants(double kS, double kV, double kP, double kI, double kD) {
-  //   TalonFXConfigurator talonFXConfigurator1 = m_flywheelMotorL.getConfigurator();
-  //   Slot0Configs slot0FlywheelConfigs = new Slot0Configs();
-  //   slot0FlywheelConfigs.kS = kS;
-  //   slot0FlywheelConfigs.kV = kV;
-  //   slot0FlywheelConfigs.kP = kP;
-  //   slot0FlywheelConfigs.kI = kI;
-  //   slot0FlywheelConfigs.kD = kD;
-  //   talonFXConfigurator1.apply(slot0FlywheelConfigs);
-  //   System.out.println("Shooter" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
+  public void setFlywheelTuningConstants(double kS, double kV, double kP, double kI, double kD) {
+    TalonFXConfigurator talonFXConfigurator1 = m_flywheelMotorL.getConfigurator();
+    Slot0Configs slot0FlywheelConfigs = new Slot0Configs();
+    slot0FlywheelConfigs.kS = kS;
+    slot0FlywheelConfigs.kV = kV;
+    slot0FlywheelConfigs.kP = kP;
+    slot0FlywheelConfigs.kI = kI;
+    slot0FlywheelConfigs.kD = kD;
+    talonFXConfigurator1.apply(slot0FlywheelConfigs);
+    System.out.println("Shooter" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
 
-  // }
+  }
 
   // public void setPitchTuningConstants(double kS, double kV, double kP, double kI, double kD, double kG) {
   //   m_pitchFeedforward.setKg(kG);

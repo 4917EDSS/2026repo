@@ -261,13 +261,13 @@ public class RobotContainer {
     // Operator Left Trigger
     m_operatorController.leftTrigger()
         .whileTrue(new InstantCommand(() -> m_hopperSub.disableEscalatorAutomation())
-            .andThen(new StartEndCommand(() -> m_hopperSub.setEscalatorTargetVelocity(10.0),
+            .andThen(new StartEndCommand(() -> m_hopperSub.setEscalatorTargetVelocity(150.0),
                 () -> m_hopperSub.setEscalatorTargetVelocity(0.0), m_hopperSub)));
 
     // Operator Right Trigger
     m_operatorController.rightTrigger()
-        .whileTrue(new InstantCommand(() -> m_hopperSub.disableEscalatorAutomation())
-            .andThen(new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(10.0),
+        .whileTrue(new InstantCommand(() -> m_shooterSub.disableFlywheelAutomation())
+            .andThen(new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(90.0),
                 () -> m_shooterSub.setTargetFlywheelVelocity(0.0), m_shooterSub)));
 
     // Operator Back
@@ -288,17 +288,17 @@ public class RobotContainer {
         new StartEndCommand(() -> m_shooterSub.setYawVoltage(-2.0), () -> m_shooterSub.setYawVoltage(0.0),
             m_shooterSub));
     // Operator POV Down
-    m_operatorController.povDown()
-        .whileTrue(new RunCommand(
-            () -> m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.calculationsInMotion(m_drivetrainSub.getPose(),
-                m_drivetrainSub.getRobotRelativeSpeeds())[1]),
-            m_shooterSub));
-    // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setYawTuningConstants( //this is just for tuning, delete for competitions
-    //     SmartDashboard.getNumber("kS", 0.0),
-    //     SmartDashboard.getNumber("kV", 0.0),
-    //     SmartDashboard.getNumber("kP", 0.0),
-    //     SmartDashboard.getNumber("kI", 0.0),
-    //     SmartDashboard.getNumber("kD", 0.0)), m_shooterSub));
+    // m_operatorController.povDown()
+    //     .whileTrue(new RunCommand(
+    //         () -> m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.calculationsInMotion(m_drivetrainSub.getPose(),
+    //             m_drivetrainSub.getRobotRelativeSpeeds())[1]),
+    //         m_shooterSub));
+    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_hopperSub.setEscalatorTuningConstants( //this is just for tuning, delete for competitions
+        SmartDashboard.getNumber("kS", 0.0),
+        SmartDashboard.getNumber("kV", 0.0),
+        SmartDashboard.getNumber("kP", 0.0),
+        SmartDashboard.getNumber("kI", 0.0),
+        SmartDashboard.getNumber("kD", 0.0)), m_hopperSub));
 
     // Operator POV Left
     m_operatorController.povLeft().whileTrue(
