@@ -31,31 +31,34 @@ public class RobotStatus extends Command {
   private static FieldPosition previousFieldPosition = FieldPosition.Shoot;
 
   public static void LeftLob() {
-    previousFieldPosition = currentFieldPosition;
     currentFieldPosition = FieldPosition.LeftLob;
     SmartDashboard.putNumber("Shooting Mode", currentFieldPosition.getValue());
   }
 
   public static void RightLob() {
-    previousFieldPosition = currentFieldPosition;
     currentFieldPosition = FieldPosition.RightLob;
     SmartDashboard.putNumber("Shooting Mode", currentFieldPosition.getValue());
   }
 
   public static void Shoot() {
-    previousFieldPosition = currentFieldPosition;
     currentFieldPosition = FieldPosition.Shoot;
     SmartDashboard.putNumber("Shooting Mode", currentFieldPosition.getValue());
   }
 
   public static void BumpTransition() {
-    previousFieldPosition = currentFieldPosition;
+    if(currentFieldPosition != FieldPosition.BumpTransition
+        && currentFieldPosition != FieldPosition.CenterlineTransition) {
+      previousFieldPosition = currentFieldPosition;
+    }
     currentFieldPosition = FieldPosition.BumpTransition;
     SmartDashboard.putNumber("Shooting Mode", currentFieldPosition.getValue());
   }
 
   public static void CenterlineTransition() {
-    previousFieldPosition = currentFieldPosition;
+    if(currentFieldPosition != FieldPosition.BumpTransition
+        && currentFieldPosition != FieldPosition.CenterlineTransition) {
+      previousFieldPosition = currentFieldPosition;
+    }
     currentFieldPosition = FieldPosition.CenterlineTransition;
     SmartDashboard.putNumber("Shooting Mode", currentFieldPosition.getValue());
   }
@@ -77,23 +80,17 @@ public class RobotStatus extends Command {
 
   public static String getPreviousFieldPosition() {
     if(previousFieldPosition == FieldPosition.LeftLob) {
-
+      return "LeftLob";
     } else if(previousFieldPosition == FieldPosition.RightLob) {
       return "RightLob";
     } else if(previousFieldPosition == FieldPosition.Shoot) {
       return "Shoot";
-    } else if(previousFieldPosition == FieldPosition.BumpTransition) {
-      return "BumpTransition";
-    } else if(previousFieldPosition == FieldPosition.CenterlineTransition) {
-
-      return "CenterlineTransition";
     }
     return "";
   }
 
   public static boolean isLobbing() {
     return (currentFieldPosition == FieldPosition.LeftLob || currentFieldPosition == FieldPosition.RightLob);
-
   }
 
   public static boolean isShooting() {
@@ -101,11 +98,11 @@ public class RobotStatus extends Command {
   }
 
   public static boolean wasLobbing() {
-    return (previousFieldPosition == FieldPosition.Shoot);
+    return (previousFieldPosition == FieldPosition.LeftLob || previousFieldPosition == FieldPosition.RightLob);
   }
 
   public static boolean wasShooting() {
-    return(previousFieldPosition == FieldPosition.Shoot);
+    return (previousFieldPosition == FieldPosition.Shoot);
   }
 
 }

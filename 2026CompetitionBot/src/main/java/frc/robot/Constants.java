@@ -134,7 +134,7 @@ public final class Constants {
     public static final double kDeployKD = 0.0;
 
     public static final double kBeltMaxCurrent = 120.0;
-    public static final double kBeltPower = 0.35;
+    public static final double kBeltPower = 0.5;
 
     public static final double kHoldPositionPidPower = 0.001;
     public static final double kDeploySafetyZoneSize = 10;
@@ -151,9 +151,9 @@ public final class Constants {
     public static final double kYawTolerance = 0.25;
     public static final double kYawMaxVelocityDegPerSec = 30.0;
     public static final double kYawMaxAccelerationDegPerSec = 36.0;
-    public static final double kYawKS = 0.002;
+    public static final double kYawKS = 0.75;
     public static final double kYawKV = 0.0079803;
-    public static final double kYawKP = 0.01; //0.1;
+    public static final double kYawKP = 0.05; //0.1;
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.0;
 
@@ -194,15 +194,17 @@ public final class Constants {
 
   //////////////////// These are the other constants ////////////////////
   public static class FieldElements {
-    public static final double kRedHubX = 4.675; // coordinates of the hub on the field
+    public static final double kRedHubX = 11.856; // coordinates of the hub on the field
     public static final double kRedHubY = 4.035;
-    public static final double kBlueHubX = 11.856;
+    public static final double kBlueHubX = 4.675;
     public static final double kBlueHubY = 4.035;
 
-    public static final double kNeutralZoneX = 0.0;
-    public static final double kAllianceZoneX = 0.0;
-    public static final double kLeftSideY = 0.0;
-    public static final double kRightSideY = 0.0;
+    public static final double kBlueNeutralZoneX = 5.208524;
+    public static final double kBlueAllianceZoneX = 4.014724;
+    public static final double kRedNeutralZoneX = 11.304524;
+    public static final double kRedAllianceZoneX = 12.498324;
+    public static final double kLeftSideY = 3.411728;
+    public static final double kRightSideY = 4.630928;
   }
 
   public static class TrajectoryCalculations {
@@ -211,8 +213,9 @@ public final class Constants {
     public static final double piecewiseSwapCalculationDistance = 3.5;
     public static final double shooterToHubHeight = 1.0668; // 42 in, not exactly measured
     public static final double kShooterToFloorHeight = 0.762;
-    public static final double kLeftLobY = 0.0;
-    public static final double kRightLobY = 0.0;
-    public static final double kLobX = 0.0;
+    public static final double kLeftLobY = 1.0;
+    public static final double kRightLobY = 7.0;
+    public static final double kBlueLobX = 1.0;
+    public static final double kRedLobX = 13.0;
   }
 }

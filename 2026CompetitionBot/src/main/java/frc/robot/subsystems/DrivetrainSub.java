@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.utils.GameData;
 import frc.robot.utils.RobotStatus;
 
 /**
@@ -317,6 +318,8 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     SmartDashboard.putNumber("Velocity bl", states[2].speedMetersPerSecond);
     SmartDashboard.putNumber("Velocity br", states[3].speedMetersPerSecond);
     m_field.setRobotPose(getState().Pose);
+    SmartDashboard.putString("currentPos", RobotStatus.getCurrentFieldPosition());
+    SmartDashboard.putString("previousPos", RobotStatus.getPreviousFieldPosition());
     //m_field.allianceColor = 
   }
 
@@ -391,18 +394,34 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
   }
 
   public void updateFieldPosition() {
-    if(getState().Pose.getX() > Constants.FieldElements.kNeutralZoneX) {
-      if(getState().Pose.getY() > Constants.FieldElements.kRightSideY) {
-        RobotStatus.RightLob();
-      } else if(getState().Pose.getY() < Constants.FieldElements.kLeftSideY) {
-        RobotStatus.LeftLob();
+    if(GameData.getAlliance() == Alliance.Blue) {
+      if(getState().Pose.getX() > Constants.FieldElements.kBlueNeutralZoneX) {
+        if(getState().Pose.getY() > Constants.FieldElements.kRightSideY) {
+          RobotStatus.RightLob();
+        } else if(getState().Pose.getY() < Constants.FieldElements.kLeftSideY) {
+          RobotStatus.LeftLob();
+        } else {
+          RobotStatus.CenterlineTransition();
+        }
+      } else if(getState().Pose.getX() < Constants.FieldElements.kBlueAllianceZoneX) {
+        RobotStatus.Shoot();
       } else {
-        RobotStatus.CenterlineTransition();
+        RobotStatus.BumpTransition();
       }
-    } else if(getState().Pose.getX() < Constants.FieldElements.kAllianceZoneX) {
-      RobotStatus.Shoot();
-    } else {
-      RobotStatus.BumpTransition();
+    } else if(GameData.getAlliance() == Alliance.Red) {
+      if(getState().Pose.getX() < Constants.FieldElements.kRedNeutralZoneX) {
+        if(getState().Pose.getY() > Constants.FieldElements.kRightSideY) {
+          RobotStatus.RightLob();
+        } else if(getState().Pose.getY() < Constants.FieldElements.kLeftSideY) {
+          RobotStatus.LeftLob();
+        } else {
+          RobotStatus.CenterlineTransition();
+        }
+      } else if(getState().Pose.getX() > Constants.FieldElements.kRedAllianceZoneX) {
+        RobotStatus.Shoot();
+      } else {
+        RobotStatus.BumpTransition();
+      }
     }
   }
 }

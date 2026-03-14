@@ -38,18 +38,18 @@ public class ShooterAimingCalcs {
     velocityInterpolation.put(10.0, 13.0);
     if(RobotStatus.isLobbing()) {
       if(RobotStatus.getCurrentFieldPosition() == "RightLob") {
-        rps = velocityInterpolation.get(getDistanceFromRightLob(robot));
+        rps = velocityInterpolation.get(getDistanceFromRightLob(robot).getNorm());
       } else {
-        rps = velocityInterpolation.get(getDistanceFromLeftLob(robot));
+        rps = velocityInterpolation.get(getDistanceFromLeftLob(robot).getNorm());
       }
     } else if(RobotStatus.isShooting()) {
       rps = velocityInterpolation.get(getDistanceFromHub(robot).getNorm());
     } else {
       if(RobotStatus.wasLobbing()) {
         if(RobotStatus.getPreviousFieldPosition() == "RightLob") {
-          rps = velocityInterpolation.get(getDistanceFromRightLob(robot));
+          rps = velocityInterpolation.get(getDistanceFromRightLob(robot).getNorm());
         } else {
-          rps = velocityInterpolation.get(getDistanceFromLeftLob(robot));
+          rps = velocityInterpolation.get(getDistanceFromLeftLob(robot).getNorm());
         }
       } else if(RobotStatus.wasShooting()) {
         rps = velocityInterpolation.get(getDistanceFromHub(robot).getNorm());
@@ -62,8 +62,38 @@ public class ShooterAimingCalcs {
 
   public double calculateShooterYawDegrees(Pose2d robot) {
     robotYawAngle = robot.getRotation().getDegrees() + 180; //robot angle 0 to 360
-    targetYawAngle =
-        Math.toDegrees(Math.atan2(getDistanceFromHub(robot).getY(), getDistanceFromHub(robot).getX())) + 180;
+    if(RobotStatus.isLobbing()) {
+      if(RobotStatus.getCurrentFieldPosition() == "RightLob") {
+        targetYawAngle =
+            Math.toDegrees(Math.atan2(getDistanceFromRightLob(robot).getY(), getDistanceFromRightLob(robot).getX()))
+                + 180 + 315;//315 is turret starting rotational offset
+      } else {
+        targetYawAngle =
+            Math.toDegrees(Math.atan2(getDistanceFromLeftLob(robot).getY(), getDistanceFromLeftLob(robot).getX())) + 180
+                + 315;//315 is turret starting rotational offset
+      }
+    } else if(RobotStatus.isShooting()) {
+      targetYawAngle =
+          Math.toDegrees(Math.atan2(getDistanceFromHub(robot).getY(), getDistanceFromHub(robot).getX())) + 180 + 315;//315 is turret starting rotational offset
+    } else {
+      if(RobotStatus.wasLobbing()) {
+        if(RobotStatus.getPreviousFieldPosition() == "RightLob") {
+          targetYawAngle =
+              Math.toDegrees(Math.atan2(getDistanceFromRightLob(robot).getY(), getDistanceFromRightLob(robot).getX()))
+                  + 180 + 315;//315 is turret starting rotational offset
+        } else {
+          targetYawAngle =
+              Math.toDegrees(Math.atan2(getDistanceFromLeftLob(robot).getY(), getDistanceFromLeftLob(robot).getX()))
+                  + 180 + 315;//315 is turret starting rotational offset
+        }
+      } else if(RobotStatus.wasShooting()) {
+        targetYawAngle =
+            Math.toDegrees(Math.atan2(getDistanceFromHub(robot).getY(), getDistanceFromHub(robot).getX())) + 180 + 315;//315 is turret starting rotational offset
+      } else {
+        targetYawAngle = 0.0;
+      }
+    }
+
     relativeTargetYawAngle = (360 + (targetYawAngle - robotYawAngle)) % 360;
     return relativeTargetYawAngle;
   }
@@ -96,14 +126,34 @@ public class ShooterAimingCalcs {
     return distToHub;
   }
 
-  public double getDistanceFromLeftLob(Pose2d robot) {
-    return Math.hypot(robot.getX() - Constants.TrajectoryCalculations.kLobX,
-        robot.getY() - Constants.TrajectoryCalculations.kLeftLobY);
+  public Translation2d getDistanceFromLeftLob(Pose2d robot) {
+    Alliance alliance = GameData.getAlliance();
+    Translation2d distToLob;
+    Pose2d turretPos = robot.plus(new Transform2d(-0.1, 0.1, new Rotation2d(0.0)));
+
+    if(alliance == Alliance.Blue) {
+      distToLob = new Translation2d(Constants.TrajectoryCalculations.kBlueLobX - turretPos.getX(),
+          Constants.TrajectoryCalculations.kLeftLobY - turretPos.getY());
+    } else {
+      distToLob = new Translation2d(Constants.TrajectoryCalculations.kRedLobX - turretPos.getX(),
+          Constants.TrajectoryCalculations.kLeftLobY - turretPos.getY());
+    }
+    return distToLob;
   }
 
-  public double getDistanceFromRightLob(Pose2d robot) {
-    return Math.hypot(robot.getX() - Constants.TrajectoryCalculations.kLobX,
-        robot.getY() - Constants.TrajectoryCalculations.kRightLobY);
+  public Translation2d getDistanceFromRightLob(Pose2d robot) {
+    Alliance alliance = GameData.getAlliance();
+    Translation2d distToLob;
+    Pose2d turretPos = robot.plus(new Transform2d(-0.1, 0.1, new Rotation2d(0.0)));
+
+    if(alliance == Alliance.Blue) {
+      distToLob = new Translation2d(Constants.TrajectoryCalculations.kBlueLobX - turretPos.getX(),
+          Constants.TrajectoryCalculations.kRightLobY - turretPos.getY());
+    } else {
+      distToLob = new Translation2d(Constants.TrajectoryCalculations.kRedLobX - turretPos.getX(),
+          Constants.TrajectoryCalculations.kRightLobY - turretPos.getY());
+    }
+    return distToLob;
   }
 
   public double[] calculateShooterPitchDegrees(Pose2d robot) {
@@ -124,35 +174,35 @@ public class ShooterAimingCalcs {
 
     if(RobotStatus.isLobbing()) {
       if(RobotStatus.getCurrentFieldPosition() == "RightLob") {
-        System.out.println("rl");
+        //System.out.println("rl");
         dy = -Constants.TrajectoryCalculations.kShooterToFloorHeight;
-        dx = getDistanceFromRightLob(robot);
+        dx = getDistanceFromRightLob(robot).getNorm();
       } else {
-        System.out.println("ll");
+        //System.out.println("ll");
         dy = -Constants.TrajectoryCalculations.kShooterToFloorHeight;
-        dx = getDistanceFromLeftLob(robot);
+        dx = getDistanceFromLeftLob(robot).getNorm();
       }
     } else if(RobotStatus.isShooting()) {
-      System.out.println("s");
+      //System.out.println("s");
       dy = Constants.TrajectoryCalculations.shooterToHubHeight;
       dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
     } else {
       if(RobotStatus.wasLobbing()) {
         if(RobotStatus.getPreviousFieldPosition() == "RightLob") {
-          System.out.println("rl");
+          //System.out.println("rl");
           dy = -Constants.TrajectoryCalculations.kShooterToFloorHeight;
-          dx = getDistanceFromRightLob(robot);
+          dx = getDistanceFromRightLob(robot).getNorm();
         } else {
-          System.out.println("ll");
+          //System.out.println("ll");
           dy = -Constants.TrajectoryCalculations.kShooterToFloorHeight;
-          dx = getDistanceFromLeftLob(robot);
+          dx = getDistanceFromLeftLob(robot).getNorm();
         }
       } else if(RobotStatus.wasShooting()) {
-        System.out.println("s");
+        //System.out.println("s");
         dy = Constants.TrajectoryCalculations.shooterToHubHeight;
         dx = Math.hypot(getDistanceFromHub(robot).getX(), getDistanceFromHub(robot).getY());
       } else {
-        System.out.println("bad :(");
+        //System.out.println("bad :(");
         dx = 0.0;
         dy = 0.0;
       }
@@ -205,12 +255,12 @@ public class ShooterAimingCalcs {
   public double[] calculationsInMotion(Pose2d robot, ChassisSpeeds velocity) {
     double velocityX = velocity.vxMetersPerSecond;
     double velocityY = velocity.vyMetersPerSecond;
-    double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
+    //double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
     double offsetX = velocityX * calculateTimeOfFlight(robot); //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
     double offsetY = velocityY * calculateTimeOfFlight(robot);
-    double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
-    Pose2d offsetPos = new Pose2d(robot.getX() + offsetX, robot.getY() + offsetY,
-        robot.getRotation().plus(new Rotation2d(Math.toRadians(offsetRot))));
+    //double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
+    Pose2d offsetPos = new Pose2d(robot.getX() - offsetX, robot.getY() - offsetY,
+        robot.getRotation());
     double[] pitchAndVelocity = calculateShooterPitchDegrees(offsetPos);
     double[] trajectoriesArray = {pitchAndVelocity[0], calculateShooterYawDegrees(offsetPos),
         pitchAndVelocity[1], offsetPos.getX(), offsetPos.getY(), offsetPos.getRotation().getDegrees()};
