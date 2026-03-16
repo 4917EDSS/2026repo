@@ -13,29 +13,29 @@ import frc.robot.subsystems.ShooterSub;
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
 public class HitLimitSwitchesCmd extends Command {
-  IntakeSub m_intakeSub;
   ShooterSub m_shooterSub;
-  Boolean m_isAtIntakeLimit = false;
-  Boolean m_isAtPitchLimit = false;
-  Boolean m_isAtYawLimit = false;
+  Boolean m_isAtPitchLimit;
+  Boolean m_isAtYawLimit;
 
-  public HitLimitSwitchesCmd(IntakeSub intakeSub, ShooterSub shooterSub) {
-    m_intakeSub = intakeSub;
+  public HitLimitSwitchesCmd(ShooterSub shooterSub) {
     m_shooterSub = shooterSub;
 
 
-    addRequirements(intakeSub, shooterSub);
+    addRequirements(shooterSub);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     // TODO: MAKE SURE THESE ALL GO IN THE CORRECT DIRECTION
-    m_intakeSub.setDeployPower(0.1);
+    m_isAtPitchLimit = false;
+    m_isAtYawLimit = false;
 
-    m_shooterSub.setYawPower(-0.1);
+    m_shooterSub.disablePitchAutomation();
+    m_shooterSub.disableYawAutomation();
+
     m_shooterSub.setPitchPower(-0.1);
-
+    m_shooterSub.setYawPower(-0.2);
 
   }
 
@@ -43,11 +43,6 @@ public class HitLimitSwitchesCmd extends Command {
   @Override
   public void execute() {
     // TODO: PROBABLY ONLY CHECK ONE LIMIT, THE CORRECT ONE
-
-    if(m_intakeSub.isAtInLimit()) {
-      m_intakeSub.setDeployPower(0.0);
-      m_isAtIntakeLimit = true;
-    }
 
     if(m_shooterSub.isAtPitchLowerLimit()) {
       m_shooterSub.setPitchPower(0.0);
@@ -66,6 +61,6 @@ public class HitLimitSwitchesCmd extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (m_isAtIntakeLimit && m_isAtPitchLimit && m_isAtYawLimit);
+    return (m_isAtPitchLimit && m_isAtYawLimit);
   }
 }

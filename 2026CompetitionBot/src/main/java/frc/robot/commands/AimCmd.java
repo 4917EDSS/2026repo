@@ -34,11 +34,8 @@ public class AimCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.calculateShooterYawDegrees(m_drivetrainSub.getPose()));
-    m_shooterSub.setTargetPitchAngle(ShooterAimingCalcs
-        .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceFromHub(m_drivetrainSub.getPose()).getNorm()));
-    m_shooterSub.setTargetFlywheelVelocity(ShooterAimingCalcs
-        .getInterpolatedFlywheelVelocity(m_shooterAimingCalcs.getDistanceFromHub(m_drivetrainSub.getPose()).getNorm()));
+    m_shooterSub.setPitchYawFlywheelTarget(
+        m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getRobotRelativeSpeeds()));
   }
 
   // Called once the command ends or is interrupted.

@@ -7,7 +7,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.logging.Logger;
 import frc.robot.subsystems.CanSub;
-import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
@@ -19,21 +18,19 @@ import frc.robot.subsystems.ShooterSub;
  */
 public class KillAllCmd extends Command {
   private static Logger m_logger = Logger.getLogger(KillAllCmd.class.getName());
-  ClimbSub m_climbSub;
   ShooterSub m_shooterSub;
   IntakeSub m_intakeSub;
   HopperSub m_hopperSub;
 
   /** Creates a new KillAllCmd. */
-  public KillAllCmd(CanSub canSub, ClimbSub climbSub, DrivetrainSub drivetrainSub, HopperSub hopperSub,
+  public KillAllCmd(CanSub canSub, DrivetrainSub drivetrainSub, HopperSub hopperSub,
       IntakeSub intakeSub, ShooterSub shooterSub) {
 
-    m_climbSub = climbSub;
     m_shooterSub = shooterSub;
     m_intakeSub = intakeSub;
     m_hopperSub = hopperSub;
 
-    addRequirements(canSub, climbSub, drivetrainSub, hopperSub, intakeSub, shooterSub);
+    addRequirements(canSub, drivetrainSub, hopperSub, intakeSub, shooterSub);
   }
 
   // Called when the command is initially scheduled.
@@ -41,13 +38,11 @@ public class KillAllCmd extends Command {
   public void initialize() {
     m_logger.fine("KillAllCmd - Init");
 
-    m_climbSub.setTargetRotateAngle(m_climbSub.getRotationAngleDeg());
-    m_climbSub.setTargetDeployDistance(m_climbSub.getDeployDistanceM());
     m_intakeSub.setTargetDeployAngle(m_intakeSub.getDeployAngleDeg());
-    m_shooterSub.setTargetPitchAngle(m_shooterSub.getPitchAngleDeg());
-    m_shooterSub.setTargetYawAngle(m_shooterSub.getYawAngleDeg());
-    m_hopperSub.setSingulatorPower(0.0);
-    m_hopperSub.setEscalatorTargetVelocity(0.0);
+    m_shooterSub.disablePitchAutomation();
+    m_shooterSub.disableYawAutomation();
+    m_shooterSub.disableFlywheelAutomation();
+    m_hopperSub.disableEscalatorAutomation();
     m_intakeSub.setBeltPower(0.0);
 
 
