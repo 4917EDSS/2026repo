@@ -46,8 +46,8 @@ public class KillAllCmd extends Command {
     m_intakeSub.setTargetDeployAngle(m_intakeSub.getDeployAngleDeg());
     m_shooterSub.setTargetPitchAngle(m_shooterSub.getPitchAngleDeg());
     m_shooterSub.setTargetYawAngle(m_shooterSub.getYawAngleDeg());
-    m_hopperSub.setSingulatorPower(0.0);
-    m_hopperSub.setEscalatorTargetVelocity(0.0);
+    m_hopperSub.disableSingulatorAutomation();
+    m_hopperSub.disableEscalatorAutomation();;
     m_intakeSub.setBeltPower(0.0);
 
 

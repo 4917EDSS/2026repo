@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ShooterSub;
@@ -34,11 +36,8 @@ public class AimCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.calculateShooterYawDegrees(m_drivetrainSub.getPose()));
-    m_shooterSub.setTargetPitchAngle(ShooterAimingCalcs
-        .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceFromHub(m_drivetrainSub.getPose()).getNorm()));
-    m_shooterSub.setTargetFlywheelVelocity(ShooterAimingCalcs
-        .getInterpolatedFlywheelVelocity(m_shooterAimingCalcs.getDistanceFromHub(m_drivetrainSub.getPose()).getNorm()));
+    m_shooterSub.setPitchYawFlywheelTarget(
+        m_shooterAimingCalcs.setTargets(m_drivetrainSub.getPose(), m_drivetrainSub.getRobotRelativeSpeeds()));
   }
 
   // Called once the command ends or is interrupted.

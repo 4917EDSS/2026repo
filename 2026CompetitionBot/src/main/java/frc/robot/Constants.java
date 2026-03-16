@@ -166,14 +166,14 @@ public final class Constants {
     public static final double kPitchMaxVelocityDegPerSec = 5.0;
     public static final double kPitchMaxAccelerationDegPerSec = 120.0;
     public static final double kPitchKS = 0.5;
-    public static final double kPitchKG = 0.5;
+    public static final double kPitchKG = 0.45;
     public static final double kPitchKV = 0.0;
-    public static final double kPitchKP = 0.15;
-    public static final double kPitchKI = 0.0;
-    public static final double kPitchKD = 0.0;
+    public static final double kPitchKP = 0.35;
+    public static final double kPitchKI = 0.25;
+    public static final double kPitchKD = 1.0;
 
-    public static final double kFlywheelEncoderToRotsPerSecConversionFactor = 1 / (36 / 28 * 30 / 18); // 0.467;
-    public static final double kFlywheelRotsPerSecToMpsConversionFactor = 0.3164 / 2; // 4 inches diamater to metters / 2
+    public static final double kFlywheelEncoderToRotsPerSecConversionFactor = 1.0 / (36.0 / 28.0 * 24.0 / 18.0); // 0.467;
+    public static final double kFlywheelRotsPerSecToMpsConversionFactor = 0.3164 / 2.0; // 4 inches diamater to metters / 2
     public static final double kFlywheelMinVelocityRotsPerSec = Hopper.kEscalatorMaxVelocityRotPerSec
         * (Hopper.kInputEscalatorRpsToMpsConversionFactor / kFlywheelRotsPerSecToMpsConversionFactor);
     public static final double kFlywheelMaxVelocityRotsPerSec = 200.0;
@@ -182,9 +182,9 @@ public final class Constants {
     public static final double kFlywheelMaxCurrent = 120.0;
     public static final double kFlywheelMaxPower = 1.0;
     public static final double kFlywheelKS = 0.055;
-    public static final double kFlywheelKV = 0.076;
-    public static final double kFlywheelKP = 0.65;//ADD FLYWHELL PID
-    public static final double kFlywheelKI = 1.0;
+    public static final double kFlywheelKV = 0.07;
+    public static final double kFlywheelKP = 0.0;//ADD FLYWHELL PID
+    public static final double kFlywheelKI = 0.0;
     public static final double kFlywheelKD = 0.0;
 
     public static final double kGravity = 9.80665;

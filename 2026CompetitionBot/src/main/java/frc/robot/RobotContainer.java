@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.HitLimitSwitchesCmd;
 import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.generated.TunerConstants;
@@ -136,6 +137,7 @@ public class RobotContainer {
     //     .whileTrue(
     //         new DriveToPoseCmd(new Pose2d(new Translation2d(15.23, 5.26), new Rotation2d(Math.toRadians(-90.0))),
     //             m_drivetrainSub));
+    m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));
 
     // // Driver Y
 
@@ -197,36 +199,45 @@ public class RobotContainer {
 
 
     // Operator A
-    m_operatorController.a().whileTrue(new InstantCommand(() -> m_intakeSub.disableDeployAutomation())
-        .andThen(new StartEndCommand(() -> m_intakeSub.setDeployPower(0.1), () -> {
-          m_intakeSub.setDeployPower(0.0);
-          m_intakeSub.disableDeployAutomation();
-        }, m_intakeSub)));
+    m_operatorController.a().whileTrue(
+        new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(50.0),
+            () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
+    // m_operatorController.a().whileTrue(new InstantCommand(() -> m_intakeSub.disableDeployAutomation())
+    //     .andThen(new StartEndCommand(() -> m_intakeSub.setDeployPower(0.1), () -> {
+    //       m_intakeSub.setDeployPower(0.0);
+    //       m_intakeSub.disableDeployAutomation();
+    //     }, m_intakeSub)));
 
     // Operator B
-    m_operatorController.b()
-        .whileTrue(new InstantCommand(() -> m_intakeSub.disableDeployAutomation())
-            .andThen(new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1),
-                () -> {
-                  m_intakeSub.setDeployPower(0.0);
-                  m_intakeSub.disableDeployAutomation();
-                }, m_intakeSub)));
+    m_operatorController.b().whileTrue(new StartEndCommand(() -> m_shooterSub.setTargetPitchAngle(25.0),
+        () -> m_shooterSub.setTargetPitchAngle(45.0), m_shooterSub));
+    // m_operatorController.b()
+    //     .whileTrue(new InstantCommand(() -> m_intakeSub.disableDeployAutomation())
+    //         .andThen(new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1),
+    //             () -> {
+    //               m_intakeSub.setDeployPower(0.0);
+    //               m_intakeSub.disableDeployAutomation();
+    //             }, m_intakeSub)));
 
     // Operator X
-    m_operatorController.x()
-        .whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation())
-            .andThen(new StartEndCommand(() -> m_shooterSub.setPitchPower(0.12), () -> {
-              m_shooterSub.setPitchPower(0.0);
-            },
-                m_shooterSub)));
+    m_operatorController.x().whileTrue(new StartEndCommand(() -> m_hopperSub.setEscalatorTargetVelocity(30.0),
+        () -> m_hopperSub.disableEscalatorAutomation(), m_hopperSub));
+    // m_operatorController.x()
+    //     .whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation())
+    //         .andThen(new StartEndCommand(() -> m_shooterSub.setPitchPower(0.12), () -> {
+    //           m_shooterSub.setPitchPower(0.0);
+    //         },
+    //             m_shooterSub)));
 
     // Operator Y
-    m_operatorController.y()
-        .whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation())
-            .andThen(new StartEndCommand(() -> m_shooterSub.setPitchPower(-0.12), () -> {
-              m_shooterSub.setPitchPower(0.0);
-            },
-                m_shooterSub)));
+    m_operatorController.y().whileTrue(new StartEndCommand(() -> m_shooterSub.setTargetYawAngle(205.0),
+        () -> m_shooterSub.setTargetYawAngle(25.0), m_shooterSub));
+    // m_operatorController.y()
+    //     .whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation())
+    //         .andThen(new StartEndCommand(() -> m_shooterSub.setPitchPower(-0.12), () -> {
+    //           m_shooterSub.setPitchPower(0.0);
+    //         },
+    //             m_shooterSub)));
 
 
     // Operator Left Bumper
@@ -262,9 +273,7 @@ public class RobotContainer {
         new StartEndCommand(() -> m_climbSub.setRotatePower(-0.1), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
 
     // Operator POV Up
-    m_operatorController.povUp().whileTrue(
-        new StartEndCommand(() -> m_climbSub.setTargetDeployDistance(0.1),
-            () -> m_climbSub.setTargetDeployDistance(0.0), m_climbSub));
+
 
     // Operator POV Right
     m_operatorController.povRight().whileTrue(
@@ -277,12 +286,12 @@ public class RobotContainer {
     //         () -> m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.setTargets(m_drivetrainSub.getPose(),
     //             m_drivetrainSub.getRobotRelativeSpeeds())[1]),
     //         m_shooterSub));
-    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_hopperSub.setEscalatorTuningConstants( //this is just for tuning, delete for competitions
-        SmartDashboard.getNumber("kS", 0.0),
-        SmartDashboard.getNumber("kV", 0.0),
-        SmartDashboard.getNumber("kP", 0.0),
-        SmartDashboard.getNumber("kI", 0.0),
-        SmartDashboard.getNumber("kD", 0.0)), m_hopperSub));
+    // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_hopperSub.setEscalatorTuningConstants( //this is just for tuning, delete for competitions
+    //     SmartDashboard.getNumber("kS", 0.0),
+    //     SmartDashboard.getNumber("kV", 0.0),
+    //     SmartDashboard.getNumber("kP", 0.0),
+    //     SmartDashboard.getNumber("kI", 0.0),
+    //     SmartDashboard.getNumber("kD", 0.0)), m_hopperSub));
 
     // Operator POV Left
     m_operatorController.povLeft().whileTrue(

@@ -227,11 +227,6 @@ public class ShooterSub extends SubsystemBase {
     m_pitchMotor.set(power);
   }
 
-  public void setPitchAndYawPower(double pitch, double yaw) {
-    setPitchPower(pitch);
-    setYawPower(yaw);
-  }
-
   public void setFlywheelPower(double power) {
     m_flywheelMotorL.set(power);
     // Motor 2 should follow motor 1

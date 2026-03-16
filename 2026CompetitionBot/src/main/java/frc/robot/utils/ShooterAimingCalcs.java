@@ -73,8 +73,8 @@ public class ShooterAimingCalcs {
     return m_distanceToPitchMap.get(distance);
   }
 
-  public double calculateShooterFlywheelRps(Pose2d robot) {
-    getInterpolatedFlywheelVelocity.get(current.minus(target).getTranslation().getNorm());
+  public double calculateShooterFlywheelRps(Pose2d current, Pose2d target) {
+    return getInterpolatedFlywheelVelocity(current.minus(target).getTranslation().getNorm());
   }
 
   public double calculateShooterYawDegrees(Pose2d current, Pose2d target) {
