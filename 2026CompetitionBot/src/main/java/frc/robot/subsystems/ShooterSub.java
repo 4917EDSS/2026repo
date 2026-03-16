@@ -24,11 +24,7 @@ import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -48,15 +44,16 @@ public class ShooterSub extends SubsystemBase {
   private final TalonFX m_flywheelMotorR = new TalonFX(Constants.CanIds.kShooterFlywheelMotorR);
 
 
-  private final SimpleMotorFeedforward m_yawFeedforward =
-      new SimpleMotorFeedforward(Constants.Shooter.kYawKS, Constants.Shooter.kYawKV);
+  // Part of old 
+  // private final SimpleMotorFeedforward m_yawFeedforward =
+  //     new SimpleMotorFeedforward(Constants.Shooter.kYawKS, Constants.Shooter.kYawKV);
   // private final TrapezoidProfile.Constraints m_yawProfileConstraints = new TrapezoidProfile.Constraints(
   //     Constants.Shooter.kYawMaxVelocityDegPerSec, Constants.Shooter.kYawMaxAccelerationDegPerSec);
   private final PIDController m_yawPidController =
       new PIDController(Constants.Shooter.kYawKP, Constants.Shooter.kYawKI, Constants.Shooter.kYawKD);
 
-  private final ArmFeedforward m_pitchFeedforward =
-      new ArmFeedforward(Constants.Shooter.kPitchKS, Constants.Shooter.kPitchKG, Constants.Shooter.kPitchKV);
+  // private final ArmFeedforward m_pitchFeedforward =
+  //     new ArmFeedforward(Constants.Shooter.kPitchKS, Constants.Shooter.kPitchKG, Constants.Shooter.kPitchKV);
   // private final TrapezoidProfile.Constraints m_pitchProfileConstraints = new TrapezoidProfile.Constraints(
   //     Constants.Shooter.kPitchMaxVelocityDegPerSec, Constants.Shooter.kPitchMaxAccelerationDegPerSec);
   private final PIDController m_pitchPidController =
@@ -379,7 +376,8 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setTargetPitchAngle(double angleDeg) {
-    m_targetPitchAngleDeg = angleDeg;
+    m_targetPitchAngleDeg =
+        MathUtil.clamp(angleDeg, Constants.Shooter.kPitchMinAngleDeg, Constants.Shooter.kPitchMaxAngleDeg);
     m_pitchPidController.reset();
     m_pitchPidController.setSetpoint(angleDeg);
     runPitchControl(true);
@@ -424,7 +422,8 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setTargetFlywheelVelocity(double velocityRotsPerSec) {
-    m_targetFlywheelVelocityRotsPerSec = velocityRotsPerSec;
+    m_targetFlywheelVelocityRotsPerSec = MathUtil.clamp(velocityRotsPerSec,
+        Constants.Shooter.kFlywheelMinVelocityRotsPerSec, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
     enableFlyhweelAutomation();
   }
 
@@ -547,9 +546,15 @@ public class ShooterSub extends SubsystemBase {
   }
 
   //RUN ALL CONTROL ALGORTHMS
-  public void setPitchYawFlywheelPower(double[] trajectoriesArray) {
-    //setTargetPitchAngle(trajectoriesArray[0]);
-    //setTargetYawAngle(trajectoriesArray[1]);
-    // setTargetFlywheelVelocity(trajectoriesArray[2]);
+  public void setPitchYawFlywheelTarget(double[] trajectoriesArray) {
+    setTargetPitchAngle(trajectoriesArray[0]);
+    setTargetYawAngle(trajectoriesArray[1]);
+    setTargetFlywheelVelocity(trajectoriesArray[2]);
+  }
+
+  public void endPitchYawFlywheel() {
+    setTargetPitchAngle(getPitchAngleDeg());
+    setTargetYawAngle(getYawAngleDeg());
+    setTargetFlywheelVelocity(0.0);
   }
 }

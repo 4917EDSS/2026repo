@@ -91,7 +91,7 @@ public final class Constants {
   public static class Hopper {
     // TODO:  Set all the values correctly
     public static final double kSingulatorEncoderToRpsConversionFactor = 2.5; // Gearing TBD
-    public static final double kSingulatorMaxVelocityRotPerSec = 200.0; // Throughput must be slower than Escalator to avoid jams
+    public static final double kSingulatorMaxVelocityRotPerSec = 20.0; // Throughput must be slower than Escalator to avoid jams
     public static final double kSinglatorRpsToMpsConversionFactor = 0.63403070014 * 0.6; //  // 4 inches diamater to metters / 2
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 120.0;
@@ -103,7 +103,7 @@ public final class Constants {
     public static final double kSingulatorKD = 0.0;
 
     public static final double kEscalatorEncoderToRpsConversionFactor = 0.333; // Gearing 1:1
-    public static final double kEscalatorMaxVelocityRotPerSec = 300.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
+    public static final double kEscalatorMaxVelocityRotPerSec = 35.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
     public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795 / 2; //  inches diamater to meters / 2
     public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2
     public static final double kEscalatorVelocityToleranceRotPerSec = 0.1;
@@ -174,6 +174,8 @@ public final class Constants {
 
     public static final double kFlywheelEncoderToRotsPerSecConversionFactor = 1 / (36 / 28 * 30 / 18); // 0.467;
     public static final double kFlywheelRotsPerSecToMpsConversionFactor = 0.3164 / 2; // 4 inches diamater to metters / 2
+    public static final double kFlywheelMinVelocityRotsPerSec = Hopper.kEscalatorMaxVelocityRotPerSec
+        * (Hopper.kInputEscalatorRpsToMpsConversionFactor / kFlywheelRotsPerSecToMpsConversionFactor);
     public static final double kFlywheelMaxVelocityRotsPerSec = 200.0;
     public static final double kFlywheelMaxAccelerationRotsPerSec = 100.0;
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;

@@ -13,24 +13,16 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.DriveToPoseCmd;
 import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
-import frc.robot.commands.ManualShooterTestingCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.ClimbSub;
@@ -98,7 +90,7 @@ public class RobotContainer {
     //     m_shooterSub));
 
     // m_shooterSub.setDefaultCommand(new RunCommand(
-    //     () -> m_shooterSub.setPitchYawFlywheelPower(m_shooterAimingCalcs.calculationsInMotion(m_drivetrainSub.getPose(),
+    //     () -> m_shooterSub.setPitchYawFlywheelPower(m_shooterAimingCalcs.setTargets(m_drivetrainSub.getPose(),
     //         m_drivetrainSub.getRobotRelativeSpeeds())),
     //     m_shooterSub));
   }
@@ -115,24 +107,22 @@ public class RobotContainer {
    * Use this method to define your trigger->command mappings.
    */
   private void configureBindings() {
-    m_driverController.a().whileTrue(m_shooterSub.pitchSysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    m_driverController.b().whileTrue(m_shooterSub.pitchSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    m_driverController.x().whileTrue(m_shooterSub.pitchSysIdDynamic(SysIdRoutine.Direction.kForward));
-    m_driverController.y().whileTrue(m_shooterSub.pitchSysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // m_driverController.a().whileTrue(m_shooterSub.pitchSysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // m_driverController.b().whileTrue(m_shooterSub.pitchSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // m_driverController.x().whileTrue(m_shooterSub.pitchSysIdDynamic(SysIdRoutine.Direction.kForward));
+    // m_driverController.y().whileTrue(m_shooterSub.pitchSysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Driver A
-    // m_driverController.a()
-    //     .onTrue(new ConditionalCommand(
-    // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(false)),
-    // new InstantCommand(() -> m_calculateShooterAiming.setLobbingMode(true)),
-    // m_calculateShooterAiming.getLobbingMode()));
-    //m_driverController.a().onTrue(new ManualShooterTestingCmd(m_shooterSub, m_hopperSub));
-    //m_driverController.a().onTrue(new)
     // m_driverController.a().whileTrue(
     //     new StartEndCommand(() -> m_intakeSub.setDeployPower(0.1), () -> {
     //       m_intakeSub.setDeployPower(0.0);
     //       m_intakeSub.disableDeployAutomation();
     //     }, m_intakeSub));
+    m_driverController.a()
+        .whileTrue(
+            new StartEndCommand(() -> m_shooterSub.setPitchYawFlywheelTarget(m_shooterAimingCalcs
+                .setTargets(m_drivetrainSub.getPose(), m_drivetrainSub.getRobotRelativeSpeeds())),
+                () -> m_shooterSub.endPitchYawFlywheel(), m_shooterSub));
 
     // // Driver B
     // m_driverController.b().whileTrue(
@@ -148,9 +138,6 @@ public class RobotContainer {
     //             m_drivetrainSub));
 
     // // Driver Y
-    // m_driverController.y()
-    //     .whileTrue(
-    //         m_drivetrainSub.applyRequest(() -> m_drive.withVelocityX(9999.9).withVelocityY(0).withRotationalRate(0)));
 
     // Driver Left Bumper
     m_driverController.leftBumper().whileTrue(new StartEndCommand(() -> {
@@ -160,6 +147,7 @@ public class RobotContainer {
       m_hopperSub.setEscalatorTargetVelocity(30.0);
       m_hopperSub.setSingulatorPower(1.0);
     }, () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub, m_hopperSub));
+
     // Driver Right Bumper
     m_driverController.rightBumper()
         .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceM),
@@ -176,8 +164,7 @@ public class RobotContainer {
         () -> m_hopperSub.disableShooting(), m_hopperSub));
 
     // Driver Back
-    m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading
-    //m_driverController.back().onTrue(m_drivetrainSub.runOnce(() -> m_drivetrainSub.seedFieldCentric())); 
+    m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading 
 
     // Driver Start
     m_driverController.start()
@@ -190,12 +177,8 @@ public class RobotContainer {
     // // Driver POV Right
     m_driverController.povRight()
         .onTrue(new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(21.0), m_shooterSub));
-    //     .whileTrue(
-    //         new StartEndCommand(() -> m_shooterSub.setTargetYawAngle(45.0), () -> m_shooterSub.setTargetYawAngle(0.0),
-    //             m_shooterSub));
-    // .onTrue(
-    //     new InstantCommand(() -> m_shooterSub.setTargetYawAngle(SmartDashboard.getNumber("turret angle", 0.0)),
-    //         m_shooterSub));
+
+
     // Driver POV Down
     m_driverController.povDown()
         .onTrue(new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(5.0), m_shooterSub));
@@ -287,10 +270,11 @@ public class RobotContainer {
     m_operatorController.povRight().whileTrue(
         new StartEndCommand(() -> m_shooterSub.setYawVoltage(-2.0), () -> m_shooterSub.setYawVoltage(0.0),
             m_shooterSub));
+
     // Operator POV Down
     // m_operatorController.povDown()
     //     .whileTrue(new RunCommand(
-    //         () -> m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.calculationsInMotion(m_drivetrainSub.getPose(),
+    //         () -> m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.setTargets(m_drivetrainSub.getPose(),
     //             m_drivetrainSub.getRobotRelativeSpeeds())[1]),
     //         m_shooterSub));
     m_operatorController.povDown().onTrue(new InstantCommand(() -> m_hopperSub.setEscalatorTuningConstants( //this is just for tuning, delete for competitions
