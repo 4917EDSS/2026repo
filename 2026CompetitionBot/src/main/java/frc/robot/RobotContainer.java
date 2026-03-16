@@ -26,7 +26,6 @@ import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
-import frc.robot.subsystems.ClimbSub;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
@@ -55,7 +54,6 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here
   public final CanSub m_canSub = new CanSub(1);
-  public final ClimbSub m_climbSub = new ClimbSub();
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   public final HopperSub m_hopperSub = new HopperSub(m_canSub);
   public final IntakeSub m_intakeSub = new IntakeSub();
@@ -151,12 +149,6 @@ public class RobotContainer {
     }, () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub, m_hopperSub));
 
     // Driver Right Bumper
-    m_driverController.rightBumper()
-        .onTrue(new InstantCommand(() -> m_climbSub.setTargetDeployDistance(Constants.Climb.kDeployOutDistanceM),
-            m_climbSub)
-                .andThen(new WaitUntilCommand(() -> m_climbSub.isAtDeployOutLimit()))
-                .andThen(new InstantCommand(
-                    () -> m_climbSub.setTargetRotateAngle(Constants.Climb.kRotationFinalAngleDeg), m_climbSub)));
 
     // Driver Left Trigger
     m_driverController.leftTrigger().whileTrue(new IntakeToggleCmd(m_hopperSub, m_intakeSub));
@@ -192,11 +184,11 @@ public class RobotContainer {
     // Driver Left Stick
     m_driverController.leftStick()
         .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+        .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
 
     // Driver Right Stick
     m_driverController.rightStick()
-        .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
-
+        .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
 
     // Operator A
     m_operatorController.a().whileTrue(
@@ -241,16 +233,8 @@ public class RobotContainer {
 
 
     // Operator Left Bumper
-    m_operatorController.leftBumper()
-        .whileTrue(new InstantCommand(() -> m_hopperSub.disableSingulatorAutomation())
-            .andThen(new StartEndCommand(() -> m_hopperSub.setSingulatorPower(-0.1),
-                () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub)));
 
     // Operator Right Bumper
-    m_operatorController.rightBumper()
-        .whileTrue(new InstantCommand(() -> m_hopperSub.disableSingulatorAutomation())
-            .andThen(new StartEndCommand(() -> m_hopperSub.setSingulatorTargetVelocity(10.0),
-                () -> m_hopperSub.setSingulatorPower(0.0), m_hopperSub)));
 
     // Operator Left Trigger
     m_operatorController.leftTrigger()
@@ -265,12 +249,8 @@ public class RobotContainer {
                 () -> m_shooterSub.setTargetFlywheelVelocity(0.0), m_shooterSub)));
 
     // Operator Back
-    m_operatorController.back().whileTrue(
-        new StartEndCommand(() -> m_climbSub.setRotatePower(0.1), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
 
     // Operator Start
-    m_operatorController.start().whileTrue(
-        new StartEndCommand(() -> m_climbSub.setRotatePower(-0.1), () -> m_climbSub.setRotatePower(0.0), m_climbSub));
 
     // Operator POV Up
 
@@ -299,11 +279,13 @@ public class RobotContainer {
             m_shooterSub));
     // Operator Left Stick
     m_operatorController.leftStick()
-        .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+        .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+
 
     // Operator Right Stick
     m_operatorController.rightStick()
-        .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+        .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+
 
   }
 
@@ -322,7 +304,6 @@ public class RobotContainer {
 
   public void initSubsystems() {
     m_canSub.init();
-    m_climbSub.init();
     m_drivetrainSub.init();
     m_hopperSub.init();
     m_intakeSub.init();

@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.commands.KillAllCmd;
 
 public class HopperSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
@@ -37,9 +38,7 @@ public class HopperSub extends SubsystemBase {
   private final CanSub m_canSub;
 
   // Request objects for velocity PID control
-  private boolean m_singulatorAutomationEnabled = false;
   private boolean m_escalatorAutomationEnabled = false;
-  private double m_targetSingulatorVelocityRps = 0.0;
   private double m_targetEscalatorVelocityRps = 0.0;
 
   /** Creates a new HopperSub. */
@@ -60,15 +59,6 @@ public class HopperSub extends SubsystemBase {
     limitSingulatorConfigs.StatorCurrentLimit = Constants.Hopper.kSingulatorMaxCurrent;
     limitSingulatorConfigs.StatorCurrentLimitEnable = true;
     talonFxSingulatorConfigurator.apply(limitSingulatorConfigs);
-
-    // PID configurations for singulator
-    Slot0Configs slot0SingulatorConfigs = new Slot0Configs();
-    slot0SingulatorConfigs.kS = Constants.Hopper.kSingulatorKS; // Add voltage to overcome static friction
-    slot0SingulatorConfigs.kV = Constants.Hopper.kSingulatorKV; // A velocity target of 1 rps results in X volts
-    slot0SingulatorConfigs.kP = Constants.Hopper.kSingulatorKP;
-    slot0SingulatorConfigs.kI = Constants.Hopper.kSingulatorKI;
-    slot0SingulatorConfigs.kD = Constants.Hopper.kSingulatorKD;
-    talonFxSingulatorConfigurator.apply(slot0SingulatorConfigs);
 
     // Motor configurations for singulator
     MotorOutputConfigs outputSingulatorConfigs = new MotorOutputConfigs();
@@ -107,7 +97,6 @@ public class HopperSub extends SubsystemBase {
   public void init() {
     m_logger.info("Initializing HopperSub Subsystem");
     disableEscalatorAutomation();
-    disableSingulatorAutomation();
     setEscalatorPower(0.0);
     setSingulatorPower(0.0);
   }
@@ -115,8 +104,6 @@ public class HopperSub extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Singulator Auto", m_singulatorAutomationEnabled);
-    SmartDashboard.putNumber("Singulator Target", m_targetSingulatorVelocityRps);
     SmartDashboard.putNumber("Singulator Velocity", getSingulatorVelocityRotPerSec());
     SmartDashboard.putNumber("Singulator Vel Mps", getSingulatorVelocityMetersPerSec());
     SmartDashboard.putNumber("Singulator Power", m_singulatorMotor.get());
@@ -131,14 +118,12 @@ public class HopperSub extends SubsystemBase {
   }
 
   public void setShooting() {
-    setSingulatorTargetVelocity(Constants.Hopper.kSingulatorMaxVelocityRotPerSec);
-    setEscalatorTargetVelocity(Constants.Hopper.kEscalatorMaxVelocityRotPerSec);
-    enableSingulatorAutomation();
-    enableEscalatorAutomation();
+    setEscalatorTargetVelocity(Constants.Hopper.kEscalatorFeedSpeed);
+    setSingulatorPower(Constants.Hopper.kEscalatorMaxPower);
   }
 
   public void disableShooting() {
-    disableSingulatorAutomation();
+    setSingulatorPower(0);
     disableEscalatorAutomation();
   }
 
@@ -168,7 +153,6 @@ public class HopperSub extends SubsystemBase {
 
   public void setSingulatorPower(double power) {
     // Disable TalonFX velocity control to stop interferring 
-    disableSingulatorAutomation();
     m_singulatorMotor.set(power);
   }
 
@@ -229,33 +213,6 @@ public class HopperSub extends SubsystemBase {
 
   public boolean isFuelInEscalator() {
     return m_canSub.isFuelInEscalator();
-  }
-
-  ////////////////////////////// Singulator automation //////////////////////////////
-  private void enableSingulatorAutomation() {
-    m_singulatorAutomationEnabled = true;
-    // Use TalonFX's PID control to set velocity
-    m_singulatorMotor.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetSingulatorVelocityRps)
-        .withFeedForward(Constants.Hopper.kSingulatorKV));
-  }
-
-  public void disableSingulatorAutomation() {
-    m_singulatorAutomationEnabled = false;
-    m_singulatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
-  }
-
-  // Set Singulator velocity with PID in RPS
-  public void setSingulatorTargetVelocity(double velocityRps) {
-    m_targetSingulatorVelocityRps = velocityRps;
-    enableSingulatorAutomation();
-  }
-
-  private boolean isSingulatorAtTargetVelocity() {
-    if(Math.abs(m_targetSingulatorVelocityRps
-        - getSingulatorVelocityRotPerSec()) < Constants.Hopper.kSingulatorVelocityToleranceRotPerSec) {
-      return true;
-    }
-    return false;
   }
 
   ////////////////////////////// Escalator automation //////////////////////////////
