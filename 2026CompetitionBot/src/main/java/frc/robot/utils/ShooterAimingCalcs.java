@@ -14,21 +14,67 @@ import frc.robot.Constants;
 
 /** Add your docs here. */
 public class ShooterAimingCalcs {
-  public double calculateShooterFlywheelRps(Pose2d current, Pose2d target) {
-    InterpolatingDoubleTreeMap velocityInterpolation = new InterpolatingDoubleTreeMap();
+
+  private double targetYawAngle;
+  private double robotYawAngle;
+  private double relativeTargetYawAngle;
+
+  static InterpolatingDoubleTreeMap m_distanceToFlywheelMap = new InterpolatingDoubleTreeMap();
+  static InterpolatingDoubleTreeMap m_distanceToPitchMap = new InterpolatingDoubleTreeMap();
+  static {
     //This will need to be derived experementally, currentlty based on theoretical values
-    velocityInterpolation.put(0.0, 0.0);
-    velocityInterpolation.put(1.0, 10.0);
-    velocityInterpolation.put(2.0, 10.0);
-    velocityInterpolation.put(3.0, 10.0);
-    velocityInterpolation.put(4.0, 11.0);
-    velocityInterpolation.put(5.0, 11.5);
-    velocityInterpolation.put(6.0, 12.0);
-    velocityInterpolation.put(7.0, 12.5);
-    velocityInterpolation.put(8.0, 13.0);
-    velocityInterpolation.put(9.0, 13.0);
-    velocityInterpolation.put(10.0, 13.0);
-    return velocityInterpolation.get(current.minus(target).getTranslation().getNorm());
+    // Key is distance to target in metres
+    // Value is flywheel speed in rps
+    m_distanceToFlywheelMap.put(0.0, 40.0); // Change this to minimum flywheel speed
+    m_distanceToFlywheelMap.put(1.0, 40.0);
+    m_distanceToFlywheelMap.put(1.5, 40.0);
+    m_distanceToFlywheelMap.put(2.0, 44.0);
+    m_distanceToFlywheelMap.put(2.5, 48.0);
+    m_distanceToFlywheelMap.put(3.0, 52.0);
+    m_distanceToFlywheelMap.put(3.5, 56.0);
+    m_distanceToFlywheelMap.put(4.0, 60.0);
+    m_distanceToFlywheelMap.put(4.5, 64.0);
+    m_distanceToFlywheelMap.put(5.0, 68.0);
+    m_distanceToFlywheelMap.put(6.0, 76.0);
+    m_distanceToFlywheelMap.put(7.0, 84.0);
+    m_distanceToFlywheelMap.put(8.0, 92.0);
+    m_distanceToFlywheelMap.put(10.0, 100.0);
+    m_distanceToFlywheelMap.put(12.0, 110.0);
+    m_distanceToFlywheelMap.put(14.0, 115.0);
+    m_distanceToFlywheelMap.put(16.540988, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
+
+    //This will need to be derived experementally, currentlty based on theoretical values
+    // Key is distance to target in metres
+    // Value is pitch angle in degrees
+    m_distanceToPitchMap.put(0.0, Constants.Shooter.kPitchMaxAngleDeg);
+    m_distanceToPitchMap.put(1.0, 49.6);
+    m_distanceToPitchMap.put(1.5, 46.0);
+    m_distanceToPitchMap.put(2.0, 44.0);
+    m_distanceToPitchMap.put(2.5, 42.0);
+    m_distanceToPitchMap.put(3.0, 40.0);
+    m_distanceToPitchMap.put(3.5, 38.0);
+    m_distanceToPitchMap.put(4.0, 36.0);
+    m_distanceToPitchMap.put(4.5, 34.0);
+    m_distanceToPitchMap.put(5.0, 32.0);
+    m_distanceToPitchMap.put(6.0, 28.0);
+    m_distanceToPitchMap.put(7.0, 24.0);
+    m_distanceToPitchMap.put(8.0, 20.7);
+    m_distanceToPitchMap.put(10.0, 20.7);
+    m_distanceToPitchMap.put(12.0, 20.7);
+    m_distanceToPitchMap.put(14.0, 20.7);
+    m_distanceToPitchMap.put(16.540988, Constants.Shooter.kPitchMinAngleDeg);
+  }
+
+  public static double getInterpolatedFlywheelVelocity(double distance) {
+    return m_distanceToFlywheelMap.get(distance);
+  }
+
+  public static double getInterpolatedPitchAngle(double distance) {
+    return m_distanceToPitchMap.get(distance);
+  }
+
+  public double calculateShooterFlywheelRps(Pose2d robot) {
+    getInterpolatedFlywheelVelocity.get(current.minus(target).getTranslation().getNorm());
   }
 
   public double calculateShooterYawDegrees(Pose2d current, Pose2d target) {
