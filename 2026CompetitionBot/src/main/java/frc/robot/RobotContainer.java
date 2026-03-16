@@ -183,7 +183,6 @@ public class RobotContainer {
             new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(40.0), m_shooterSub));
     // Driver Left Stick
     m_driverController.leftStick()
-        .onTrue(new KillAllCmd(m_canSub, m_climbSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
         .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
 
     // Driver Right Stick
