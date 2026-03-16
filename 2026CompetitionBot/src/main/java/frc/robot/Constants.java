@@ -147,19 +147,18 @@ public final class Constants {
     public static final double kYawMinAngleDeg = 0.0;
     public static final double kYawMaxAngleDeg = 310.0;
     public static final double kYawMaxCurrent = 120.0;
-    public static final double kYawMaxPower = 0.3;
-    public static final double kYawTolerance = 0.25;
+    public static final double kYawMaxPower = 0.6;
+    public static final double kYawTolerance = 0.5;
     public static final double kYawMaxVelocityDegPerSec = 30.0;
     public static final double kYawMaxAccelerationDegPerSec = 36.0;
-    public static final double kYawKS = 0.75;
-    public static final double kYawKV = 0.0079803;
-    public static final double kYawKP = 0.05; //0.1;
+    public static final double kYawKS = 1.5;
+    public static final double kYawKP = 0.03; //0.1;
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.0;
 
     public static final double kPitchEncoderToDegConversionFactor = 29.0 / 39.29; // Difference between min and max / motor rotations
-    public static final double kPitchMinAngleDeg = 20.7;
-    public static final double kPitchMaxAngleDeg = 49.6;
+    public static final double kPitchMinAngleDeg = 18.0;
+    public static final double kPitchMaxAngleDeg = 48.0;
     public static final double kPitchMaxCurrent = 12.0;
     public static final double kPitchMaxPower = 0.3;
     public static final double kPitchTolerance = 1.0;
@@ -169,22 +168,22 @@ public final class Constants {
     public static final double kPitchKG = 0.45;
     public static final double kPitchKV = 0.0;
     public static final double kPitchKP = 0.35;
-    public static final double kPitchKI = 0.25;
-    public static final double kPitchKD = 1.0;
+    public static final double kPitchKI = 0.0;
+    public static final double kPitchKD = 0.0;
 
     public static final double kFlywheelEncoderToRotsPerSecConversionFactor = 1.0 / (36.0 / 28.0 * 24.0 / 18.0); // 0.467;
     public static final double kFlywheelRotsPerSecToMpsConversionFactor = 0.3164 / 2.0; // 4 inches diamater to metters / 2
     public static final double kFlywheelMinVelocityRotsPerSec = Hopper.kEscalatorMaxVelocityRotPerSec
         * (Hopper.kInputEscalatorRpsToMpsConversionFactor / kFlywheelRotsPerSecToMpsConversionFactor);
-    public static final double kFlywheelMaxVelocityRotsPerSec = 200.0;
+    public static final double kFlywheelMaxVelocityRotsPerSec = 140.0;
     public static final double kFlywheelMaxAccelerationRotsPerSec = 100.0;
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
     public static final double kFlywheelMaxCurrent = 120.0;
     public static final double kFlywheelMaxPower = 1.0;
     public static final double kFlywheelKS = 0.055;
-    public static final double kFlywheelKV = 0.07;
-    public static final double kFlywheelKP = 0.0;//ADD FLYWHELL PID
-    public static final double kFlywheelKI = 0.0;
+    public static final double kFlywheelKV = 0.0789;
+    public static final double kFlywheelKP = 0.3;//ADD FLYWHELL PID
+    public static final double kFlywheelKI = 0.3;
     public static final double kFlywheelKD = 0.0;
 
     public static final double kGravity = 9.80665;

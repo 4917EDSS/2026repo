@@ -155,6 +155,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putBoolean("Sht Yaw CW", isAtYawAtCWLimit());
     SmartDashboard.putBoolean("Sht Yaw Enc Set", m_yawHasBeenReset);
     SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
+    SmartDashboard.putNumber("Sht Yaw Power", m_yawMotor.get());
     // Yaw power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Ptc Auto", m_pitchAutomationEnabled);
