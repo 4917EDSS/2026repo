@@ -4,8 +4,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ShooterSub;
@@ -37,7 +35,7 @@ public class AimCmd extends Command {
   @Override
   public void execute() {
     m_shooterSub.setPitchYawFlywheelTarget(
-        m_shooterAimingCalcs.setTargets(m_drivetrainSub.getPose(), m_drivetrainSub.getRobotRelativeSpeeds()));
+        m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getRobotRelativeSpeeds()));
   }
 
   // Called once the command ends or is interrupted.

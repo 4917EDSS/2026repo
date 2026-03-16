@@ -89,7 +89,7 @@ public class RobotContainer {
     //     m_shooterSub));
 
     // m_shooterSub.setDefaultCommand(new RunCommand(
-    //     () -> m_shooterSub.setPitchYawFlywheelPower(m_shooterAimingCalcs.setTargets(m_drivetrainSub.getPose(),
+    //     () -> m_shooterSub.setPitchYawFlywheelPower(m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(),
     //         m_drivetrainSub.getRobotRelativeSpeeds())),
     //     m_shooterSub));
   }
@@ -120,7 +120,7 @@ public class RobotContainer {
     m_driverController.a()
         .whileTrue(
             new StartEndCommand(() -> m_shooterSub.setPitchYawFlywheelTarget(m_shooterAimingCalcs
-                .setTargets(m_drivetrainSub.getPose(), m_drivetrainSub.getRobotRelativeSpeeds())),
+                .setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getRobotRelativeSpeeds())),
                 () -> m_shooterSub.endPitchYawFlywheel(), m_shooterSub));
 
     // // Driver B
@@ -262,7 +262,7 @@ public class RobotContainer {
     // Operator POV Down
     // m_operatorController.povDown()
     //     .whileTrue(new RunCommand(
-    //         () -> m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.setTargets(m_drivetrainSub.getPose(),
+    //         () -> m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(),
     //             m_drivetrainSub.getRobotRelativeSpeeds())[1]),
     //         m_shooterSub));
     // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_hopperSub.setEscalatorTuningConstants( //this is just for tuning, delete for competitions
