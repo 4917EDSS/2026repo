@@ -3,6 +3,7 @@ package frc.robot.utils;
 import java.util.Optional;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GameData {
   enum DefendFirst {
@@ -68,6 +69,7 @@ public class GameData {
     }
 
     String data = DriverStation.getGameSpecificMessage();
+    SmartDashboard.putString("Game Data", data);
     if(data.length() > 0) {
       if(data.charAt(0) == allianceColour.charAt(0)) {
         s_amIDefendingFirst = DefendFirst.YES;
