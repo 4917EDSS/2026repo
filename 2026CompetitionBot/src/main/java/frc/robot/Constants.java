@@ -103,7 +103,8 @@ public final class Constants {
     public static final double kSingulatorKD = 0.0;
 
     public static final double kEscalatorEncoderToRpsConversionFactor = 3.0;
-    public static final double kEscalatorMaxVelocityRotPerSec = 35.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
+    public static final double kEscalatorFeedSpeed = 30.0;
+    public static final double kEscalatorMaxVelocityRotPerSec = 31.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
     public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795 / 2; //  inches diamater to meters / 2
     public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2
     public static final double kEscalatorVelocityToleranceRotPerSec = 0.1;
@@ -187,6 +188,9 @@ public final class Constants {
     public static final double kFlywheelKD = 0.0;
 
     public static final double kGravity = 9.80665;
+
+    public static final double kTurretOffsetX = -0.141;
+    public static final double kTurretOffsetY = -0.127;
   }
 
   public static class Vision {
