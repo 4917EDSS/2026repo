@@ -102,7 +102,7 @@ public final class Constants {
     public static final double kSingulatorKI = 0.0;
     public static final double kSingulatorKD = 0.0;
 
-    public static final double kEscalatorEncoderToRpsConversionFactor = 0.333; // Gearing 1:1
+    public static final double kEscalatorEncoderToRpsConversionFactor = 3.0;
     public static final double kEscalatorMaxVelocityRotPerSec = 300.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
     public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795 / 2; //  inches diamater to meters / 2
     public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2
@@ -110,10 +110,10 @@ public final class Constants {
     public static final double kEscalatorMaxCurrent = 120.0;
     public static final double kEscalatorMaxPower = 1.0;
     public static final double kEscalatorKS = 0.37;
-    public static final double kEscalatorKV = 0.04;
+    public static final double kEscalatorKV = 0.36; // TODO: Test this value
     public static final double kEscalatorKP = 0.25;
-    public static final double kEscalatorKI = 0.0;
-    public static final double kEscalatorKD = 0.00125;
+    public static final double kEscalatorKI = 0.0; // TODO: Add KI
+    public static final double kEscalatorKD = 0.0;
   }
 
   public static class Intake {
