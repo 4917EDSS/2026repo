@@ -279,7 +279,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
 
   public Pose2d getTurretPose() {
     return getState().Pose.transformBy(new Transform2d(Constants.Shooter.kTurretOffsetX,
-        Constants.Shooter.kTurretOffsetY, new Rotation2d(getPose().getRotation().getRadians())));
+        Constants.Shooter.kTurretOffsetY, getPose().getRotation()));
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
