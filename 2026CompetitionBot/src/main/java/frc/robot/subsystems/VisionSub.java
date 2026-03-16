@@ -6,9 +6,12 @@ package frc.robot.subsystems;
 
 import java.util.logging.Logger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -109,6 +112,7 @@ public class VisionSub extends SubsystemBase {
     m_logger.info("Initializing VisionSub Subsystem");
     SmartDashboard.putData("FieldLLRight", m_fieldLLRight);
     SmartDashboard.putData("FieldLLLeft", m_fieldLLLeft);
+    SmartDashboard.putNumber("std", 0.0);
   }
 
 
@@ -194,6 +198,16 @@ public class VisionSub extends SubsystemBase {
     return mt2.pose;
   }
 
+  public double calculateStandardDeviation() {
+    double distFromTag = new Translation3d(botposeTarget[0], botposeTarget[1], botposeTarget[2]).getNorm();
+    double areaOfTag = a;
+    double calculatedSTD = Constants.Vision.kStandardDeviation
+        + (distFromTag - Constants.Vision.kDistanceTrustThreshold) * Constants.Vision.kDistanceWeight
+        - (areaOfTag - Constants.Vision.kAreaTrustThreshold) * Constants.Vision.kAreaWeight;
+    SmartDashboard.putNumber("std", calculatedSTD);
+    return MathUtil.clamp(calculatedSTD, 0.2, 5);
+  }
+
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
     LimelightHelpers.SetRobotOrientation(camera, m_drivetrainSub.getState().Pose.getRotation().getDegrees(), 0, 0, 0,
         0, 0);
@@ -205,7 +219,8 @@ public class VisionSub extends SubsystemBase {
 
     if(timestamp > m_previousTimestamp) {
       m_previousTimestamp = timestamp;
-      double standardDeviation = 0.0; // 0.7 is a good starting value according to limelight docs.
+
+      double standardDeviation = calculateStandardDeviation(); // 0.7 is a good starting value according to limelight docs.
 
       if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than
                                                                             // 360 degrees per second, ignore vision

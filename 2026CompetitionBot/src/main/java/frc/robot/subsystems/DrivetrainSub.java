@@ -325,6 +325,10 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     m_field.setRobotPose(getState().Pose);
     SmartDashboard.putString("currentPos", RobotStatus.getCurrentFieldPosition());
     SmartDashboard.putString("previousPos", RobotStatus.getPreviousFieldPosition());
+
+    SmartDashboard.putNumber("turret x", getTurretPose().getX());
+    SmartDashboard.putNumber("turret y", getTurretPose().getY());
+    SmartDashboard.putNumber("turret rot", getTurretPose().getRotation().getDegrees());
     //m_field.allianceColor = 
   }
 

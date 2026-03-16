@@ -155,6 +155,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putBoolean("Sht Yaw CW", isAtYawAtCWLimit());
     SmartDashboard.putBoolean("Sht Yaw Enc Set", m_yawHasBeenReset);
     SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
+    SmartDashboard.putNumber("Sht Yaw Power", m_yawMotor.get());
     // Yaw power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Ptc Auto", m_pitchAutomationEnabled);
@@ -372,7 +373,7 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetPitchAngle(double angleDeg) {
     m_targetPitchAngleDeg =
-        MathUtil.clamp(angleDeg, Constants.Shooter.kPitchMinAngleDeg, Constants.Shooter.kPitchMaxAngleDeg);
+        MathUtil.clamp(angleDeg, Constants.Shooter.kPitchMinAngleDeg + 2, Constants.Shooter.kPitchMaxAngleDeg - 2);
     m_pitchPidController.reset();
     m_pitchPidController.setSetpoint(angleDeg);
     runPitchControl(true);
@@ -400,7 +401,7 @@ public class ShooterSub extends SubsystemBase {
     totalVolts =
         MathUtil.clamp(totalVolts, -Constants.Shooter.kPitchMaxPower * 12, Constants.Shooter.kPitchMaxPower * 12);
 
-    if(setPower) {
+    if(setPower && !Double.isNaN(totalVolts)) {
       setPitchVoltage(totalVolts);
     }
   }
@@ -542,7 +543,7 @@ public class ShooterSub extends SubsystemBase {
 
   //RUN ALL CONTROL ALGORTHMS
   public void setPitchYawFlywheelTarget(double[] trajectoriesArray) {
-    setTargetPitchAngle(trajectoriesArray[0]);
+    setTargetPitchAngle(90 - trajectoriesArray[0]);
     setTargetYawAngle(trajectoriesArray[1]);
     setTargetFlywheelVelocity(trajectoriesArray[2]);
   }

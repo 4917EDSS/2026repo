@@ -25,7 +25,10 @@ Arduin Nano RP2040 connect. (If it can dream it, it can be it)
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-Adafruit_VL53L0X range_sensor = Adafruit_VL53L0X();
+Adafruit_VL53L0X range_sensor0 = Adafruit_VL53L0X();
+Adafruit_VL53L0X range_sensor1 = Adafruit_VL53L0X();
+Adafruit_VL53L0X range_sensor2 = Adafruit_VL53L0X();
+Adafruit_VL53L0X range_sensor3 = Adafruit_VL53L0X();
 
 int xshut0 = 18;
 int xshut1 = 19;
@@ -38,10 +41,8 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   bool stat1 = true;
   bool stat2 = true;
   bool stat3 = true;
-
-  int xshutDelay = 300;
-  int sensorBootAllocation = 400;
   
+  /*
   if (sensor0) {
     digitalWrite(xshut0, LOW);
     digitalWrite(xshut1, LOW);
@@ -53,62 +54,86 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
     // Allow some time for the sensor to start up
     delay(sensorBootAllocation);
     // Initialize range sensor driver
-    if (!range_sensor.begin()) {
+    if (!range_sensor0.begin()) {
       Serial.print("Failed to boot VL53L0X. SENSOR 0!! Stopping.\n");
       stat0 = false;
     }
-  } 
 
+    // Set the adress of each sensor so they can be accessed later
+    range_sensor0.setAddress(0x31);
+  } 
+  */
+  
+  /*
+  // Initialize each of the sensors individually, ONLY IF WE HAVE THEM ISNTALLED!! (Otherwise we initialize sensors that don't exist)
+  if (sensor0) {
+    // Call the initialization function
+    stat0 = initializeRangeSensor(range_sensor0, 0x31, xshut0);
+  }
+
+  
   if (sensor1) {
-    digitalWrite(xshut0, LOW);
-    digitalWrite(xshut1, LOW);
-    digitalWrite(xshut2, LOW);
-    digitalWrite(xshut3, LOW);
-    delay(xshutDelay);
-    digitalWrite(xshut1, HIGH);
-
-    // Allow some time for the sensor to start up
-    delay(sensorBootAllocation);
-    // Initialize range sensor driver
-    if (!range_sensor.begin()) {
-      Serial.print("Failed to boot VL53L0X. SENSOR 1!! Stopping.\n");
-      stat1 = false;
-    }
-  } 
+    stat1 = initializeRangeSensor(range_sensor1, 0x32, xshut1);
+  }
 
   if (sensor2) {
-    digitalWrite(xshut0, LOW);
-    digitalWrite(xshut1, LOW);
-    digitalWrite(xshut2, LOW);
-    digitalWrite(xshut3, LOW);
-    delay(xshutDelay);
-    digitalWrite(xshut2, HIGH);
-
-    // Allow some time for the sensor to start up
-    delay(sensorBootAllocation);
-    // Initialize range sensor driver
-    if (!range_sensor.begin()) {
-      Serial.print("Failed to boot VL53L0X. SENSOR 2!!! Stopping.\n");
-      stat2 = false;
-    }
+    stat2 = initializeRangeSensor(range_sensor2, 0x33, xshut2);
   }
 
   if (sensor3) {
-    digitalWrite(xshut0, LOW);
-    digitalWrite(xshut1, LOW);
-    digitalWrite(xshut2, LOW);
-    digitalWrite(xshut3, LOW);
-    delay(xshutDelay);
-    digitalWrite(xshut3, HIGH);
-
-    // Allow some time for the sensor to start up
-    delay(sensorBootAllocation);
-    // Initialize range sensor driver
-    if (!range_sensor.begin()) {
-      Serial.print("Failed to boot VL53L0X. SENSOR 3!!! Stopping.\n");
-      stat3 = false;
-    }
+    stat3 = initializeRangeSensor(range_sensor3, 0x34, xshut3);
   }
+  */
+
+  int xshutDelay = 300;
+  int sensorBootAllocation = 400;
+
+  digitalWrite(xshut0, LOW);
+  digitalWrite(xshut1, LOW);
+  digitalWrite(xshut2, LOW);
+  digitalWrite(xshut3, LOW);
+  delay(xshutDelay);
+  digitalWrite(xshut0, HIGH);
+
+  // Allow some time for the sensor to start up
+  delay(sensorBootAllocation);
+
+  // Initialize range sensor driver
+  if (!range_sensor0.begin()) {
+    Serial.print("Failed to boot VL53L0X. Stopping.\n");
+    // Bad, sensor failed
+    //return false;
+    stat0 = false;
+  } 
+
+  range_sensor0.setAddress(0x31);
+
+
+  /*
+  digitalWrite(xshut0, LOW);
+  digitalWrite(xshut1, LOW);
+  digitalWrite(xshut2, LOW);
+  digitalWrite(xshut3, LOW);
+  delay(xshutDelay);
+  digitalWrite(xshut1, HIGH);
+
+  // Allow some time for the sensor to start up
+  delay(sensorBootAllocation);
+
+  // Initialize range sensor driver
+  if (!range_sensor1.begin()) {
+    Serial.print("Failed to boot VL53L0X. Stopping.\n");
+    // Bad, sensor failed
+    //return false;
+    stat1 = false;
+  }
+
+  range_sensor1.setAddress(0x32);
+  */
+  
+  
+
+
 
   // One of the sensors is clapped, stop the initialization process
   if (!(stat0 && stat1 && stat2 && stat3)) {
@@ -125,6 +150,43 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   }
 
 }
+
+
+
+
+bool initializeRangeSensor(Adafruit_VL53L0X sensor, uint8_t address, int xshut) {
+  int xshutDelay = 300;
+  int sensorBootAllocation = 400;
+
+
+  digitalWrite(xshut0, LOW);
+  digitalWrite(xshut1, LOW);
+  digitalWrite(xshut2, LOW);
+  digitalWrite(xshut3, LOW);
+  delay(xshutDelay);
+  digitalWrite(xshut, HIGH);
+
+  // Allow some time for the sensor to start up
+  delay(sensorBootAllocation);
+  // Initialize range sensor driver
+  if (!sensor.begin()) {
+    Serial.print("Failed to boot VL53L0X. Stopping.\n");
+    // Bad, sensor failed
+    return false;
+  }
+
+  // Set the adress of each sensor so they can be accessed later
+  sensor.setAddress(address);
+
+  // success! 
+  return true;
+}
+
+
+
+
+
+
 
 void setup() {
   // Give the OLED time to boot
@@ -158,42 +220,9 @@ void setup() {
   while (!Serial) {
     ; //wait for serial port to connect. Needed for native USB port only
   }
-  
-  /*
-  // Initialize range sensor driver
-  if (!range_sensor.begin()) {
-    Serial.print("Failed to boot VL53L0X. Stopping.\n");
-
-    // Display shenanigans 
-    display.clearDisplay();
-    display.setTextSize(1);      // Normal 1:1 pixel scale
-    display.setTextColor(SSD1306_WHITE); // Draw white text
-    display.setCursor(0, 0);     // Start at top-left corner
-    display.cp437(true);         // Use full 256 char 'Code Page 437' font
-    display.write("SENSORS CLAPPED!!!");
-    display.display();
-
-    while(1);
-
-  } else {
-    Serial.print("works??");
-  }
-  */
-
-  /*
-  // Initialize range sensor driver
-  if (!range_sensor.begin()) {
-    Serial.print("Failed to boot VL53L0X. SENSOR 0!! Stopping.\n");
-    //stat0 = false;
-
-    while(1);
-  }
-  */
-
-  //sensorInit(true, false, false, false);
 
   Serial.print("VL53L0X driver loaded.\n");
-  range_sensor.startRangeContinuous(); 
+  range_sensor0.startRangeContinuous(); 
   
 
   // Show initial display buffer contents on the screen --
@@ -207,31 +236,33 @@ void setup() {
 
 void loop() {
   char buffer[100];
-  int distance;
+  uint16_t distance0;
+  uint16_t distance1;
   int angle;
 
   
   // Check if the range sensor has compleated a range mesurement
-  if (range_sensor.isRangeComplete()){
-
+  if (range_sensor0.isRangeComplete()){
     // Get the intager range value in mm
-    distance = range_sensor.readRange();
+    distance0 = range_sensor0.readRange();
 
-    
-    //Serial.print(0); // To freeze the lower limit
-    //Serial.print(" ");
-    //Serial.print(9000); // To freeze the upper limit
-    //Serial.print(" ");
-    
-
-    // Debug serial print 
-    sprintf (buffer, "Distance 1: %dmm\n",distance);
-    //Serial.print(buffer);
-
-    // Divide the range by 8 (bit shift 2^3 times to the right)
-    angle = distance >> 3;
+    //sprintf (buffer, "Distance 1: %dmm\nDistance 2: ",distance0);
+    //sprintf (buffer, "Distance 1: %u", distance0);
   }
+
+  /*
+  // Check if the range sensor has compleated a range mesurement
+  if (range_sensor1.isRangeComplete()){
+    // Get the intager range value in mm
+    distance1 = range_sensor1.readRange();
+
+    //sprintf (buffer, "Distance 1: %dmm\nDistance 2: ",distance0);
+    //sprintf (buffer, "Distance 1: %u", distance0);
+  }
+  */
   
+  
+  sprintf(buffer, "Distance 1: %u mm\nDistance 2: mm", distance0);
 
   // Display shenanigans 
   display.clearDisplay();

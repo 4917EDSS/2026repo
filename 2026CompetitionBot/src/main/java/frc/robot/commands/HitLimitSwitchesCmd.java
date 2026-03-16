@@ -35,7 +35,7 @@ public class HitLimitSwitchesCmd extends Command {
     m_shooterSub.disableYawAutomation();
 
     m_shooterSub.setPitchPower(-0.1);
-    m_shooterSub.setYawPower(-0.15);
+    m_shooterSub.setYawPower(-0.2);
 
   }
 

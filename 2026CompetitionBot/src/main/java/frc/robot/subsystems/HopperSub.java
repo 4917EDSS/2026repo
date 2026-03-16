@@ -119,7 +119,7 @@ public class HopperSub extends SubsystemBase {
 
   public void setShooting() {
     setEscalatorTargetVelocity(Constants.Hopper.kEscalatorFeedSpeed);
-    setSingulatorPower(Constants.Hopper.kEscalatorMaxPower);
+    setSingulatorPower(Constants.Hopper.kSingulatorMaxPower);
   }
 
   public void disableShooting() {
