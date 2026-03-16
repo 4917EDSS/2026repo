@@ -23,12 +23,9 @@ public class ShootCmd extends Command {
   public ShootCmd(HopperSub hopperSub) {
     m_hopperSub = hopperSub;
 
-
+    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(hopperSub);
   }
-
-  // Use addRequirements() here to declare subsystem dependencies.
-
 
   // Called when the command is initially scheduled.
   @Override

@@ -101,6 +101,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("IntakeDeployCmd", new IntakeToggleCmd(m_hopperSub, m_intakeSub, true));
 
     NamedCommands.registerCommand("IntakeRetractCmd", new IntakeToggleCmd(m_hopperSub, m_intakeSub, false));
+
+    NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub));
   }
 
   /*
