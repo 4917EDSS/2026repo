@@ -107,12 +107,12 @@ public final class Constants {
     public static final double kEscalatorMaxVelocityRotPerSec = 31.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
     public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795 / 2; //  inches diamater to meters / 2
     public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2
-    public static final double kEscalatorVelocityToleranceRotPerSec = 0.1;
+    public static final double kEscalatorVelocityToleranceRotPerSec = 2;
     public static final double kEscalatorMaxCurrent = 120.0;
     public static final double kEscalatorMaxPower = 1.0;
     public static final double kEscalatorKS = 0.37;
     public static final double kEscalatorKV = 0.36; // TODO: Test this value
-    public static final double kEscalatorKP = 0.25;
+    public static final double kEscalatorKP = 0.4;
     public static final double kEscalatorKI = 0.0; // TODO: Add KI
     public static final double kEscalatorKD = 0.0;
   }
@@ -183,8 +183,8 @@ public final class Constants {
     public static final double kFlywheelMaxPower = 1.0;
     public static final double kFlywheelKS = 0.055;
     public static final double kFlywheelKV = 0.0789;
-    public static final double kFlywheelKP = 0.3;//ADD FLYWHELL PID
-    public static final double kFlywheelKI = 0.3;
+    public static final double kFlywheelKP = 0.5;//ADD FLYWHELL PID
+    public static final double kFlywheelKI = 0.1;
     public static final double kFlywheelKD = 0.0;
 
     public static final double kGravity = 9.80665;
@@ -195,6 +195,11 @@ public final class Constants {
 
   public static class Vision {
     public static final double kDistanceTooCloseToDrive = 0.5;
+    public static final double kStandardDeviation = 0.7;
+    public static final double kDistanceWeight = 0.25;
+    public static final double kDistanceTrustThreshold = 2.0;
+    public static final double kAreaWeight = 1.5;
+    public static final double kAreaTrustThreshold = 0.2;
   }
 
   //////////////////// These are the other constants ////////////////////
