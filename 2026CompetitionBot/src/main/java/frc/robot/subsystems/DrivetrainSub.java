@@ -19,6 +19,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -274,6 +275,11 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
 
   public Pose2d getPose() {
     return getState().Pose;
+  }
+
+  public Pose2d getTurretPose() {
+    return getState().Pose.transformBy(new Transform2d(Constants.Shooter.kTurretOffsetX,
+        Constants.Shooter.kTurretOffsetY, new Rotation2d(getPose().getRotation().getRadians())));
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {

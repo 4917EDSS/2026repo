@@ -188,6 +188,9 @@ public final class Constants {
     public static final double kFlywheelKD = 0.0;
 
     public static final double kGravity = 9.80665;
+
+    public static final double kTurretOffsetX = -0.141;
+    public static final double kTurretOffsetY = -0.127;
   }
 
   public static class Vision {
