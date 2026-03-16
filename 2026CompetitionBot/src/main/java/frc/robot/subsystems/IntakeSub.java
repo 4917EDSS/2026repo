@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -24,6 +25,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -37,8 +39,8 @@ public class IntakeSub extends SubsystemBase {
 
   private final SparkFlex m_beltMotor = new SparkFlex(Constants.CanIds.kIntakeBeltMotor, MotorType.kBrushless);
   private final TalonFX m_deployMotor = new TalonFX(Constants.CanIds.kIntakeDeployMotor);
-  private final DigitalInput m_deployInLimit = new DigitalInput(Constants.DioIds.kIntakeDeployInLimit);
-  private final DigitalInput m_deployOutLimit = new DigitalInput(Constants.DioIds.kIntakeDeployOtherInLimit);
+  private final DutyCycleEncoder m_encoder =
+      new DutyCycleEncoder(new DigitalInput(Constants.DioIds.kIntakeEncoder), 360, 210);
 
 
   private final ArmFeedforward m_deployFeedforward =
@@ -50,7 +52,6 @@ public class IntakeSub extends SubsystemBase {
           m_deployProfileConstraints);
 
   private boolean m_deployAutomationEnabled = false;
-  private boolean m_isIntakeEncoderSet = false;
   private double m_targetDeployAngleDeg = 0.0;
 
 
@@ -105,7 +106,6 @@ public class IntakeSub extends SubsystemBase {
     disableDeployAutomation();
     setDeployPower(0.0);
     m_beltMotor.set(0.0);
-    m_isIntakeEncoderSet = false;
     SmartDashboard.putNumber("totalVolts", 0.0);
   }
 
@@ -113,21 +113,8 @@ public class IntakeSub extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Intake Auto", m_deployAutomationEnabled);
-    SmartDashboard.putBoolean("Intake In Limit", isAtInLimit());
-    SmartDashboard.putBoolean("Intake Out Limit", isAtOutLimit());
-    SmartDashboard.putBoolean("Intake Enc Set", m_isIntakeEncoderSet);
     SmartDashboard.putNumber("Intake Target Angle", m_targetDeployAngleDeg);
     SmartDashboard.putNumber("Intake Current Angle", getDeployAngleDeg());
-    SmartDashboard.putNumber("deploy velcity", getDeployVelocityDegPerSec());
-
-    // Check if the relative encoder has been zeroed yet or not
-    if(!m_isIntakeEncoderSet) {
-      // Reset encoder if we're at the in limit and we've never set the encoder
-      if(isAtInLimit()) {
-        m_isIntakeEncoderSet = true;
-        resetDeployEncoder(Constants.Intake.kDeployInAngleDeg);
-      }
-    }
 
     // Run the deploy-angle PID but only set the motor power if automation is currently enabled
     runDeployAngleControl(m_deployAutomationEnabled);
@@ -148,28 +135,21 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public double getDeployAngleDeg() {
-    return m_deployMotor.getPosition().getValueAsDouble();
+    double encoderValue = m_encoder.get();
+    if(encoderValue > 350) {
+      encoderValue = 0;
+    }
+    return encoderValue;
   }
 
   public double getTargetDeployAngleDeg() {
     return m_targetDeployAngleDeg;
   }
 
-  public double getDeployVelocityDegPerSec() {
-    return m_deployMotor.getVelocity().getValueAsDouble();
-  }
-
   public void resetDeployEncoder(double resetAngleDeg) {
     m_deployMotor.setPosition(resetAngleDeg);
   }
 
-  public boolean isAtInLimit() {
-    return !m_deployInLimit.get();
-  }
-
-  public boolean isAtOutLimit() {
-    return !m_deployOutLimit.get();
-  }
 
   ////////////////////////////// Deploy automation //////////////////////////////
   public void enableDeployAutomation() {
@@ -191,21 +171,19 @@ public class IntakeSub extends SubsystemBase {
 
   public boolean isAtTargetDeployAngle() {
     // If the yaw encoder isn't reset, then we can never be at our goal since we don't know where we are
-    return m_isIntakeEncoderSet && m_deployPidController.atGoal();
+    return m_deployPidController.atGoal();
   }
 
   // Set power based on difference between target and current yaw
   private void runDeployAngleControl(boolean setPower) {
     // Can't run automated control if encoder position is unknown
-    if(!m_isIntakeEncoderSet) {
-      return;
-    }
+
 
     double currentAngle = getDeployAngleDeg();
     double pidVolts = m_deployPidController.calculate(currentAngle);
     TrapezoidProfile.State setPoint = m_deployPidController.getSetpoint();
     double ffVolts =
-        m_deployFeedforward.calculate((Constants.Intake.kDeployOutAngleDeg - currentAngle) / 360 * 2 * Math.PI,
+        m_deployFeedforward.calculate((Constants.Intake.kDeployMaxGravityDeg - currentAngle) / 360 * 2 * Math.PI,
             setPoint.velocity);
     double totalVolts = pidVolts + ffVolts;
     SmartDashboard.putNumber("totalVolts", totalVolts);
@@ -224,9 +202,9 @@ public class IntakeSub extends SubsystemBase {
     }
 
     // If our power is negative and we are at the in limit, set the voltage to 0
-    if(isAtInLimit() && totalVolts < 0.0) {
-      totalVolts = 0.0;
-    }
+    // if(isAtInLimit() && totalVolts < 0.0) {
+    //totalVolts = 0.0;
+    // }
 
     // We may need to apply a small amount of power to hold the intake in and out
 
@@ -246,17 +224,11 @@ public class IntakeSub extends SubsystemBase {
           (SysIdRoutineLog log) -> {
             log.motor("intakeDeploy")
                 .voltage(Units.Volts.of(m_deployMotor.get() * RobotController.getBatteryVoltage()))
-                .angularPosition(Units.Degrees.of(getDeployAngleDeg()))
-                .angularVelocity(Units.DegreesPerSecond.of(getDeployVelocityDegPerSec()));
+                .angularPosition(Units.Degrees.of(getDeployAngleDeg()));
           },
           this));
 
   public void runDeploySysIdVolts(double volts) {
-    // Make sure we're not pushing past the limits
-    if(((volts > 0) && isAtOutLimit()) || ((volts < 0) && isAtInLimit())) {
-      setDeployVoltage(0.0);
-      return;
-    }
 
     // Make sure we don't exceed our maxiumum allowed power (relative to 12.0 volts)
     volts = MathUtil.clamp(volts, -(Constants.Intake.kDeployMaxPower * 12.0), Constants.Intake.kDeployMaxPower * 12.0);
@@ -270,5 +242,19 @@ public class IntakeSub extends SubsystemBase {
 
   public Command deploySysIdDynamicCmd(SysIdRoutine.Direction dir) {
     return m_deploySysIdRoutine.dynamic(dir);
+  }
+
+  // Tuning
+  public void setDeployTuningConstants(double kS, double kG, double kV, double kP, double kI, double kD) {
+    TalonFXConfigurator talonFXConfigurator1 = m_deployMotor.getConfigurator();
+    Slot0Configs slot0DeployConfigs = new Slot0Configs();
+    slot0DeployConfigs.kS = kS;
+    slot0DeployConfigs.kG = kG;
+    slot0DeployConfigs.kV = kV;
+    slot0DeployConfigs.kP = kP;
+    slot0DeployConfigs.kI = kI;
+    slot0DeployConfigs.kD = kD;
+    talonFXConfigurator1.apply(slot0DeployConfigs);
+    System.out.println("Intake" + kS + "," + kG + "," + kV + "," + kP + "," + kI + "," + kD + ",");
   }
 }

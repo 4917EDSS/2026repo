@@ -252,7 +252,9 @@ public class RobotContainer {
     // Operator Start
 
     // Operator POV Up
-
+    // TODO: Tune intake
+    // m_operatorController.povUp()
+    //     .onTrue(new InstantCommand(() -> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployInAngleDeg)));
 
     // Operator POV Right
     m_operatorController.povRight().whileTrue(
@@ -265,8 +267,9 @@ public class RobotContainer {
     //         () -> m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(),
     //             m_drivetrainSub.getRobotRelativeSpeeds())[1]),
     //         m_shooterSub));
-    // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_hopperSub.setEscalatorTuningConstants( //this is just for tuning, delete for competitions
+    // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_intakeSub.setDeployTuningConstants( //this is just for tuning, delete for competitions
     //     SmartDashboard.getNumber("kS", 0.0),
+    //     SmartDashboard.getNumber("kG", 0.0),
     //     SmartDashboard.getNumber("kV", 0.0),
     //     SmartDashboard.getNumber("kP", 0.0),
     //     SmartDashboard.getNumber("kI", 0.0),
