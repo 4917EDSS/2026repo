@@ -25,7 +25,6 @@ public final class Constants {
     public static final int kHopperSingulatorMotor = 4;
     public static final int kIntakeBeltMotor = 5;
     public static final int kIntakeDeployMotor = 6;
-    // Used to be kIntakeDeployMotorR = 7
     public static final int kShooterFlywheelMotorL = 8;
     public static final int kShooterFlywheelMotorR = 9;
     public static final int kShooterPitchMotor = 10;
@@ -40,13 +39,11 @@ public final class Constants {
   }
 
   public static class DioIds {
-    public static final int kClimbInLimitSwitch = 7;
-    public static final int kClimbOutLimitSwitch = 2;
-    public static final int kClimbCCWLimitSwitch = 3;
-    public static final int kClimbCWLimitSwitch = 4;
-    public static final int kIntakeDeployInLimit = 0;
-    public static final int kIntakeDeployOtherInLimit = 1;
     public static final int kIntakeEncoder = 1;
+    public static final int kClimbInLimitSwitch = 6;
+    public static final int kClimbOutLimitSwitch = 7;
+    public static final int kClimbCCWLimitSwitch = 8;
+    public static final int kClimbCWLimitSwitch = 9;
   }
 
   public static class OperatorConstants {
@@ -179,7 +176,6 @@ public final class Constants {
     public static final double kFlywheelMinVelocityRotsPerSec = Hopper.kEscalatorMaxVelocityRotPerSec
         * (Hopper.kInputEscalatorRpsToMpsConversionFactor / kFlywheelRotsPerSecToMpsConversionFactor);
     public static final double kFlywheelMaxVelocityRotsPerSec = 140.0;
-    public static final double kFlywheelMaxAccelerationRotsPerSec = 100.0;
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
     public static final double kFlywheelMaxCurrent = 120.0;
     public static final double kFlywheelMaxPower = 1.0;
