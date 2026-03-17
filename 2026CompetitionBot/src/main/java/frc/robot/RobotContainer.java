@@ -89,10 +89,6 @@ public class RobotContainer {
     //         m_operatorController.getLeftX() * 0.25),
     //     m_shooterSub));
 
-    // m_shooterSub.setDefaultCommand(new RunCommand(
-    //     () -> m_shooterSub.setPitchYawFlywheelPower(m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(),
-    //         m_drivetrainSub.getRobotRelativeSpeeds())),
-    //     m_shooterSub));
   }
 
 
@@ -109,17 +105,9 @@ public class RobotContainer {
    * Use this method to define your trigger->command mappings.
    */
   private void configureBindings() {
-    // m_driverController.a().whileTrue(m_shooterSub.pitchSysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    // m_driverController.b().whileTrue(m_shooterSub.pitchSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    // m_driverController.x().whileTrue(m_shooterSub.pitchSysIdDynamic(SysIdRoutine.Direction.kForward));
-    // m_driverController.y().whileTrue(m_shooterSub.pitchSysIdDynamic(SysIdRoutine.Direction.kReverse));
+
 
     // Driver A
-    // m_driverController.a().whileTrue(
-    //     new StartEndCommand(() -> m_intakeSub.setDeployPower(0.1), () -> {
-    //       m_intakeSub.setDeployPower(0.0);
-    //       m_intakeSub.disableDeployAutomation();
-    //     }, m_intakeSub));
     m_driverController.a()
         .whileTrue(
             new StartEndCommand(() -> m_shooterSub.setPitchYawFlywheelTarget(m_shooterAimingCalcs
@@ -134,10 +122,7 @@ public class RobotContainer {
     //     }, m_intakeSub));
 
     // // Driver X
-    // m_driverController.x()
-    //     .whileTrue(
-    //         new DriveToPoseCmd(new Pose2d(new Translation2d(15.23, 5.26), new Rotation2d(Math.toRadians(-90.0))),
-    //             m_drivetrainSub));
+
     m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));
 
     // // Driver Y
@@ -195,48 +180,24 @@ public class RobotContainer {
     m_operatorController.a().whileTrue(
         new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(50.0),
             () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
-    // m_operatorController.a().whileTrue(new InstantCommand(() -> m_intakeSub.disableDeployAutomation())
-    //     .andThen(new StartEndCommand(() -> m_intakeSub.setDeployPower(0.1), () -> {
-    //       m_intakeSub.setDeployPower(0.0);
-    //       m_intakeSub.disableDeployAutomation();
-    //     }, m_intakeSub)));
+
 
     // Operator B
-    // m_operatorController.b().whileTrue(new StartEndCommand(() -> m_shooterSub.setTargetPitchAngle(25.0),
-    //     () -> m_shooterSub.setTargetPitchAngle(45.0), m_shooterSub));
     m_operatorController.b().whileTrue(
         new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(75.0),
             () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
-    // m_operatorController.b()
-    //     .whileTrue(new InstantCommand(() -> m_intakeSub.disableDeployAutomation())
-    //         .andThen(new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1),
-    //             () -> {
-    //               m_intakeSub.setDeployPower(0.0);
-    //               m_intakeSub.disableDeployAutomation();
-    //             }, m_intakeSub)));
+
 
     // Operator X
-    // m_operatorController.x().whileTrue(new StartEndCommand(() -> m_hopperSub.setEscalatorTargetVelocity(30.0),
-    //     () -> m_hopperSub.disableEscalatorAutomation(), m_hopperSub));
     m_operatorController.x().whileTrue(
         new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(25.0),
             () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
-    // m_operatorController.x()
-    //     .whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation())
-    //         .andThen(new StartEndCommand(() -> m_shooterSub.setPitchPower(0.12), () -> {
-    //           m_shooterSub.setPitchPower(0.0);
-    //         },
-    //             m_shooterSub)));
+
 
     // Operator Y
     m_operatorController.y().whileTrue(new StartEndCommand(() -> m_shooterSub.setTargetYawAngle(205.0),
         () -> m_shooterSub.setTargetYawAngle(25.0), m_shooterSub));
-    // m_operatorController.y()
-    //     .whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation())
-    //         .andThen(new StartEndCommand(() -> m_shooterSub.setPitchPower(-0.12), () -> {
-    //           m_shooterSub.setPitchPower(0.0);
-    //         },
-    //             m_shooterSub)));
+
 
 
     // Operator Left Bumper
@@ -260,9 +221,7 @@ public class RobotContainer {
     // Operator Start
 
     // Operator POV Up
-    // TODO: Tune intake
-    // m_operatorController.povUp()
-    //     .onTrue(new InstantCommand(() -> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployInAngleDeg)));
+
 
     // Operator POV Right
     m_operatorController.povRight().whileTrue(
@@ -270,11 +229,6 @@ public class RobotContainer {
             m_shooterSub));
 
     // Operator POV Down
-    // m_operatorController.povDown()
-    //     .whileTrue(new RunCommand(
-    //         () -> m_shooterSub.setTargetYawAngle(m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(),
-    //             m_drivetrainSub.getRobotRelativeSpeeds())[1]),
-    //         m_shooterSub));
     // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_intakeSub.setDeployTuningConstants( //this is just for tuning, delete for competitions
     //     SmartDashboard.getNumber("kS", 0.0),
     //     SmartDashboard.getNumber("kG", 0.0),
@@ -324,7 +278,6 @@ public class RobotContainer {
   public void vibrateFeedback(Integer seconds) {
     m_stopVibratingTime = Instant.now().plus(seconds, ChronoUnit.SECONDS);
     enableVibration();
-    //Rumble requires the Driver Station, it does not work in the simulator
   }
 
   public void enableVibration() {
