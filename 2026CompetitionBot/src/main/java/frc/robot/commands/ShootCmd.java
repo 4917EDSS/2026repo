@@ -4,11 +4,9 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.HopperSub;
-import frc.robot.subsystems.ShooterSub;
 
 /*
  * You should consider using the more terse Command factories API instead
