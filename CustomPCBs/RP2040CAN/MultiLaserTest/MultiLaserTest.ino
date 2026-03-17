@@ -69,7 +69,6 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   } 
   */
   
-  /*
   // Initialize each of the sensors individually, ONLY IF WE HAVE THEM ISNTALLED!! (Otherwise we initialize sensors that don't exist)
   if (sensor0) {
     // Call the initialization function
@@ -88,8 +87,8 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   if (sensor3) {
     stat3 = initializeRangeSensor(range_sensor3, 0x34, xshut3);
   }
-  */
-
+  
+/*
   int xshutDelay = 300;
   int sensorBootAllocation = 400;
 
@@ -112,7 +111,7 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   } 
 
   range_sensor0.setAddress(0x31);
-
+*/
 
   /*
   digitalWrite(xshut0, LOW);
@@ -159,7 +158,7 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
 
 
 
-bool initializeRangeSensor(Adafruit_VL53L0X sensor, uint8_t address, int xshut) {
+bool initializeRangeSensor(Adafruit_VL53L0X &sensor, uint8_t address, int xshut) {
   int xshutDelay = 300;
   int sensorBootAllocation = 400;
 
@@ -241,7 +240,7 @@ void setup() {
 
 void loop() {
   char buffer[100];
-  static uint16_t distances[4];  // saved distance for each sensor
+  static uint16_t distances[4];  // array of saved distances for each sensor
   int angle;
   bool updateDisplay = false;
 
