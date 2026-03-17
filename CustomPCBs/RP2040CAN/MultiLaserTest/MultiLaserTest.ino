@@ -47,27 +47,10 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   bool stat2 = true;
   bool stat3 = true;
   
-  /*
-  if (sensor0) {
-    digitalWrite(xshut0, LOW);
-    digitalWrite(xshut1, LOW);
-    digitalWrite(xshut2, LOW);
-    digitalWrite(xshut3, LOW);
-    delay(xshutDelay);
-    digitalWrite(xshut0, HIGH);
-
-    // Allow some time for the sensor to start up
-    delay(sensorBootAllocation);
-    // Initialize range sensor driver
-    if (!range_sensor0.begin()) {
-      Serial.print("Failed to boot VL53L0X. SENSOR 0!! Stopping.\n");
-      stat0 = false;
-    }
-
-    // Set the adress of each sensor so they can be accessed later
-    range_sensor0.setAddress(0x31);
-  } 
-  */
+  digitalWrite(xshut0, LOW);
+  digitalWrite(xshut1, LOW);
+  digitalWrite(xshut2, LOW);
+  digitalWrite(xshut3, LOW);
   
   // Initialize each of the sensors individually, ONLY IF WE HAVE THEM ISNTALLED!! (Otherwise we initialize sensors that don't exist)
   if (sensor0) {
@@ -75,7 +58,6 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
     stat0 = initializeRangeSensor(range_sensor0, 0x31, xshut0);
   }
 
-  
   if (sensor1) {
     stat1 = initializeRangeSensor(range_sensor1, 0x32, xshut1);
   }
@@ -87,57 +69,6 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   if (sensor3) {
     stat3 = initializeRangeSensor(range_sensor3, 0x34, xshut3);
   }
-  
-/*
-  int xshutDelay = 300;
-  int sensorBootAllocation = 400;
-
-  digitalWrite(xshut0, LOW);
-  digitalWrite(xshut1, LOW);
-  digitalWrite(xshut2, LOW);
-  digitalWrite(xshut3, LOW);
-  delay(xshutDelay);
-  digitalWrite(xshut0, HIGH);
-
-  // Allow some time for the sensor to start up
-  delay(sensorBootAllocation);
-
-  // Initialize range sensor driver
-  if (!range_sensor0.begin()) {
-    Serial.print("Failed to boot VL53L0X. Stopping.\n");
-    // Bad, sensor failed
-    //return false;
-    stat0 = false;
-  } 
-
-  range_sensor0.setAddress(0x31);
-*/
-
-  /*
-  digitalWrite(xshut0, LOW);
-  digitalWrite(xshut1, LOW);
-  digitalWrite(xshut2, LOW);
-  digitalWrite(xshut3, LOW);
-  delay(xshutDelay);
-  digitalWrite(xshut1, HIGH);
-
-  // Allow some time for the sensor to start up
-  delay(sensorBootAllocation);
-
-  // Initialize range sensor driver
-  if (!range_sensor1.begin()) {
-    Serial.print("Failed to boot VL53L0X. Stopping.\n");
-    // Bad, sensor failed
-    //return false;
-    stat1 = false;
-  }
-
-  range_sensor1.setAddress(0x32);
-  */
-  
-  
-
-
 
   // One of the sensors is clapped, stop the initialization process
   if (!(stat0 && stat1 && stat2 && stat3)) {
@@ -153,20 +84,20 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
     while(1);
   }
 
+  if (sensor0) {
+    range_sensor0.startRangeContinuous();
+  }
+  
+  if (sensor1) {
+    range_sensor1.startRangeContinuous();
+  }
 }
-
-
 
 
 bool initializeRangeSensor(Adafruit_VL53L0X &sensor, uint8_t address, int xshut) {
   int xshutDelay = 300;
   int sensorBootAllocation = 400;
 
-
-  digitalWrite(xshut0, LOW);
-  digitalWrite(xshut1, LOW);
-  digitalWrite(xshut2, LOW);
-  digitalWrite(xshut3, LOW);
   delay(xshutDelay);
   digitalWrite(xshut, HIGH);
 
@@ -185,11 +116,6 @@ bool initializeRangeSensor(Adafruit_VL53L0X &sensor, uint8_t address, int xshut)
   // success! 
   return true;
 }
-
-
-
-
-
 
 
 void setup() {
@@ -217,7 +143,7 @@ void setup() {
   digitalWrite(xshut0, HIGH);
   */
 
-  sensorInit(true, false, false, false);
+  sensorInit(true, true, false, false);
 
   // start serial moniter for debugging
   Serial.begin(115200);
@@ -226,8 +152,6 @@ void setup() {
   }
 
   Serial.print("VL53L0X driver loaded.\n");
-  range_sensor0.startRangeContinuous(); 
-  
 
   // Show initial display buffer contents on the screen --
   // the library initializes this with an Adafruit splash screen.
@@ -255,20 +179,17 @@ void loop() {
     //sprintf (buffer, "Distance 1: %u", distance0);
   }
 
-  /*
   // Check if the range sensor has compleated a range mesurement
   if (range_sensor1.isRangeComplete()){
     // Get the intager range value in mm
-    distance1 = range_sensor1.readRange();
-
-    //sprintf (buffer, "Distance 1: %dmm\nDistance 2: ",distance0);
-    //sprintf (buffer, "Distance 1: %u", distance0);
+    distances[1] = range_sensor1.readRange();
+    updateDisplay = true;
   }
-  */
+
   
   if (updateDisplay)
   {
-    sprintf(buffer, "Distance 1 mm: %u\nDistance 2 mm:", distances[0]);
+    sprintf(buffer, "Distance 1 mm: %u\nDistance 2 mm: %u", distances[0], distances[1]);
 
     // Display shenanigans 
     display.clearDisplay();
