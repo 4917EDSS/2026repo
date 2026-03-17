@@ -1,0 +1,50 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Beginning of sweep"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Sweep 1"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Sweep 2"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Sweep 2 to Bump"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimCmd"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
