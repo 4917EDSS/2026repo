@@ -241,15 +241,16 @@ void setup() {
 
 void loop() {
   char buffer[100];
-  uint16_t distance0;
-  uint16_t distance1;
+  static uint16_t distances[4];  // saved distance for each sensor
   int angle;
+  bool updateDisplay = false;
 
   
   // Check if the range sensor has compleated a range mesurement
   if (range_sensor0.isRangeComplete()){
     // Get the intager range value in mm
-    distance0 = range_sensor0.readRange();
+    distances[0] = range_sensor0.readRange();
+    updateDisplay = true;
 
     //sprintf (buffer, "Distance 1: %dmm\nDistance 2: ",distance0);
     //sprintf (buffer, "Distance 1: %u", distance0);
@@ -266,20 +267,22 @@ void loop() {
   }
   */
   
-  
-  sprintf(buffer, "Distance 1 mm: %u\nDistance 2 mm:", distance0);
+  if (updateDisplay)
+  {
+    sprintf(buffer, "Distance 1 mm: %u\nDistance 2 mm:", distances[0]);
 
-  // Display shenanigans 
-  display.clearDisplay();
+    // Display shenanigans 
+    display.clearDisplay();
 
-  display.setTextSize(1);      // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE); // Draw white text
-  display.setCursor(0, 0);     // Start at top-left corner
-  display.cp437(true);         // Use full 256 char 'Code Page 437' font
+    display.setTextSize(1);      // Normal 1:1 pixel scale
+    display.setTextColor(SSD1306_WHITE); // Draw white text
+    display.setCursor(0, 0);     // Start at top-left corner
+    display.cp437(true);         // Use full 256 char 'Code Page 437' font
 
-  //sprintf (buffer, "Yo mama was a \nsnowblower");
+    //sprintf (buffer, "Yo mama was a \nsnowblower");
 
-  display.write(buffer);
+    display.write(buffer);
 
-  display.display();
+    display.display();
+  }
 }
