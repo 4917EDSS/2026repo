@@ -17,13 +17,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
@@ -376,7 +373,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setTargetYawAngle(double angleDeg) {
-    System.out.println(angleDeg);
+    //System.out.println(angleDeg);
     angleDeg %= 360;
     if(angleDeg > Constants.Shooter.kYawMaxAngleDeg) {
       angleDeg = 155.0;
