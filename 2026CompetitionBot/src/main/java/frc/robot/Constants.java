@@ -118,18 +118,17 @@ public final class Constants {
   public static class Intake {
     // TODO:  Set all the values correctly
     public static final double kDeployEncoderToDegConversionFactor = 2.72244; // Gearing is 0.014368 (approx 1:69.5)
-    public static final double kDeployInAngleDeg = 10.0;
-    public static final double kDeployOutAngleDeg = 100.0;
+    public static final double kDeployInAngleDeg = -45.0;
+    public static final double kDeployOutAngleDeg = 8.8;
     public static final double kDeployMaxGravityDeg = 115.0;
     public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxCurrent = 120.0;
-    public static final double kDeployMaxPower = 1.0;
+    public static final double kDeployMaxPower = 0.5;
     public static final double kDeployMaxVelocityDegPerSec = 350.0;
     public static final double kDeployMaxAccelerationDegPerSec = 1.0;
-    public static final double kDeployKS = 0.2;
-    public static final double kDeployKG = -0.2;
-    public static final double kDeployKV = 0.01;
-    public static final double kDeployKP = 0.0;
+    public static final double kDeployKS = 0.4;
+    public static final double kDeployKG = 0.0;
+    public static final double kDeployKP = 0.014;
     public static final double kDeployKI = 0.0;
     public static final double kDeployKD = 0.0;
 

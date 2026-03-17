@@ -172,6 +172,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putBoolean("Sht Yaw Enc Set", m_yawHasBeenReset);
     SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
     SmartDashboard.putNumber("Sht Yaw Power", m_yawMotor.get());
+    SmartDashboard.putNumber("Sht Yaw Amps", m_yawMotor.getOutputCurrent());
     // Yaw power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Ptc Auto", m_pitchAutomationEnabled);
@@ -376,7 +377,6 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setTargetYawAngle(double angleDeg) {
-    System.out.println(angleDeg);
     angleDeg %= 360;
     if(angleDeg > Constants.Shooter.kYawMaxAngleDeg) {
       angleDeg = 155.0;

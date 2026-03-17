@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -20,9 +19,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -37,23 +34,19 @@ import frc.robot.Constants;
 public class IntakeSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
 
+
   private final SparkFlex m_beltMotor = new SparkFlex(Constants.CanIds.kIntakeBeltMotor, MotorType.kBrushless);
   private final TalonFX m_deployMotor = new TalonFX(Constants.CanIds.kIntakeDeployMotor);
   private final DutyCycleEncoder m_encoder =
-      new DutyCycleEncoder(new DigitalInput(Constants.DioIds.kIntakeEncoder), 360, 210);
+      new DutyCycleEncoder(new DigitalInput(Constants.DioIds.kIntakeEncoder), 360, 338.0);
 
-
-  private final ArmFeedforward m_deployFeedforward =
-      new ArmFeedforward(Constants.Intake.kDeployKS, Constants.Intake.kDeployKG, Constants.Intake.kDeployKV);
-  private final TrapezoidProfile.Constraints m_deployProfileConstraints = new TrapezoidProfile.Constraints(
-      Constants.Intake.kDeployMaxVelocityDegPerSec, Constants.Intake.kDeployMaxAccelerationDegPerSec);
-  private final ProfiledPIDController m_deployPidController =
-      new ProfiledPIDController(Constants.Intake.kDeployKP, Constants.Intake.kDeployKI, Constants.Intake.kDeployKD,
-          m_deployProfileConstraints);
+  private final PIDController m_deployPidController =
+      new PIDController(Constants.Intake.kDeployKP, Constants.Intake.kDeployKI, Constants.Intake.kDeployKD);
 
   private boolean m_deployAutomationEnabled = false;
   private double m_targetDeployAngleDeg = 0.0;
-
+  private double m_deployKS;
+  private double m_deployKG;
 
   /** Creates a new IntakeSub. */
   public IntakeSub() { // Motor Configs need to be tested
@@ -136,8 +129,8 @@ public class IntakeSub extends SubsystemBase {
 
   public double getDeployAngleDeg() {
     double encoderValue = m_encoder.get();
-    if(encoderValue > 350) {
-      encoderValue = 0;
+    if(encoderValue > 180) {
+      encoderValue = (360 - encoderValue) * -1;
     }
     return encoderValue;
   }
@@ -163,43 +156,39 @@ public class IntakeSub extends SubsystemBase {
 
   public void setTargetDeployAngle(double angleDeg) {
     m_targetDeployAngleDeg = angleDeg;
-    m_deployPidController.reset(getDeployAngleDeg());
-    m_deployPidController.setGoal(angleDeg);
+    m_deployPidController.setSetpoint(angleDeg);
     runDeployAngleControl(true);
     enableDeployAutomation();
   }
 
   public boolean isAtTargetDeployAngle() {
     // If the yaw encoder isn't reset, then we can never be at our goal since we don't know where we are
-    return m_deployPidController.atGoal();
+    return m_deployPidController.atSetpoint();
   }
 
-  // Set power based on difference between target and current yaw
+  // Set power based on difference between target and current angle
   private void runDeployAngleControl(boolean setPower) {
-    // Can't run automated control if encoder position is unknown
-
-
     double currentAngle = getDeployAngleDeg();
     double pidVolts = m_deployPidController.calculate(currentAngle);
-    TrapezoidProfile.State setPoint = m_deployPidController.getSetpoint();
-    double ffVolts =
-        m_deployFeedforward.calculate((Constants.Intake.kDeployMaxGravityDeg - currentAngle) / 360 * 2 * Math.PI,
-            setPoint.velocity);
+    double ffVolts = m_deployKS + m_deployKG * Math.cos(-currentAngle / 180 * Math.PI);
+    if(currentAngle - m_targetDeployAngleDeg > 0) {
+      ffVolts *= -1;
+    }
     double totalVolts = pidVolts + ffVolts;
+    SmartDashboard.putNumber("ffVolts", ffVolts);
     SmartDashboard.putNumber("totalVolts", totalVolts);
-    SmartDashboard.putNumber("SETPOINT VELO", setPoint.velocity);
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
     MathUtil.clamp(totalVolts, -Constants.Intake.kDeployMaxPower * 12, Constants.Intake.kDeployMaxPower * 12);
 
     // Sets 'safety zones' so that we don't bash into our limits
-    if(currentAngle <= Constants.Intake.kDeployInAngleDeg + Constants.Intake.kDeploySafetyZoneSize
-        && totalVolts < -Constants.Intake.kDeploySafetyPower) {
-      totalVolts = -Constants.Intake.kDeploySafetyPower * 12;
-    } else if(currentAngle >= Constants.Intake.kDeployOutAngleDeg - Constants.Intake.kDeploySafetyZoneSize
-        && totalVolts > Constants.Intake.kDeploySafetyPower) {
-      totalVolts = Constants.Intake.kDeploySafetyPower * 12;
-    }
+    // if(currentAngle <= Constants.Intake.kDeployInAngleDeg + Constants.Intake.kDeploySafetyZoneSize
+    //     && totalVolts < -Constants.Intake.kDeploySafetyPower) {
+    //   totalVolts = -Constants.Intake.kDeploySafetyPower * 12;
+    // } else if(currentAngle >= Constants.Intake.kDeployOutAngleDeg - Constants.Intake.kDeploySafetyZoneSize
+    //     && totalVolts > Constants.Intake.kDeploySafetyPower) {
+    //   totalVolts = Constants.Intake.kDeploySafetyPower * 12;
+    // }
 
     // If our power is negative and we are at the in limit, set the voltage to 0
     // if(isAtInLimit() && totalVolts < 0.0) {
@@ -245,16 +234,12 @@ public class IntakeSub extends SubsystemBase {
   }
 
   // Tuning
-  public void setDeployTuningConstants(double kS, double kG, double kV, double kP, double kI, double kD) {
-    TalonFXConfigurator talonFXConfigurator1 = m_deployMotor.getConfigurator();
-    Slot0Configs slot0DeployConfigs = new Slot0Configs();
-    slot0DeployConfigs.kS = kS;
-    slot0DeployConfigs.kG = kG;
-    slot0DeployConfigs.kV = kV;
-    slot0DeployConfigs.kP = kP;
-    slot0DeployConfigs.kI = kI;
-    slot0DeployConfigs.kD = kD;
-    talonFXConfigurator1.apply(slot0DeployConfigs);
-    System.out.println("Intake" + kS + "," + kG + "," + kV + "," + kP + "," + kI + "," + kD + ",");
+  public void setDeployTuningConstants(double kS, double kG, double kP, double kI, double kD) {
+    m_deployKS = kS;
+    m_deployKG = kG;
+    m_deployPidController.setP(kP);
+    m_deployPidController.setI(kI);
+    m_deployPidController.setD(kD);
+    System.out.println("Intake" + kS + "," + kG + "," + kP + "," + kI + "," + kD + ",");
   }
 }

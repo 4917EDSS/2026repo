@@ -122,11 +122,11 @@ public class RobotContainer {
                 () -> m_shooterSub.endPitchYawFlywheel(), m_shooterSub));
 
     // // Driver B
-    // m_driverController.b().whileTrue(
-    //     new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1), () -> {
-    //       m_intakeSub.setDeployPower(0.0);
-    //       m_intakeSub.disableDeployAutomation();
-    //     }, m_intakeSub));
+    m_driverController.b().whileTrue(
+        new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1), () -> {
+          m_intakeSub.setDeployPower(0.0);
+          m_intakeSub.disableDeployAutomation();
+        }, m_intakeSub));
 
     // // Driver X
 
@@ -223,11 +223,16 @@ public class RobotContainer {
                 () -> m_shooterSub.setTargetFlywheelVelocity(0.0), m_shooterSub)));
 
     // Operator Back
+    m_operatorController.back().whileTrue(new StartEndCommand(() -> m_intakeSub.setDeployVoltage(2.0),
+        () -> m_intakeSub.setDeployVoltage(0.0), m_intakeSub));
 
     // Operator Start
+    m_operatorController.start().whileTrue(new StartEndCommand(() -> m_intakeSub.setDeployVoltage(-2.0),
+        () -> m_intakeSub.setDeployVoltage(0.0), m_intakeSub));
 
     // Operator POV Up
-
+    m_operatorController.povUp().onTrue(
+        new InstantCommand(() -> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployInAngleDeg), m_intakeSub));
 
     // Operator POV Right
     m_operatorController.povRight().whileTrue(
@@ -235,13 +240,12 @@ public class RobotContainer {
             m_shooterSub));
 
     // Operator POV Down
-    // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_intakeSub.setDeployTuningConstants( //this is just for tuning, delete for competitions
-    //     SmartDashboard.getNumber("kS", 0.0),
-    //     SmartDashboard.getNumber("kG", 0.0),
-    //     SmartDashboard.getNumber("kV", 0.0),
-    //     SmartDashboard.getNumber("kP", 0.0),
-    //     SmartDashboard.getNumber("kI", 0.0),
-    //     SmartDashboard.getNumber("kD", 0.0)), m_hopperSub));
+    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_intakeSub.setDeployTuningConstants( //this is just for tuning, delete for competitions
+        SmartDashboard.getNumber("kS", 0.0),
+        SmartDashboard.getNumber("kG", 0.0),
+        SmartDashboard.getNumber("kP", 0.0),
+        SmartDashboard.getNumber("kI", 0.0),
+        SmartDashboard.getNumber("kD", 0.0)), m_hopperSub));
 
     // Operator POV Left
     m_operatorController.povLeft().whileTrue(
