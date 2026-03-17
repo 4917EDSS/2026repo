@@ -1,7 +1,7 @@
 /*
 TEAM 4917 SIR LANCERBOT 2026
 
-- Add addition board manager URL (Preferences): https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+- Add additional board manager URL (Preferences): https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
 - Download the Earle F Philihower Raspberry Pi Pico/RP2040/RP2350 board manager version 5.5.1.
 - Set board to Arduino Nano RP2040 Connect
 
