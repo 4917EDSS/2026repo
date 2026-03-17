@@ -1,8 +1,10 @@
 /*
 TEAM 4917 SIR LANCERBOT 2026
 
-Download the Adafruit board package for running the RP2040 - it allows us to 
-command the GPIO of the RP2040 directly while it thinks that it is an 
+Add addition board manager URL (Preferences): https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+
+Download the Earle F Philihower Raspberry Pi Pico/RP2040/RP2350 board manager.
+It allows us to command the GPIO of the RP2040 directly while it thinks that it is an 
 Arduin Nano RP2040 connect. (If it can dream it, it can be it)
 */
 
