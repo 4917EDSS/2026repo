@@ -125,10 +125,11 @@ public class RobotContainer {
         }, m_intakeSub));
 
     // // Driver X
-
     m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));
 
     // // Driver Y
+    m_driverController.y()
+        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltPower(Constants.Intake.kBeltPower), m_intakeSub));
 
     // Driver Left Bumper
     m_driverController.leftBumper().whileTrue(new StartEndCommand(() -> {

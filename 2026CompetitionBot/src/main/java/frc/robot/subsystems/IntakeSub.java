@@ -117,6 +117,10 @@ public class IntakeSub extends SubsystemBase {
     m_beltMotor.set(power);
   }
 
+  public void setBeltVoltage(double volts) {
+    m_beltMotor.setVoltage(volts);
+  }
+
   public void setDeployPower(double power) {
     SmartDashboard.putNumber("Intake Deploy Power", m_deployMotor.get());
     m_deployMotor.set(power);
