@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.713909090909091,
+        "x": 5.755062611806798,
         "y": 5.756238636362649
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.092820479313815,
+        "x": 6.133974000211522,
         "y": 5.7219537285614495
       },
       "isLocked": false,
@@ -28,7 +28,16 @@
       "linkedName": "Bump to Depot End"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0.7389937106918268,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -48,7 +57,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 3.0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

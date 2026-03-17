@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.AimCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
 import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
@@ -99,6 +100,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("IntakeRetractCmd", new IntakeToggleCmd(m_hopperSub, m_intakeSub, false));
 
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub));
+
+    NamedCommands.registerCommand("AimCmd", new AimCmd(m_drivetrainSub, m_shooterSub, m_shooterAimingCalcs));
+
+    NamedCommands.registerCommand("StopShooting", new InstantCommand(() -> m_hopperSub.disableShooting(), m_hopperSub));
+
+    NamedCommands.registerCommand("HitLimitSwitchesCmd", new HitLimitSwitchesCmd(m_shooterSub));
   }
 
   /*
@@ -199,7 +206,6 @@ public class RobotContainer {
         () -> m_shooterSub.setTargetYawAngle(25.0), m_shooterSub));
 
 
-
     // Operator Left Bumper
 
     // Operator Right Bumper
@@ -263,6 +269,8 @@ public class RobotContainer {
   void autoChooserSetup() {
     m_Chooser.addOption("Straight 3m", new PathPlannerAuto("Go Straight"));
     m_Chooser.addOption("Test Auto", new PathPlannerAuto("Test Auto"));
+    m_Chooser.addOption("Right Middle Climb", new PathPlannerAuto("Right Middle Climb"));
+    m_Chooser.addOption("with commands Right Middle Climb", new PathPlannerAuto("with commands Right Middle Climb"));
     SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 
