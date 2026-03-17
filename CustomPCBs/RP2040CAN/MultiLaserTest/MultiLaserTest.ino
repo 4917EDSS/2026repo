@@ -267,7 +267,7 @@ void loop() {
   */
   
   
-  sprintf(buffer, "Distance 1: %u mm\nDistance 2: mm", distance0);
+  sprintf(buffer, "Distance 1 mm: %u\nDistance 2 mm:", distance0);
 
   // Display shenanigans 
   display.clearDisplay();
