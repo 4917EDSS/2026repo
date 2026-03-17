@@ -10,8 +10,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -30,6 +30,7 @@ public class VisionSub extends SubsystemBase {
   private static String LEFT = "limelight-left";
   private static String MIDDLE = "limelight-middle";
   private static String RIGHT = "limelight-right";
+  private static String currentLimelight;
   private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
 
   // Variables to track field posistion
@@ -55,6 +56,7 @@ public class VisionSub extends SubsystemBase {
   NetworkTableEntry m_pipetypeL;
   NetworkTableEntry m_botposeTargetL;
   NetworkTableEntry m_botposeL;
+  NetworkTableEntry m_botposeblueL;
 
   NetworkTableEntry m_tidR;
   NetworkTableEntry m_t2dR;
@@ -66,6 +68,7 @@ public class VisionSub extends SubsystemBase {
   NetworkTableEntry m_pipetypeR;
   NetworkTableEntry m_botposeTargetR;
   NetworkTableEntry m_botposeR;
+  NetworkTableEntry m_botposeblueR;
 
   long id;
   double[] t2d;
@@ -77,8 +80,11 @@ public class VisionSub extends SubsystemBase {
   String pipetype;
   double[] botposeTarget;
   double[] botpose;
+  double[] botposeblue;
 
   int m_printPosCounter = 0;
+  int ticksSincePoseUpdate = 0;
+  ChassisSpeeds chassisSpeeds;
 
   /** Creates a new VisionSub. */
   public VisionSub(DrivetrainSub drivetrainSub) {
@@ -92,6 +98,7 @@ public class VisionSub extends SubsystemBase {
     m_pipetypeL = m_networkTableL.getEntry("getpipetype");
     m_botposeTargetL = m_networkTableL.getEntry("botpose_targetspace");
     m_botposeL = m_networkTableL.getEntry("botpose");
+    m_botposeblueL = m_networkTableL.getEntry("botpose_wpiblue");
 
     m_t2dR = m_networkTableR.getEntry("t2d");
     m_tidR = m_networkTableR.getEntry("tid");
@@ -103,6 +110,7 @@ public class VisionSub extends SubsystemBase {
     m_pipetypeR = m_networkTableR.getEntry("getpipetype");
     m_botposeTargetR = m_networkTableR.getEntry("botpose_targetspace");
     m_botposeR = m_networkTableR.getEntry("botpose");
+    m_botposeblueR = m_networkTableR.getEntry("botpose_wpiblue");
 
     m_drivetrainSub = drivetrainSub;
     init();
@@ -129,8 +137,10 @@ public class VisionSub extends SubsystemBase {
       pipetype = m_pipetypeL.getString("");
       botposeTarget = m_botposeTargetL.getDoubleArray(new double[8]);
       botpose = m_botposeL.getDoubleArray(new double[8]);
+      botposeblue = m_botposeblueL.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", true);
       updateOdometryLeft(m_drivetrainSub.getState());
+      currentLimelight = LEFT;
 
     } else {
       id = m_tidR.getInteger(0);
@@ -143,10 +153,12 @@ public class VisionSub extends SubsystemBase {
       pipetype = m_pipetypeR.getString("");
       botposeTarget = m_botposeTargetR.getDoubleArray(new double[8]);
       botpose = m_botposeR.getDoubleArray(new double[8]);
+      botposeblue = m_botposeblueR.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", false);
       updateOdometryRight(m_drivetrainSub.getState());
-
+      currentLimelight = RIGHT;
     }
+
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Vi Primary ID", id);
     SmartDashboard.putNumber("Vi Sees Tag", t2d[1]);
@@ -161,6 +173,24 @@ public class VisionSub extends SubsystemBase {
     //SmartDashboard.putNumber("y estimate", getEstimatedPose().getY());
     //SmartDashboard.putNumber("rot estimate", getEstimatedPose().getRotation().getDegrees());
     // SmartDashboard.putString("Main Limelight:", "none");
+
+    chassisSpeeds = m_drivetrainSub.getRobotRelativeSpeeds();
+
+    if(Math
+        .sqrt(Math.pow(chassisSpeeds.vxMetersPerSecond, 2)
+            + Math.pow(chassisSpeeds.vxMetersPerSecond, 2)) < 2.0
+        && Math.abs(chassisSpeeds.omegaRadiansPerSecond) < Math.PI
+        && a >= 0.3
+        && ticksSincePoseUpdate >= 300) {
+      m_drivetrainSub.resetPose(getEstimatedPose());
+      ticksSincePoseUpdate = 0;
+      System.out.println("Robot Pose Updated!");
+    } else {
+      ticksSincePoseUpdate++;
+    }
+
+    System.out.println(a + ", " + ticksSincePoseUpdate);
+
   }
 
   public Pose2d getTagPose2d() {
@@ -195,7 +225,8 @@ public class VisionSub extends SubsystemBase {
   }
 
   public Pose2d getEstimatedPose() {
-    return mt2.pose;
+    System.out.println(botposeblue[0] + ", " + botposeblue[1]);
+    return new Pose2d(botposeblue[0], botposeblue[1], m_drivetrainSub.getPose().getRotation());
   }
 
   public double calculateStandardDeviation() {
@@ -205,7 +236,7 @@ public class VisionSub extends SubsystemBase {
         + (distFromTag - Constants.Vision.kDistanceTrustThreshold) * Constants.Vision.kDistanceWeight
         - (areaOfTag - Constants.Vision.kAreaTrustThreshold) * Constants.Vision.kAreaWeight;
     SmartDashboard.putNumber("std", calculatedSTD);
-    return MathUtil.clamp(calculatedSTD, 0.2, 5);
+    return MathUtil.clamp(calculatedSTD, 0.2, 1.0);
   }
 
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
