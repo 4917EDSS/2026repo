@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.ShooterSub;
@@ -14,12 +16,12 @@ import frc.robot.utils.ShooterAimingCalcs;
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
  */
 public class AimCmd extends Command {
-  private final DrivetrainSub m_drivetrainSub;
-  private final ShooterSub m_shooterSub;
+  private DrivetrainSub m_drivetrainSub;
+  private ShooterSub m_shooterSub;
   private final ShooterAimingCalcs m_shooterAimingCalcs;
 
   /** Creates a new AimCmd. */
-  public AimCmd(DrivetrainSub drivetrainSub, ShooterSub shooterSub, ShooterAimingCalcs shooterAimingCalcs) {
+  public AimCmd(ShooterSub shooterSub, ShooterAimingCalcs shooterAimingCalcs, DrivetrainSub drivetrainSub) {
     m_drivetrainSub = drivetrainSub;
     m_shooterSub = shooterSub;
     m_shooterAimingCalcs = shooterAimingCalcs;
@@ -29,7 +31,9 @@ public class AimCmd extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

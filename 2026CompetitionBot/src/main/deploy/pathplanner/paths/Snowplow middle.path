@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.788236978064155,
-        "y": 2.580205071058817
+        "x": 3.8097840909090905,
+        "y": 2.478670454545455
       },
       "isLocked": false,
       "linkedName": "start of good auto"
@@ -78,14 +78,6 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5408805031446541,
-      "rotationDegrees": 145.0
-    },
-    {
-      "waypointRelativePos": 0.7484276729559748,
-      "rotationDegrees": 0.0
-    },
-    {
       "waypointRelativePos": 1.3522012578616354,
       "rotationDegrees": 90.0
     },
@@ -113,7 +105,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 135.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

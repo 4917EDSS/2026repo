@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
@@ -101,7 +100,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub));
 
-    NamedCommands.registerCommand("AimCmd", new AimCmd(m_drivetrainSub, m_shooterSub, m_shooterAimingCalcs));
+    NamedCommands.registerCommand("AimCmd", (new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub)));
 
     NamedCommands.registerCommand("StopShooting", new InstantCommand(() -> m_hopperSub.disableShooting(), m_hopperSub));
 
@@ -116,10 +115,7 @@ public class RobotContainer {
 
     // Driver A
     m_driverController.a()
-        .whileTrue(
-            new StartEndCommand(() -> m_shooterSub.setPitchYawFlywheelTarget(m_shooterAimingCalcs
-                .setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getRobotRelativeSpeeds())),
-                () -> m_shooterSub.endPitchYawFlywheel(), m_shooterSub));
+        .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub));
 
     // // Driver B
     // m_driverController.b().whileTrue(
