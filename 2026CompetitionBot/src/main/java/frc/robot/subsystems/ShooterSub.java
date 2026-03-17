@@ -543,14 +543,14 @@ public class ShooterSub extends SubsystemBase {
 
   //RUN ALL CONTROL ALGORTHMS
   public void setPitchYawFlywheelTarget(double[] trajectoriesArray) {
-    setTargetPitchAngle(90 - trajectoriesArray[0]);
+    //setTargetPitchAngle(90 - trajectoriesArray[0]);
     setTargetYawAngle(trajectoriesArray[1]);
-    setTargetFlywheelVelocity(trajectoriesArray[2]);
+    //setTargetFlywheelVelocity(trajectoriesArray[2]);
   }
 
   public void endPitchYawFlywheel() {
     setTargetPitchAngle(getPitchAngleDeg());
     setTargetYawAngle(getYawAngleDeg());
-    setTargetFlywheelVelocity(0.0);
+    disableFlywheelAutomation();
   }
 }
