@@ -92,9 +92,9 @@ public final class Constants {
     public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxCurrent = 120.0;
     public static final double kDeployMaxVoltage = 6.0;
-    public static final double kDeployKS = 0.4;
+    public static final double kDeployKS = 0.8;
     public static final double kDeployKG = 0.0;
-    public static final double kDeployKP = 0.014;
+    public static final double kDeployKP = 0.028;
     public static final double kDeployKI = 0.0;
     public static final double kDeployKD = 0.0;
 
