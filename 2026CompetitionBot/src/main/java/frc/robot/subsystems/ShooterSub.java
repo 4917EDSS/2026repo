@@ -408,14 +408,6 @@ public class ShooterSub extends SubsystemBase {
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
     totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower * 12, Constants.Shooter.kYawMaxPower * 12);
 
-    if(Constants.Shooter.kYawDeadzoneMax - currentAngle < 10.0 && totalVolts > 2.0) {
-      totalVolts = 2.0;
-    }
-
-    if(currentAngle - Constants.Shooter.kYawDeadzoneMin < 10.0 && totalVolts < (-2.0)) {
-      totalVolts = -2.0;
-    }
-
     if(setPower && !Double.isNaN(totalVolts)) {
       //setYawVoltage(totalVolts);
     }
