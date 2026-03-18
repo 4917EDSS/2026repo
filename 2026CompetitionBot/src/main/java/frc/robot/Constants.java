@@ -146,7 +146,8 @@ public final class Constants {
     public static final double kYawEncoderOffset = 0.0206;
     public static final double kYawMinAngleDeg = 0.0;
     public static final double kYawMaxAngleDeg = 360.0;
-    public static final double kYawMaxCurrent = 120.0;
+    public static final double kYawMaxAngleDeg = 310.0;
+    public static final double kYawMaxCurrent = 40.0;
     public static final double kYawMaxPower = 0.6;
     public static final double kYawTolerance = 5.0;
     public static final double kYawMaxVelocityDegPerSec = 30.0;

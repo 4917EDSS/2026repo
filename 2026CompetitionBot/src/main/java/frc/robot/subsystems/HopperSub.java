@@ -232,7 +232,7 @@ public class HopperSub extends SubsystemBase {
     enableEscalatorAutomation();
   }
 
-  private boolean isEscalatorAtTargetVelocity() {
+  public boolean isEscalatorAtTargetVelocity() {
     if(Math
         .abs(m_targetEscalatorVelocityRps
             - getEscalatorVelocityRotPerSec()) < Constants.Hopper.kEscalatorVelocityToleranceRotPerSec) {

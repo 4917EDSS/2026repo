@@ -112,8 +112,7 @@ public class RobotContainer {
    * Use this method to define your trigger->command mappings.
    */
   private void configureBindings() {
-
-
+    ////////////////////////////// Driver Buttons //////////////////////////////
     // Driver A
     m_driverController.a()
         .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub));
@@ -136,18 +135,27 @@ public class RobotContainer {
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0)));
 
     // Driver Right Bumper
-    m_driverController.rightBumper().whileTrue(new ShootCmd(m_hopperSub));
+    m_driverController.rightBumper().whileTrue(new InstantCommand(() -> {
+      m_hopperSub.disableEscalatorAutomation();
+      m_hopperSub.setSingulatorPower(0.0);
+      m_shooterSub.disableFlywheelAutomation();
+    }, m_shooterSub, m_hopperSub));
 
     // Driver Left Trigger
     m_driverController.leftTrigger()
-        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(2.0))
+        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(10.0))
             .andThen(new InstantCommand(() -> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployOutAngleDeg))
                 .andThen(new WaitUntilCommand(() -> m_intakeSub.isAtTargetDeployAngle()))
                 .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
 
     // Driver Right Trigger
-    m_driverController.rightTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setShooting(),
-        () -> m_hopperSub.disableShooting(), m_hopperSub));
+    m_driverController.rightTrigger().onTrue(new InstantCommand(() -> {
+      m_shooterSub.setTargetFlywheelVelocity(Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
+      new WaitUntilCommand(() -> m_shooterSub.isAtTargetFlywheelVelocity());
+      m_hopperSub.setEscalatorTargetVelocity(Constants.Hopper.kEscalatorFeedSpeed);
+      new WaitUntilCommand(() -> m_hopperSub.isEscalatorAtTargetVelocity());
+      m_hopperSub.setSingulatorPower(Constants.Hopper.kSingulatorMaxPower);
+    }, m_shooterSub, m_hopperSub));
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading 
@@ -182,7 +190,7 @@ public class RobotContainer {
         .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
 
 
-    ///////////////////////// Operator Buttons //////////////////////////////
+    ////////////////////////////// Operator Buttons //////////////////////////////
     // Operator A
     m_operatorController.a()
         .whileTrue(new InstantCommand(() -> m_intakeSub.disableDeployAutomation())
