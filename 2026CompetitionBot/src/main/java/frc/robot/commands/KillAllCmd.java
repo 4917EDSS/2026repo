@@ -43,8 +43,8 @@ public class KillAllCmd extends Command {
     m_shooterSub.disableYawAutomation();
     m_shooterSub.disableFlywheelAutomation();
     m_hopperSub.disableEscalatorAutomation();
-    m_hopperSub.setSingulatorPower(0.0);
-    m_intakeSub.setBeltPower(0.0);
+    m_hopperSub.setSingulatorVoltage(0.0);
+    m_intakeSub.setBeltVoltage(0.0);
 
 
   }
