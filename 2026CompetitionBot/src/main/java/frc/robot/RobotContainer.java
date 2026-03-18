@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
+import frc.robot.commands.IntakeSetPositionCmd;
 import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.ShootCmd;
@@ -118,11 +119,7 @@ public class RobotContainer {
         .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub));
 
     // Driver B
-    m_driverController.b().whileTrue(
-        new StartEndCommand(() -> m_intakeSub.setDeployVoltage(-1.5), () -> {
-          m_intakeSub.setDeployVoltage(0.0);
-          m_intakeSub.disableDeployAutomation();
-        }, m_intakeSub));
+    m_driverController.b().onTrue(new IntakeSetPositionCmd(-90.0, 2.0, m_intakeSub));
 
     // Driver X
     m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));
@@ -144,10 +141,9 @@ public class RobotContainer {
 
     // Driver Left Trigger
     m_driverController.leftTrigger()
-        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage))
-            .andThen(new InstantCommand(() -> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployOutAngleDeg))
-                .andThen(new WaitUntilCommand(() -> m_intakeSub.isAtTargetDeployAngle()))
-                .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
+        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage), m_intakeSub)
+            .andThen(new IntakeSetPositionCmd(-45.0, 2.0, m_intakeSub)));
+    //  .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
 
     // Driver Right Trigger
     m_driverController.rightTrigger().onTrue(
