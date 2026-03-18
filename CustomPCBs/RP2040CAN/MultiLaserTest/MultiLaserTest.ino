@@ -40,6 +40,43 @@ int xshut1 = 19;
 int xshut2 = 17;
 int xshut3 = 16;
 
+// Please don't touch this (Squint and you can see the logo)
+static const unsigned char PROGMEM lancerbot_logo_bmp[] = {
+0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00000000,0B00000001,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00000000,0B00010000,0B11000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00000000,0B00010111,0B00111100,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00000000,0B00001110,0B00000010,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00000000,0B00000111,0B01100010,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00000000,0B00000010,0B10010100,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00000000,0B00000011,0B00001000,0B00000000,0B00000000,0B00000000,0B00000000,0B00110001,0B11110000,0B11001111,0B11100000,
+0B00000000,0B00000011,0B10011000,0B00000000,0B00000000,0B00000000,0B00000000,0B01110011,0B11111001,0B11001111,0B11100000,
+0B00000000,0B00000110,0B11000100,0B00000000,0B00000000,0B00000000,0B00000000,0B11110011,0B10011111,0B11001111,0B11100000,
+0B00000000,0B01111010,0B10101000,0B00000000,0B00000000,0B00000000,0B00000001,0B11110010,0B00001111,0B11001100,0B11100000,
+0B00001111,0B11111110,0B01001000,0B00000000,0B00000000,0B00000000,0B00000011,0B10110011,0B00001100,0B11000000,0B11100000,
+0B00010000,0B00111111,0B11110000,0B00000000,0B00001011,0B00010000,0B00000011,0B00110011,0B10011100,0B11000000,0B11100000,
+0B00100100,0B00010111,0B01000000,0B00000110,0B00000011,0B00100110,0B00000011,0B11111001,0B11111100,0B11000001,0B11000000,
+0B00100110,0B00000111,0B11000000,0B00000011,0B00111101,0B11111001,0B00000011,0B11111000,0B00011100,0B11000001,0B11000000,
+0B00101110,0B01110001,0B11101000,0B01100001,0B11100111,0B11111000,0B01000011,0B11111011,0B10011100,0B11000001,0B11000000,
+0B00101101,0B01001001,0B11101101,0B10000111,0B00111111,0B11111111,0B10100000,0B00110011,0B10011100,0B11000011,0B10000000,
+0B01010111,0B10001001,0B11101100,0B00010001,0B11111111,0B10111111,0B10010000,0B01111011,0B11111111,0B11100011,0B10000000,
+0B01110010,0B01100111,0B11101110,0B01111001,0B11110111,0B00111111,0B11000000,0B01111001,0B11111011,0B11100011,0B10000000,
+0B01000000,0B11011001,0B11111111,0B10001111,0B11101111,0B11011111,0B10110000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B01000000,0B01100011,0B11110000,0B00000111,0B11011111,0B10110000,0B01111111,0B11111111,0B11111111,0B11111111,0B11000000,
+0B01011100,0B00000111,0B11111111,0B00111111,0B11011101,0B01000000,0B10111111,0B11110000,0B00000000,0B00000000,0B00000000,
+0B01101101,0B10001000,0B00000011,0B10000000,0B00000000,0B10000000,0B00110000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00100110,0B10101000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00100000,0B01010011,0B11000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00010000,0B00100100,0B00100000,0B00001000,0B00001000,0B10001001,0B11100111,0B11011110,0B01111000,0B11100111,0B11000000,
+0B00001000,0B11000011,0B00000000,0B00001000,0B00011100,0B11001010,0B00010100,0B00010001,0B01000101,0B00010001,0B00000000,
+0B00000111,0B00000000,0B11001011,0B10001000,0B00010100,0B10101010,0B00000111,0B10010001,0B01111001,0B00010001,0B00000000,
+0B00000000,0B00000100,0B00101010,0B10001000,0B00100010,0B10011010,0B00010100,0B00011110,0B01000101,0B00010001,0B00000000,
+0B00000000,0B00000011,0B11001010,0B00001111,0B10100010,0B10001001,0B11100111,0B11010011,0B01111000,0B11100001,0B00000000,
+0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
+0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000
+};
+
+
 void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   // Sensor status - default to true for each sensor because they might not be all connected
   bool stat0 = true;
@@ -47,6 +84,7 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   bool stat2 = true;
   bool stat3 = true;
   
+  // Set all of the reset pins low
   digitalWrite(xshut0, LOW);
   digitalWrite(xshut1, LOW);
   digitalWrite(xshut2, LOW);
@@ -84,6 +122,7 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
     while(1);
   }
 
+  // Start the sensors that we need to intitialize 
   if (sensor0) {
     range_sensor0.startRangeContinuous();
   }
@@ -91,9 +130,18 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   if (sensor1) {
     range_sensor1.startRangeContinuous();
   }
+
+  if(sensor2) {
+    range_sensor2.startRangeContinuous();
+  }
+
+  if(sensor3) {
+    range_sensor3.startRangeContinuous();
+  }
 }
 
 
+// A function that starts up the individual range sensor 
 bool initializeRangeSensor(Adafruit_VL53L0X &sensor, uint8_t address, int xshut) {
   int xshutDelay = 300;
   int sensorBootAllocation = 400;
@@ -120,13 +168,22 @@ bool initializeRangeSensor(Adafruit_VL53L0X &sensor, uint8_t address, int xshut)
 
 void setup() {
   // Give the OLED time to boot
-  delay(1000);
+  delay(1500);
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
   }
+
+  // Show initial display buffer contents on the screen --
+  // the library initializes this with an Adafruit splash screen.
+  display.display();
+  drawLogo();
+
+  // Clear the buffer
+  display.clearDisplay();
+
   
   // Sensors
   pinMode(xshut0, OUTPUT);
@@ -143,7 +200,7 @@ void setup() {
   digitalWrite(xshut0, HIGH);
   */
 
-  sensorInit(true, true, false, false);
+  sensorInit(true, true, true, true);
 
   // start serial moniter for debugging
   Serial.begin(115200);
@@ -152,14 +209,6 @@ void setup() {
   }
 
   Serial.print("VL53L0X driver loaded.\n");
-
-  // Show initial display buffer contents on the screen --
-  // the library initializes this with an Adafruit splash screen.
-  display.display();
-  //delay(2000); // Pause for 2 seconds
-
-  // Clear the buffer
-  display.clearDisplay();
 }
 
 void loop() {
@@ -168,7 +217,9 @@ void loop() {
   int angle;
   bool updateDisplay = false;
 
-  
+
+  // CAN'T READ DATA FROM SENSORS THAT DON'T EXIST!!!
+
   // Check if the range sensor has compleated a range mesurement
   if (range_sensor0.isRangeComplete()){
     // Get the intager range value in mm
@@ -186,10 +237,19 @@ void loop() {
     updateDisplay = true;
   }
 
-  
-  if (updateDisplay)
-  {
-    sprintf(buffer, "Distance 1 mm: %u\nDistance 2 mm: %u", distances[0], distances[1]);
+  if (range_sensor2.isRangeComplete()) {
+    distances[2] = range_sensor2.readRange();
+    updateDisplay = true;
+  }
+
+  if (range_sensor3.isRangeComplete()) {
+    distances[3] = range_sensor3.readRange();
+    updateDisplay = true;
+  }
+
+  // Only update the display if there is sensor data to display 
+  if (updateDisplay) {
+    sprintf(buffer, "Sensor 1: %umm\nSensor 2: %umm\nSensor 3: %umm\nSensor 4: %umm", distances[0], distances[1], distances[2], distances[3]);
 
     // Display shenanigans 
     display.clearDisplay();
@@ -205,4 +265,18 @@ void loop() {
 
     display.display();
   }
+}
+
+// Draw the lancerbot logo!!
+void drawLogo(void) {
+  display.clearDisplay();
+
+  display.drawBitmap(
+    //(display.width()  - LOGO_WIDTH ) / 2,
+    //(display.height() - LOGO_HEIGHT) / 2,
+    (display.width() - 88) / 2,
+    0,
+    lancerbot_logo_bmp, 88, 32, 1);
+  display.display();
+  delay(1000);
 }
