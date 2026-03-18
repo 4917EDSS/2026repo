@@ -74,13 +74,13 @@ public class ShooterAimingCalcs {
   }
 
   public double calculateShooterYawDegrees(Pose2d current, Pose2d target) {
-    double robotYawAngle = current.getRotation().getDegrees() + 180; //robot angle 0 to 360
+    double robotYawAngle = current.getRotation().getDegrees() + 180.0; //robot angle 0 to 360
     double targetYawAngle =
-        Math.toDegrees(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX())) + 180 + 315;
+        Math.toDegrees(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX())) + 180.0 + 315.0;
     System.out.println((target.getY() - current.getY()) + ", " + (target.getX() - current.getX()));
     System.out.println(Math.toDegrees(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX())));
     // System.out.println(robotYawAngle + ", " + targetYawAngle);
-    return (360 + (targetYawAngle - robotYawAngle)) % 360;
+    return (360.0 + (targetYawAngle - robotYawAngle)) % 360.0;
   }
 
   public double calculateTimeOfFlight(Pose2d current, Pose2d target, double flywheelVelocity, double PitchAngleDeg) {
