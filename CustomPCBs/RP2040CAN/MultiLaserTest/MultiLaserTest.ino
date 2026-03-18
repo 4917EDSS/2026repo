@@ -110,7 +110,7 @@ static const unsigned char PROGMEM clapped_warning_bmp[] = {
   0B00001111,0B11111111,0B11111111,0B11111100,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000
 };
 
-
+// Initialize all specified sensors
 void sensorInit(int numSensors) {
   // Sensor status - default to true for each sensor because they might not be all connected
   bool sensorStatus = true;
