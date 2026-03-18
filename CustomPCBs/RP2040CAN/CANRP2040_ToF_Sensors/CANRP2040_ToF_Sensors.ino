@@ -53,6 +53,8 @@ ID 4 for Climb
 #define CAN_DEVICE_ID 1
 #define CAN_DEVICE_API 0x123
 
+int numSensorsOperating;
+
 // Please don't touch this (Squint and you can see the logo)
 static const unsigned char PROGMEM lancerbot_logo_bmp[] = {
   0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,0B00000000,
@@ -155,6 +157,9 @@ void UnknownMessageCallback(uint32_t id, const frc::CANData& data) {
 void sensorInit(int numSensors) {
   // Sensor status - default to true for each sensor because they might not be all connected
   bool sensorStatus = true;
+
+  // Define the global variable with the number of sensors that we are operating with
+  numSensorsOperating = numSensors;
 
   // I2C adress of the sensors 
   uint8_t adresses[4] = {0x31, 0x32, 0x33, 0x34};
@@ -259,7 +264,7 @@ void setup() {
   pinMode(greenLed, OUTPUT);
 
   // Initialize a specific number of sensors (1 - 4)
-  sensorInit(1);                                                                              // CHANGE THIS VALUE IF WE ARE NOT USING 4 SENSORS!! 
+  sensorInit(4);                                                                              // CHANGE THIS VALUE IF WE ARE NOT USING 4 SENSORS!! 
 
   // start serial moniter for debugging
   Serial.begin(115200);
@@ -299,12 +304,12 @@ void loop() {
   // Define the buffer for printing text
   char buffer[100];
   // Define an array of all the distances aquired from the sensors 
-  static uint16_t distances[4];
+  static uint16_t distances[4] = {0,0,0,0};
   // Is there new data to display on the screen? 
   bool updateDisplay = false;
 
   // Check each of the range sensors for new data
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < numSensorsOperating; i++) {
     // Check if the sensor has new data to send
     if(rangeSensors[i].isRangeComplete()) {
       // Get the integer range value in mm
