@@ -1,0 +1,20 @@
+// Online Java Compiler
+// Use this editor to write, compile and run your Java code online
+
+class Main {
+    public static double calculateShooterYawDegrees(double rx, double ry, double tx, double ty, double ryaw) {
+        double robotYawAngle = ryaw + 180.0; //robot angle 0 to 360
+        double targetYawAngle =
+            Math.toDegrees(Math.atan2(ty - ry, tx - rx)) + 180.0 + 315.0;
+        //System.out.println((ty - ry) + ", " + (tx - rx));
+        //System.out.println(Math.toDegrees(Math.atan2(ty - ry, tx - rx)));
+        // System.out.println(robotYawAngle + ", " + targetYawAngle);
+        System.out.println((360.0 + (targetYawAngle - robotYawAngle)) % 360.0);
+        return ((360.0 + (targetYawAngle - robotYawAngle)) % 360.0);
+  }
+    public static void main(String[] args) {
+        for(double i=0.0; i<=6.0; i=i+0.1){
+            calculateShooterYawDegrees(14.2, i, 11.856, 4.035, 0.0);
+        }
+    }
+}
