@@ -133,11 +133,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_intakeSub.setBeltPower(Constants.Intake.kBeltPower), m_intakeSub));
 
     // Driver Left Bumper
-    m_driverController.leftBumper().whileTrue(new StartEndCommand(() -> {
-      m_shooterSub.setTargetFlywheelVelocity(75.0);
-      //m_shooterSub.setTargetYawAngle(100.0);
-      m_shooterSub.setTargetPitchAngle(25.0);
-    }, () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
+    m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0)));
 
     // Driver Right Bumper
     m_driverController.rightBumper().whileTrue(new InstantCommand(() -> {
@@ -147,7 +143,12 @@ public class RobotContainer {
     }, m_shooterSub, m_hopperSub));
 
     // Driver Left Trigger
-    m_driverController.leftTrigger().whileTrue(new IntakeToggleCmd(m_hopperSub, m_intakeSub));
+    m_driverController.leftTrigger()
+        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(2.0))
+            .andThen(new InstantCommand(() -> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployOutAngleDeg))
+                .andThen(new WaitUntilCommand(() -> m_intakeSub.isAtTargetDeployAngle()))
+                .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
+
     // Driver Right Trigger
     m_driverController.rightTrigger().onTrue(new InstantCommand(() -> {
       m_shooterSub.setTargetFlywheelVelocity(Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
@@ -189,17 +190,19 @@ public class RobotContainer {
     m_driverController.rightStick()
         .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
 
-    // Operator A
-    m_operatorController.a().whileTrue(
-        new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(50.0),
-            () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
 
+    ///////////////////////// Operator Buttons //////////////////////////////
+    // Operator A
+    m_operatorController.a()
+        .whileTrue(new InstantCommand(() -> m_intakeSub.disableDeployAutomation())
+            .andThen(new StartEndCommand(() -> m_intakeSub.setDeployVoltage(2.0),
+                () -> m_intakeSub.setDeployVoltage(0.0), m_intakeSub)));
 
     // Operator B
-    m_operatorController.b().whileTrue(
-        new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(75.0),
-            () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
-
+    m_operatorController.b()
+        .whileTrue(new InstantCommand(() -> m_intakeSub.disableDeployAutomation())
+            .andThen(new StartEndCommand(() -> m_intakeSub.setDeployVoltage(-2.0),
+                () -> m_intakeSub.setDeployVoltage(0.0), m_intakeSub)));
 
     // Operator X
     m_operatorController.x().whileTrue(
