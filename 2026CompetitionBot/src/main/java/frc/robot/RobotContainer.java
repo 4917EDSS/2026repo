@@ -27,7 +27,6 @@ import frc.robot.commands.EnableShooterCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
 import frc.robot.commands.IntakeSetPositionCmd;
 import frc.robot.commands.IntakeBumpLiftCmd;
-import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
@@ -98,13 +97,15 @@ public class RobotContainer {
 
   private void registerNameCommand() {
     // TODO: Add commands that PathPlanner needs access to here
-    NamedCommands.registerCommand("IntakeDeployCmd", new IntakeToggleCmd(m_intakeSub, true));
+    NamedCommands.registerCommand("IntakeDeployCmd",
+        new IntakeSetPositionCmd(Constants.Intake.kDeployOutAngleDeg, Constants.Intake.kDeployDeployVoltage,
+            m_intakeSub));
 
-    NamedCommands.registerCommand("IntakeRetractCmd", new IntakeToggleCmd(m_intakeSub, false));
+    NamedCommands.registerCommand("IntakeRetractCmd",
+        new IntakeSetPositionCmd(Constants.Intake.kDeployInAngleDeg, Constants.Intake.kDeployRetractVoltage,
+            m_intakeSub));
 
     NamedCommands.registerCommand("AimCmd", (new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub)));
-
-    NamedCommands.registerCommand("StopShooting", new InstantCommand(() -> m_hopperSub.disableShooting(), m_hopperSub));
 
     NamedCommands.registerCommand("HitLimitSwitchesCmd", new HitLimitSwitchesCmd(m_shooterSub));
 
@@ -112,7 +113,12 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("DisableShooterCmd", new DisableShooterCmd(m_intakeSub, m_hopperSub, m_shooterSub));
 
-    NamedCommands.registerCommand("IntakeBumpLifeCmd", new IntakeBumpLiftCmd(m_intakeSub));
+    NamedCommands.registerCommand("IntakeBumpLiftCmd", new IntakeBumpLiftCmd(m_intakeSub));
+
+    NamedCommands.registerCommand("IntakeRollersOnCmd",
+        new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage)));
+
+    NamedCommands.registerCommand("IntakeRollersOffCmd", new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0)));
   }
 
   /*
@@ -127,7 +133,9 @@ public class RobotContainer {
     //     .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub));
 
     // Driver B
-    m_driverController.b().onTrue(new IntakeSetPositionCmd(-90.0, 2.0, m_intakeSub));
+    m_driverController.b()
+        .onTrue(new IntakeSetPositionCmd(Constants.Intake.kDeployInAngleDeg, Constants.Intake.kDeployRetractVoltage,
+            m_intakeSub));
 
     // Driver X
     m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));
@@ -294,8 +302,7 @@ public class RobotContainer {
    * Create a list of auto period action choices+
    */
   void autoChooserSetup() {
-    m_Chooser.addOption("Straight 3m", new PathPlannerAuto("Go Straight"));
-    m_Chooser.addOption("Test Auto", new PathPlannerAuto("Test Auto"));
+    m_Chooser.addOption("Centre and Depot Scoring Auto", new PathPlannerAuto("Centre and Depot Scoring Auto"));
     SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 

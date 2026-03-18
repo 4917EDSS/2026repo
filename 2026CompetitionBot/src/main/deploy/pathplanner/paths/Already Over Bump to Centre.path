@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5,
-        "y": 2.5
+        "x": 5.682988636363636,
+        "y": 5.9
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5,
-        "y": 2.5
+        "x": 6.682988636363636,
+        "y": 5.9
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Over Bump"
     },
     {
       "anchor": {
-        "x": 5.5,
-        "y": 2.5
+        "x": 7.610363636363637,
+        "y": 5.9
       },
       "prevControl": {
-        "x": 4.5,
-        "y": 2.5
+        "x": 6.610363636363637,
+        "y": 5.9
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Centre"
     }
   ],
   "rotationTargets": [],
@@ -47,7 +47,7 @@
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": 0.0
   },
   "useDefaultConstraints": true
