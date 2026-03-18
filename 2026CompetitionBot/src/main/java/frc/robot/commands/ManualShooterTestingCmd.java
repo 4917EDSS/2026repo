@@ -42,9 +42,9 @@ public class ManualShooterTestingCmd extends Command {
   public void initialize() {
     m_shooterSub.setTargetPitchAngle(SmartDashboard.getNumber("hood angle", 0.0));
     m_shooterSub.setTargetYawAngle(SmartDashboard.getNumber("turret angle", 0.0));
-    System.out.println(SmartDashboard.getNumber("turret angle", 0.0));
+    //System.out.println(SmartDashboard.getNumber("turret angle", 0.0));
     m_shooterSub.setTargetFlywheelVelocity(SmartDashboard.getNumber("flywheel rps", 0.0));
-    m_hopperSub.setEscalatorTargetVelocity(SmartDashboard.getNumber("escalator rps", 0.0));
+    m_hopperSub.setEscalatorTargetVelocityRps(SmartDashboard.getNumber("escalator rps", 0.0));
     // m_hopperSub.setSingulatorPower(0.75);
     m_kill = SmartDashboard.getBoolean("kill", m_kill);
   }

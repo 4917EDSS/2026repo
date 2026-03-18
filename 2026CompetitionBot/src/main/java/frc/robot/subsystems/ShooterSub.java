@@ -374,14 +374,13 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setTargetYawAngle(double angleDeg) {
-    angleDeg = (angleDeg + 180) % 360;
-    if(angleDeg > Constants.Shooter.kYawMaxAngleDeg) {
-      angleDeg = 155.0;
+    angleDeg = angleDeg + 180;
+    if(Constants.Shooter.kYawDeadzoneMin < angleDeg && angleDeg > Constants.Shooter.kYawDeadzoneMax) {
+      angleDeg = 205.0;
     }
     m_targetYawAngleDeg = angleDeg;
-    m_yawPidController.reset();
     m_yawPidController.setSetpoint(angleDeg);
-    runYawControl(true);
+    runYawControl(false);
     enableYawAutomation();
   }
 
@@ -409,16 +408,8 @@ public class ShooterSub extends SubsystemBase {
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
     totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower * 12, Constants.Shooter.kYawMaxPower * 12);
 
-    if(Constants.Shooter.kYawMaxAngleDeg - currentAngle < 10.0 && totalVolts > 2.0) {
-      totalVolts = 2.0;
-    }
-
-    if(currentAngle - Constants.Shooter.kYawMinAngleDeg < 10.0 && totalVolts < (-2.0)) {
-      totalVolts = -2.0;
-    }
-
     if(setPower && !Double.isNaN(totalVolts)) {
-      setYawVoltage(totalVolts);
+      //setYawVoltage(totalVolts);
     }
   }
 

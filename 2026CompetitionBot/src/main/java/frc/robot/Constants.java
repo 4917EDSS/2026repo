@@ -89,7 +89,7 @@ public final class Constants {
   public static class Hopper {
     // TODO:  Set all the values correctly
     public static final double kSingulatorEncoderToRpsConversionFactor = 2.5; // Gearing TBD
-    public static final double kSingulatorMaxVelocityRotPerSec = 20.0; // Throughput must be slower than Escalator to avoid jams
+    public static final double kSingulatorMaxVelocityRps = 20.0; // Throughput must be slower than Escalator to avoid jams
     public static final double kSinglatorRpsToMpsConversionFactor = 0.63403070014 * 0.6; //  // 4 inches diamater to metters / 2
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 120.0;
@@ -101,7 +101,7 @@ public final class Constants {
     public static final double kSingulatorKD = 0.0;
 
     public static final double kEscalatorEncoderToRpsConversionFactor = 3.0;
-    public static final double kEscalatorFeedSpeed = 30.0;
+    public static final double kEscalatorFeedSpeedRps = 30.0;
     public static final double kEscalatorMaxVelocityRotPerSec = 31.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
     public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795 / 2; //  inches diamater to meters / 2
     public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2
@@ -134,6 +134,7 @@ public final class Constants {
 
     public static final double kBeltMaxCurrent = 120.0;
     public static final double kBeltPower = 1.0;
+    public static final double kBeltTargetVoltage = 6.0;
 
     public static final double kHoldPositionPidPower = 0.001;
     public static final double kDeploySafetyZoneSize = 10;
@@ -145,12 +146,14 @@ public final class Constants {
     public static final double kYawEncoderToDegConversionFactor = 180.0 / 2.2429;
     public static final double kYawEncoderOffset = 0.0206;
     public static final double kYawMinAngleDeg = 0.0;
-    public static final double kYawMaxAngleDeg = 310.0;
+    public static final double kYawMaxAngleDeg = 360.0;
     public static final double kYawMaxCurrent = 40.0;
     public static final double kYawMaxPower = 0.6;
     public static final double kYawTolerance = 5.0;
     public static final double kYawMaxVelocityDegPerSec = 30.0;
     public static final double kYawMaxAccelerationDegPerSec = 36.0;
+    public static final double kYawDeadzoneMin = 0.0;
+    public static final double kYawDeadzoneMax = 50.0;
     public static final double kYawKS = 1.5;
     public static final double kYawKP = 0.03; //0.1;
     public static final double kYawKI = 0.0;
@@ -179,6 +182,7 @@ public final class Constants {
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
     public static final double kFlywheelMaxCurrent = 120.0;
     public static final double kFlywheelMaxPower = 1.0;
+    public static final double kFlywheelTargetVelocity = 70.0;
     public static final double kFlywheelKS = 0.055;
     public static final double kFlywheelKV = 0.0789;
     public static final double kFlywheelKP = 0.5;//ADD FLYWHELL PID
@@ -193,9 +197,9 @@ public final class Constants {
 
   public static class Vision {
     public static final double kDistanceTooCloseToDrive = 0.5;
-    public static final double kStandardDeviation = 0.7;
+    public static final double kStandardDeviation = 1.0;
     public static final double kDistanceWeight = 0.25;
-    public static final double kDistanceTrustThreshold = 2.0;
+    public static final double kDistanceTrustThreshold = 4.0;
     public static final double kAreaWeight = 1.5;
     public static final double kAreaTrustThreshold = 0.2;
   }

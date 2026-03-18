@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.commands.KillAllCmd;
 
 public class HopperSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
@@ -39,7 +38,9 @@ public class HopperSub extends SubsystemBase {
 
   // Request objects for velocity PID control
   private boolean m_escalatorAutomationEnabled = false;
+  private boolean m_singulatorAutomationEnabled = false;
   private double m_targetEscalatorVelocityRps = 0.0;
+  private double m_targetSingulatorVelocityRps = 0.0;
 
   /** Creates a new HopperSub. */
   public HopperSub(CanSub canSub) {
@@ -97,13 +98,15 @@ public class HopperSub extends SubsystemBase {
   public void init() {
     m_logger.info("Initializing HopperSub Subsystem");
     disableEscalatorAutomation();
-    setEscalatorPower(0.0);
-    setSingulatorPower(0.0);
+    setEscalatorVoltage(0.0);
+    setSingulatorVoltage(0.0);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Singulator Auto", m_singulatorAutomationEnabled);
+    SmartDashboard.putNumber("Singulator Target", m_targetSingulatorVelocityRps);
     SmartDashboard.putNumber("Singulator Velocity", getSingulatorVelocityRotPerSec());
     SmartDashboard.putNumber("Singulator Vel Mps", getSingulatorVelocityMetersPerSec());
     SmartDashboard.putNumber("Singulator Power", m_singulatorMotor.get());
@@ -117,13 +120,13 @@ public class HopperSub extends SubsystemBase {
 
   }
 
-  public void setShooting() {
-    setEscalatorTargetVelocity(Constants.Hopper.kEscalatorFeedSpeed);
-    setSingulatorPower(Constants.Hopper.kSingulatorMaxPower);
+  public void enableShooting() {
+    setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps);
+    setSingulatorTargetVelocityRps(Constants.Hopper.kSingulatorMaxVelocityRps);
   }
 
   public void disableShooting() {
-    setSingulatorPower(0);
+    disableSingulatorAutomation();;
     disableEscalatorAutomation();
   }
 
@@ -215,6 +218,37 @@ public class HopperSub extends SubsystemBase {
     return m_canSub.isFuelInEscalator();
   }
 
+  ////////////////////////////// Singulator automation //////////////////////////////
+  private void enableSingulatorAutomation() {
+    m_singulatorAutomationEnabled = true;
+    // Use TalonFX's PID control to set velocity
+    m_singulatorMotor.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetSingulatorVelocityRps));
+  }
+
+  public void disableSingulatorAutomation() {
+    m_singulatorAutomationEnabled = false;
+    m_singulatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
+  }
+
+  public void setSingulatorTargetVelocityMps(double velocityMps) {
+    setSingulatorTargetVelocityRps(velocityMps / Constants.Hopper.kSinglatorRpsToMpsConversionFactor);
+  }
+
+  // Set Singulator velocity with PID in RPS
+  public void setSingulatorTargetVelocityRps(double velocityRps) {
+    m_targetSingulatorVelocityRps = velocityRps;
+    enableSingulatorAutomation();
+  }
+
+  public boolean isSingulatorAtTargetVelocity() {
+    if(Math
+        .abs(m_targetSingulatorVelocityRps
+            - getSingulatorVelocityRotPerSec()) < Constants.Hopper.kSingulatorVelocityToleranceRotPerSec) {
+      return true;
+    }
+    return false;
+  }
+
   ////////////////////////////// Escalator automation //////////////////////////////
   private void enableEscalatorAutomation() {
     m_escalatorAutomationEnabled = true;
@@ -227,8 +261,12 @@ public class HopperSub extends SubsystemBase {
     m_escalatorMotor.setControl(new DutyCycleOut(0.0)); // Disable velocity control
   }
 
+  public void setEscalatorTargetVelocityMps(double velocityMps) {
+    setEscalatorTargetVelocityRps(velocityMps / Constants.Hopper.kInputEscalatorRpsToMpsConversionFactor);
+  }
+
   // Set Escalator velocity with PID in RPS
-  public void setEscalatorTargetVelocity(double velocityRps) {
+  public void setEscalatorTargetVelocityRps(double velocityRps) {
     m_targetEscalatorVelocityRps = velocityRps;
     enableEscalatorAutomation();
   }
