@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "HitLimitSwitchesCmd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Drive to Centre"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Drive Away from Centre"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Drive To Depot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

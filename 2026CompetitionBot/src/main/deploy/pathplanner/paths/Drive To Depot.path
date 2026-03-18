@@ -16,19 +16,24 @@
     },
     {
       "anchor": {
-        "x": 7.685885509838998,
+        "x": 0.6602862254025041,
         "y": 5.9
       },
       "prevControl": {
-        "x": 6.685885509838998,
-        "y": 5.9
+        "x": 0.41076325876441755,
+        "y": 5.915436616213676
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Centre"
+      "linkedName": "Depot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,12 +47,12 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": 0.0
   },
   "useDefaultConstraints": true
