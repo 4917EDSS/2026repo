@@ -61,6 +61,7 @@ public final class Constants {
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 120.0;
     public static final double kSingulatorMaxVoltage = 12.0;
+    public static final double kSingulatorFeedVoltage = 4.0;
     public static final double kSingulatorKS = 0.25;
     public static final double kSingulatorKV = 0.04;
     public static final double kSingulatorKP = 0.5;
@@ -68,7 +69,7 @@ public final class Constants {
     public static final double kSingulatorKD = 0.0;
 
     public static final double kEscalatorEncoderToRpsConversionFactor = 3.0;
-    public static final double kEscalatorFeedSpeedRps = 30.0;
+    public static final double kEscalatorFeedSpeedRps = 30;
     public static final double kEscalatorMaxVelocityRotPerSec = 31.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
     public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795 / 2; //  inches diamater to meters / 2
     public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2

@@ -15,10 +15,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utils.GameData;
 import frc.robot.utils.LimelightHelpers;
 
 public class VisionSub extends SubsystemBase {
@@ -116,6 +118,14 @@ public class VisionSub extends SubsystemBase {
   }
 
   public void init() {
+    if(GameData.getAlliance().equals(Alliance.Red)) {
+      LimelightHelpers.setCameraPose_RobotSpace(LEFT, 0.0, 0.39, 0.62, 0.0, 0.0, -90.0);
+      LimelightHelpers.setCameraPose_RobotSpace(RIGHT, 0.0, -0.39, 0.62, 0.0, 0.0, 90.0);
+    } else {
+      LimelightHelpers.setCameraPose_RobotSpace(LEFT, 0.0, -0.39, 0.62, 0.0, 0.0, 90.0);
+      LimelightHelpers.setCameraPose_RobotSpace(RIGHT, 0.0, 0.39, 0.62, 0.0, 0.0, -90.0);
+    }
+
     m_logger.info("Initializing VisionSub Subsystem");
     SmartDashboard.putData("FieldLLRight", m_fieldLLRight);
     SmartDashboard.putData("FieldLLLeft", m_fieldLLLeft);
