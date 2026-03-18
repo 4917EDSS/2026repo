@@ -112,8 +112,7 @@ public class RobotContainer {
    * Use this method to define your trigger->command mappings.
    */
   private void configureBindings() {
-
-
+    ////////////////////////////// Driver Buttons //////////////////////////////
     // Driver A
     m_driverController.a()
         .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub));
@@ -140,7 +139,7 @@ public class RobotContainer {
 
     // Driver Left Trigger
     m_driverController.leftTrigger()
-        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(2.0))
+        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(10.0))
             .andThen(new InstantCommand(() -> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployOutAngleDeg))
                 .andThen(new WaitUntilCommand(() -> m_intakeSub.isAtTargetDeployAngle()))
                 .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
@@ -182,7 +181,7 @@ public class RobotContainer {
         .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
 
 
-    ///////////////////////// Operator Buttons //////////////////////////////
+    ////////////////////////////// Operator Buttons //////////////////////////////
     // Operator A
     m_operatorController.a()
         .whileTrue(new InstantCommand(() -> m_intakeSub.disableDeployAutomation())
