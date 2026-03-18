@@ -53,39 +53,6 @@ public final class Constants {
 
 
   //////////////////// These are the subsystem constants ////////////////////
-  public static class Climb {
-    // TODO:  Set all the values correctly
-    public static final double kDeployEncoderToMConversionFactor = 1.0;
-    public static final double kDeployInDistanceM = 0.0;
-    public static final double kDeployOutDistanceM = 0.01;
-    public static final double kDeployToleranceM = 0.002;
-    public static final double kDeployMaxCurrent = 120.0;
-    public static final double kDeployMaxPower = 1.0;
-    public static final double kDeployMaxVelocityMPerSec = 0.5;
-    public static final double kDeployMaxAccelerationMPerSec = 0.25;
-    public static final double kDeployKS = 0.25;
-    public static final double kDeployKV = 0.12;
-    public static final double kDeployKA = 0.0;
-    public static final double kDeployKP = 0.1;
-    public static final double kDeployKI = 0.0;
-    public static final double kDeployKD = 0.0;
-
-    public static final double kRotationEncoderToDegConversionFactor = 1.0;
-    public static final double kRotationInitialAngleDeg = 0.0;
-    public static final double kRotationFinalAngleDeg = 180.0;
-    public static final double kRotationToleranceDeg = 2.0;
-    public static final double kRotationMaxCurrent = 120.0;
-    public static final double kRotationMaxPower = 1.0;
-    public static final double kRotateMaxVelocityMPerSec = 0.5;
-    public static final double kRotateMaxAccelerationMPerSec = 0.25;
-    public static final double kRotateKS = 0.25;
-    public static final double kRotateKV = 0.12;
-    public static final double kRotateKA = 0.0;
-    public static final double kRotateKP = 0.1;
-    public static final double kRotateKI = 0.0;
-    public static final double kRotateKD = 0.0;
-  }
-
   public static class Hopper {
     // TODO:  Set all the values correctly
     public static final double kSingulatorEncoderToRpsConversionFactor = 2.5; // Gearing TBD
@@ -93,7 +60,7 @@ public final class Constants {
     public static final double kSinglatorRpsToMpsConversionFactor = 0.63403070014 * 0.6; //  // 4 inches diamater to metters / 2
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 120.0;
-    public static final double kSingulatorMaxPower = 1.0;
+    public static final double kSingulatorMaxVoltage = 12.0;
     public static final double kSingulatorKS = 0.25;
     public static final double kSingulatorKV = 0.04;
     public static final double kSingulatorKP = 0.5;
@@ -107,7 +74,7 @@ public final class Constants {
     public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2
     public static final double kEscalatorVelocityToleranceRotPerSec = 2;
     public static final double kEscalatorMaxCurrent = 120.0;
-    public static final double kEscalatorMaxPower = 1.0;
+    public static final double kEscalatorMaxVoltage = 12.0;
     public static final double kEscalatorKS = 0.37;
     public static final double kEscalatorKV = 0.36; // TODO: Test this value
     public static final double kEscalatorKP = 0.4;
@@ -123,7 +90,7 @@ public final class Constants {
     public static final double kDeployMaxGravityDeg = 115.0;
     public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxCurrent = 120.0;
-    public static final double kDeployMaxPower = 0.5;
+    public static final double kDeployMaxVoltage = 6.0;
     public static final double kDeployMaxVelocityDegPerSec = 350.0;
     public static final double kDeployMaxAccelerationDegPerSec = 1.0;
     public static final double kDeployKS = 0.4;
@@ -133,11 +100,7 @@ public final class Constants {
     public static final double kDeployKD = 0.0;
 
     public static final double kBeltMaxCurrent = 120.0;
-    public static final double kBeltPower = 1.0;
-
-    public static final double kHoldPositionPidPower = 0.001;
-    public static final double kDeploySafetyZoneSize = 10;
-    public static final double kDeploySafetyPower = 0.15;
+    public static final double kBeltVoltage = 12.0;
   }
 
   public static class Shooter {
@@ -147,7 +110,7 @@ public final class Constants {
     public static final double kYawMinAngleDeg = 0.0;
     public static final double kYawMaxAngleDeg = 360.0;
     public static final double kYawMaxCurrent = 40.0;
-    public static final double kYawMaxPower = 0.6;
+    public static final double kYawMaxVoltage = 7.2;
     public static final double kYawTolerance = 5.0;
     public static final double kYawMaxVelocityDegPerSec = 30.0;
     public static final double kYawMaxAccelerationDegPerSec = 36.0;
@@ -162,7 +125,7 @@ public final class Constants {
     public static final double kPitchMinAngleDeg = 18.0;
     public static final double kPitchMaxAngleDeg = 48.0;
     public static final double kPitchMaxCurrent = 12.0;
-    public static final double kPitchMaxPower = 0.3;
+    public static final double kPitchMaxVoltage = 3.6;
     public static final double kPitchTolerance = 1.0;
     public static final double kPitchMaxVelocityDegPerSec = 5.0;
     public static final double kPitchMaxAccelerationDegPerSec = 120.0;
@@ -180,7 +143,7 @@ public final class Constants {
     public static final double kFlywheelMaxVelocityRotsPerSec = 140.0;
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
     public static final double kFlywheelMaxCurrent = 120.0;
-    public static final double kFlywheelMaxPower = 1.0;
+    public static final double kFlywheelMaxVoltage = 12.0;
     public static final double kFlywheelKS = 0.055;
     public static final double kFlywheelKV = 0.0789;
     public static final double kFlywheelKP = 0.5;//ADD FLYWHELL PID

@@ -119,8 +119,8 @@ public class RobotContainer {
 
     // // Driver B
     m_driverController.b().whileTrue(
-        new StartEndCommand(() -> m_intakeSub.setDeployPower(-0.1), () -> {
-          m_intakeSub.setDeployPower(0.0);
+        new StartEndCommand(() -> m_intakeSub.setDeployVoltage(-1.5), () -> {
+          m_intakeSub.setDeployVoltage(0.0);
           m_intakeSub.disableDeployAutomation();
         }, m_intakeSub));
 
@@ -129,7 +129,7 @@ public class RobotContainer {
 
     // // Driver Y
     m_driverController.y()
-        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltPower(Constants.Intake.kBeltPower), m_intakeSub));
+        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltVoltage), m_intakeSub));
 
     // Driver Left Bumper
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0)));
@@ -137,7 +137,7 @@ public class RobotContainer {
     // Driver Right Bumper
     m_driverController.rightBumper().whileTrue(new InstantCommand(() -> {
       m_hopperSub.disableEscalatorAutomation();
-      m_hopperSub.setSingulatorPower(0.0);
+      m_hopperSub.setSingulatorVoltage(0.0);
       m_shooterSub.disableFlywheelAutomation();
     }, m_shooterSub, m_hopperSub));
 
@@ -154,7 +154,7 @@ public class RobotContainer {
       new WaitUntilCommand(() -> m_shooterSub.isAtTargetFlywheelVelocity());
       m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps);
       new WaitUntilCommand(() -> m_hopperSub.isEscalatorAtTargetVelocity());
-      m_hopperSub.setSingulatorPower(Constants.Hopper.kSingulatorMaxPower);
+      m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorMaxVoltage);
     }, m_shooterSub, m_hopperSub));
 
     // Driver Back
@@ -166,7 +166,8 @@ public class RobotContainer {
 
     // Driver POV Up
     m_driverController.povUp().whileTrue(
-        new StartEndCommand(() -> m_shooterSub.setYawPower(-0.25), () -> m_shooterSub.setYawPower(0.0), m_shooterSub));
+        new StartEndCommand(() -> m_shooterSub.setYawVoltage(-3.0), () -> m_shooterSub.setYawVoltage(0.0),
+            m_shooterSub));
 
     // // Driver POV Right
     m_driverController.povRight()
@@ -286,8 +287,6 @@ public class RobotContainer {
   void autoChooserSetup() {
     m_Chooser.addOption("Straight 3m", new PathPlannerAuto("Go Straight"));
     m_Chooser.addOption("Test Auto", new PathPlannerAuto("Test Auto"));
-    m_Chooser.addOption("Right Middle Climb", new PathPlannerAuto("Right Middle Climb"));
-    m_Chooser.addOption("with commands Right Middle Climb", new PathPlannerAuto("with commands Right Middle Climb"));
     SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 

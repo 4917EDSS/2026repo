@@ -1,11 +1,8 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*;
-
+import static edu.wpi.first.units.Units.Volts;
 import java.util.Optional;
 import java.util.function.Supplier;
-
-import java.util.logging.Logger;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -46,8 +43,6 @@ import frc.robot.utils.RobotStatus;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
-  private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
-
   private static final double kSimLoopPeriod = 0.004; // 4 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
@@ -185,7 +180,7 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
   }
 
   public void init() {
-    m_logger.info("Initializing DrivetrainSub Subsystem");
+
   }
 
   /**
