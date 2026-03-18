@@ -134,7 +134,7 @@ public final class Constants {
 
     public static final double kBeltMaxCurrent = 120.0;
     public static final double kBeltPower = 1.0;
-    public static final double kBeltTargetVoltage = 8.0;
+    public static final double kBeltTargetVoltage = 6.0;
 
     public static final double kHoldPositionPidPower = 0.001;
     public static final double kDeploySafetyZoneSize = 10;
