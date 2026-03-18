@@ -22,7 +22,10 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimCmd;
+import frc.robot.commands.DisableShooterCmd;
+import frc.robot.commands.EnableShooterCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
+import frc.robot.commands.IntakeBumpLiftCmd;
 import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.generated.TunerConstants;
@@ -103,6 +106,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("StopShooting", new InstantCommand(() -> m_hopperSub.disableShooting(), m_hopperSub));
 
     NamedCommands.registerCommand("HitLimitSwitchesCmd", new HitLimitSwitchesCmd(m_shooterSub));
+
+    NamedCommands.registerCommand("EnableShooterCmd", new EnableShooterCmd(m_intakeSub, m_hopperSub, m_shooterSub));
+
+    NamedCommands.registerCommand("DisableShooterCmd", new DisableShooterCmd(m_intakeSub, m_hopperSub, m_shooterSub));
+
+    NamedCommands.registerCommand("IntakeBumpLifeCmd", new IntakeBumpLiftCmd(m_intakeSub));
   }
 
   /*
@@ -112,7 +121,9 @@ public class RobotContainer {
     ////////////////////////////// Driver Buttons //////////////////////////////
     // Driver A
     m_driverController.a()
-        .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub));
+        .onTrue(new IntakeBumpLiftCmd(m_intakeSub));
+    // m_driverController.a()
+    //     .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub));
 
     // Driver B
     m_driverController.b().whileTrue(
