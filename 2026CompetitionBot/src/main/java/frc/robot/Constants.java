@@ -145,12 +145,14 @@ public final class Constants {
     public static final double kYawEncoderToDegConversionFactor = 180.0 / 2.2429;
     public static final double kYawEncoderOffset = 0.0206;
     public static final double kYawMinAngleDeg = 0.0;
-    public static final double kYawMaxAngleDeg = 310.0;
+    public static final double kYawMaxAngleDeg = 360.0;
     public static final double kYawMaxCurrent = 40.0;
     public static final double kYawMaxPower = 0.6;
     public static final double kYawTolerance = 5.0;
     public static final double kYawMaxVelocityDegPerSec = 30.0;
     public static final double kYawMaxAccelerationDegPerSec = 36.0;
+    public static final double kYawDeadzoneMin = 0.0;
+    public static final double kYawDeadzoneMax = 50.0;
     public static final double kYawKS = 1.5;
     public static final double kYawKP = 0.03; //0.1;
     public static final double kYawKI = 0.0;
@@ -193,9 +195,9 @@ public final class Constants {
 
   public static class Vision {
     public static final double kDistanceTooCloseToDrive = 0.5;
-    public static final double kStandardDeviation = 0.7;
+    public static final double kStandardDeviation = 1.0;
     public static final double kDistanceWeight = 0.25;
-    public static final double kDistanceTrustThreshold = 2.0;
+    public static final double kDistanceTrustThreshold = 4.0;
     public static final double kAreaWeight = 1.5;
     public static final double kAreaTrustThreshold = 0.2;
   }

@@ -30,15 +30,23 @@ Arduino Nano RP2040 connect. (If it can dream it, it can be it)
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+/*
 Adafruit_VL53L0X range_sensor0 = Adafruit_VL53L0X();
 Adafruit_VL53L0X range_sensor1 = Adafruit_VL53L0X();
 Adafruit_VL53L0X range_sensor2 = Adafruit_VL53L0X();
 Adafruit_VL53L0X range_sensor3 = Adafruit_VL53L0X();
+*/
 
+Adafruit_VL53L0X rangeSensors[4] = {Adafruit_VL53L0X(), Adafruit_VL53L0X(), Adafruit_VL53L0X(), Adafruit_VL53L0X()};
+
+/*
 int xshut0 = 18;
 int xshut1 = 19;
 int xshut2 = 17;
 int xshut3 = 16;
+*/
+
+int xshuts[4] = {18, 19, 17, 16};
 
 // Please don't touch this (Squint and you can see the logo)
 static const unsigned char PROGMEM lancerbot_logo_bmp[] = {
@@ -77,20 +85,30 @@ static const unsigned char PROGMEM lancerbot_logo_bmp[] = {
 };
 
 
-void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
+void sensorInit(int numSensors) {
   // Sensor status - default to true for each sensor because they might not be all connected
   bool stat0 = true;
   bool stat1 = true;
   bool stat2 = true;
   bool stat3 = true;
+
+  bool sensorStatus = true;
+  uint8_t adresses[4] = {0x31, 0x32, 0x33, 0x34};
   
   // Set all of the reset pins low
+  for(int i = 0; i < 4; i++) {
+    digitalWrite(xshuts[i], LOW);
+  }
+
+  /*
   digitalWrite(xshut0, LOW);
   digitalWrite(xshut1, LOW);
   digitalWrite(xshut2, LOW);
   digitalWrite(xshut3, LOW);
+  */
   
   // Initialize each of the sensors individually, ONLY IF WE HAVE THEM ISNTALLED!! (Otherwise we initialize sensors that don't exist)
+  /*
   if (sensor0) {
     // Call the initialization function
     stat0 = initializeRangeSensor(range_sensor0, 0x31, xshut0);
@@ -107,22 +125,33 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
   if (sensor3) {
     stat3 = initializeRangeSensor(range_sensor3, 0x34, xshut3);
   }
+  */
+
+  for(int i = 0; i < numSensors; i++) {
+    // Attempt to initialize the sensors
+    if(!initializeRangeSensor(rangeSensors[i], adresses[i], xshuts[i])) {
+      // If a sensor is clapped, stop! 
+      sensorStatus = false;
+      break;
+    }
+  }
 
   // One of the sensors is clapped, stop the initialization process
-  if (!(stat0 && stat1 && stat2 && stat3)) {
-    // Display shenanigans 
+  if (!sensorStatus) {
+    // Display shenanigans (TELL THE PIT CREW THE SENSORS ARE CLAPPED)
     display.clearDisplay();
     display.setTextSize(1);      // Normal 1:1 pixel scale
     display.setTextColor(SSD1306_WHITE); // Draw white text
     display.setCursor(0, 0);     // Start at top-left corner
     display.cp437(true);         // Use full 256 char 'Code Page 437' font
-    display.write("SENSORS CLAPPED!!!");
+    display.write("CONNECTED SENSORS \nCLAPPED!");
     display.display();
 
     while(1);
   }
 
   // Start the sensors that we need to intitialize 
+  /*
   if (sensor0) {
     range_sensor0.startRangeContinuous();
   }
@@ -137,6 +166,11 @@ void sensorInit(bool sensor0, bool sensor1, bool sensor2, bool sensor3) {
 
   if(sensor3) {
     range_sensor3.startRangeContinuous();
+  }
+  */
+
+  for(int i = 0; i < numSensors; i++) {
+    rangeSensors[i].startRangeContinuous();
   }
 }
 
@@ -186,10 +220,15 @@ void setup() {
 
   
   // Sensors
+  for(int i = 0; i < 4; i++) {
+    pinMode(xshuts[i], OUTPUT);
+  }
+  /*
   pinMode(xshut0, OUTPUT);
   pinMode(xshut1, OUTPUT);
   pinMode(xshut2, OUTPUT);
   pinMode(xshut3, OUTPUT);
+  */
 
   /*
   digitalWrite(xshut0, LOW);
@@ -200,7 +239,8 @@ void setup() {
   digitalWrite(xshut0, HIGH);
   */
 
-  sensorInit(true, true, true, true);
+  // Initialize a specific number of sensors 
+  sensorInit(4);
 
   // start serial moniter for debugging
   Serial.begin(115200);
@@ -217,9 +257,7 @@ void loop() {
   int angle;
   bool updateDisplay = false;
 
-
-  // CAN'T READ DATA FROM SENSORS THAT DON'T EXIST!!!
-
+  /*
   // Check if the range sensor has compleated a range mesurement
   if (range_sensor0.isRangeComplete()){
     // Get the intager range value in mm
@@ -246,6 +284,16 @@ void loop() {
     distances[3] = range_sensor3.readRange();
     updateDisplay = true;
   }
+  */
+
+  for (int i = 0; i < 4; i++) {
+    if(rangeSensors[i].isRangeComplete()) {
+      // Get the integer range value in mm
+      distances[i] = rangeSensors[i].readRange();
+      updateDisplay = true; 
+    }
+  }
+
 
   // Only update the display if there is sensor data to display 
   if (updateDisplay) {

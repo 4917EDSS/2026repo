@@ -4,7 +4,6 @@
 
 package frc.robot.utils;
 
-import java.util.Arrays;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -77,8 +76,8 @@ public class ShooterAimingCalcs {
     double robotYawAngle = current.getRotation().getDegrees(); //robot angle 0 to 360
     double targetYawAngle =
         Math.toDegrees(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX()));
-    System.out.println((target.getY() - current.getY()) + ", " + (target.getX() - current.getX()));
-    System.out.println(Math.toDegrees(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX())));
+    // System.out.println((target.getY() - current.getY()) + ", " + (target.getX() - current.getX()));
+    // System.out.println(Math.toDegrees(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX())));
     // System.out.println(robotYawAngle + ", " + targetYawAngle);
     return (targetYawAngle - robotYawAngle);
   }
@@ -158,8 +157,9 @@ public class ShooterAimingCalcs {
     double pitchAngleDeg = pitchAngleDegAndFlywheelVelocity[0];
     double flywheelVelocity = pitchAngleDegAndFlywheelVelocity[1];
     //double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
-    double offsetX = velocityX * calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg); //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
-    double offsetY = velocityY * calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg);
+    double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg);
+    double offsetX = velocityX * tof; //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
+    double offsetY = velocityY * tof;
     //double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
     Pose2d offsetPos = new Pose2d(target.getX() + offsetX, target.getY() + offsetY, new Rotation2d(0.0));
     double[] pitchAndVelocity =

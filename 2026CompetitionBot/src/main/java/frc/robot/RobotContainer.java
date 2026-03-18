@@ -95,9 +95,9 @@ public class RobotContainer {
 
   private void registerNameCommand() {
     // TODO: Add commands that PathPlanner needs access to here
-    NamedCommands.registerCommand("IntakeDeployCmd", new IntakeToggleCmd(m_hopperSub, m_intakeSub, true));
+    NamedCommands.registerCommand("IntakeDeployCmd", new IntakeToggleCmd(m_intakeSub, true));
 
-    NamedCommands.registerCommand("IntakeRetractCmd", new IntakeToggleCmd(m_hopperSub, m_intakeSub, false));
+    NamedCommands.registerCommand("IntakeRetractCmd", new IntakeToggleCmd(m_intakeSub, false));
 
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub));
 
