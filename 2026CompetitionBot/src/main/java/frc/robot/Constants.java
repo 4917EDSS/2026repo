@@ -123,7 +123,7 @@ public final class Constants {
     public static final double kDeployMaxGravityDeg = 115.0;
     public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxCurrent = 120.0;
-    public static final double kDeployMaxPower = 1.0;
+    public static final double kDeployMaxPower = 0.5;
     public static final double kDeployMaxVelocityDegPerSec = 350.0;
     public static final double kDeployMaxAccelerationDegPerSec = 1.0;
     public static final double kDeployKS = 0.4;
@@ -133,7 +133,7 @@ public final class Constants {
     public static final double kDeployKD = 0.0;
 
     public static final double kBeltMaxCurrent = 120.0;
-    public static final double kBeltPower = 0.5;
+    public static final double kBeltPower = 1.0;
 
     public static final double kHoldPositionPidPower = 0.001;
     public static final double kDeploySafetyZoneSize = 10;
@@ -146,7 +146,7 @@ public final class Constants {
     public static final double kYawEncoderOffset = 0.0206;
     public static final double kYawMinAngleDeg = 0.0;
     public static final double kYawMaxAngleDeg = 310.0;
-    public static final double kYawMaxCurrent = 120.0;
+    public static final double kYawMaxCurrent = 40.0;
     public static final double kYawMaxPower = 0.6;
     public static final double kYawTolerance = 5.0;
     public static final double kYawMaxVelocityDegPerSec = 30.0;
