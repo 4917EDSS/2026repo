@@ -165,12 +165,13 @@ public class IntakeSub extends SubsystemBase {
   private void runDeployAngleControl(boolean setPower) {
     double currentAngle = getDeployAngleDeg();
     double pidVolts = m_deployPidController.calculate(currentAngle);
-    double ffVolts = m_deployKS + m_deployKG * Math.cos(-currentAngle / 180 * Math.PI);
+    double kSVolts = m_deployKS;
     if(currentAngle - m_targetDeployAngleDeg > 0) {
-      ffVolts *= -1;
+      kSVolts *= -1;
     }
-    double totalVolts = pidVolts + ffVolts;
-    SmartDashboard.putNumber("ffVolts", ffVolts);
+    double kGVolts = m_deployKG * Math.cos(-currentAngle / 180 * Math.PI);
+    double totalVolts = pidVolts + kGVolts + kSVolts;
+    SmartDashboard.putNumber("ffVolts", kSVolts + kGVolts);
     SmartDashboard.putNumber("totalVolts", totalVolts);
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)

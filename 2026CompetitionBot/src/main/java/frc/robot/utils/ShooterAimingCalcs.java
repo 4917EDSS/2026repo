@@ -73,7 +73,7 @@ public class ShooterAimingCalcs {
   }
 
   public double calculateShooterYawDegrees(Pose2d current, Pose2d target) {
-    double robotYawAngle = current.getRotation().getDegrees(); //robot angle 0 to 360
+    double robotYawAngle = current.getRotation().getDegrees(); //robot angle -180 to 180
     double targetYawAngle =
         Math.toDegrees(Math.atan2(target.getY() - current.getY(), target.getX() - current.getX()));
     // System.out.println((target.getY() - current.getY()) + ", " + (target.getX() - current.getX()));

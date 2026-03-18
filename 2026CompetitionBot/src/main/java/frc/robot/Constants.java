@@ -61,6 +61,7 @@ public final class Constants {
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 120.0;
     public static final double kSingulatorMaxVoltage = 12.0;
+    public static final double kSingulatorFeedVoltage = 4.0;
     public static final double kSingulatorKS = 0.25;
     public static final double kSingulatorKV = 0.04;
     public static final double kSingulatorKP = 0.5;
@@ -68,7 +69,7 @@ public final class Constants {
     public static final double kSingulatorKD = 0.0;
 
     public static final double kEscalatorEncoderToRpsConversionFactor = 3.0;
-    public static final double kEscalatorFeedSpeedRps = 30.0;
+    public static final double kEscalatorFeedSpeedRps = 30;
     public static final double kEscalatorMaxVelocityRotPerSec = 31.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
     public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795 / 2; //  inches diamater to meters / 2
     public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2
@@ -85,14 +86,12 @@ public final class Constants {
   public static class Intake {
     // TODO:  Set all the values correctly
     public static final double kDeployEncoderToDegConversionFactor = 2.72244; // Gearing is 0.014368 (approx 1:69.5)
-    public static final double kDeployInAngleDeg = -45.0;
+    public static final double kDeployInAngleDeg = -90.0;
+    public static final double kDeployBumpAngleDeg = -45.0; //it will never get to this angle (this is on purpose)
     public static final double kDeployOutAngleDeg = 8.8;
-    public static final double kDeployMaxGravityDeg = 115.0;
     public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxCurrent = 120.0;
     public static final double kDeployMaxVoltage = 6.0;
-    public static final double kDeployMaxVelocityDegPerSec = 350.0;
-    public static final double kDeployMaxAccelerationDegPerSec = 1.0;
     public static final double kDeployKS = 0.4;
     public static final double kDeployKG = 0.0;
     public static final double kDeployKP = 0.014;
