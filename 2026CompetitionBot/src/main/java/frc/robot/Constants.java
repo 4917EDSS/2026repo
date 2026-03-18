@@ -100,7 +100,7 @@ public final class Constants {
     public static final double kDeployKD = 0.0;
 
     public static final double kBeltMaxCurrent = 120.0;
-    public static final double kBeltVoltage = 12.0;
+    public static final double kBeltTargetVoltage = 6.0;
   }
 
   public static class Shooter {
@@ -144,6 +144,7 @@ public final class Constants {
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
     public static final double kFlywheelMaxCurrent = 120.0;
     public static final double kFlywheelMaxVoltage = 12.0;
+    public static final double kFlywheelTargetVelocityRotsPerSec = 70.0;
     public static final double kFlywheelKS = 0.055;
     public static final double kFlywheelKV = 0.0789;
     public static final double kFlywheelKP = 0.5;//ADD FLYWHELL PID
