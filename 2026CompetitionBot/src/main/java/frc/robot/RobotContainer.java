@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
@@ -139,14 +140,22 @@ public class RobotContainer {
     }, () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
 
     // Driver Right Bumper
-    m_driverController.rightBumper().whileTrue(new ShootCmd(m_hopperSub));
+    m_driverController.rightBumper().whileTrue(new InstantCommand(() -> {
+      m_hopperSub.disableEscalatorAutomation();
+      m_hopperSub.setSingulatorPower(0.0);
+      m_shooterSub.disableFlywheelAutomation();
+    }, m_shooterSub, m_hopperSub));
 
     // Driver Left Trigger
     m_driverController.leftTrigger().whileTrue(new IntakeToggleCmd(m_hopperSub, m_intakeSub));
-
     // Driver Right Trigger
-    m_driverController.rightTrigger().whileTrue(new StartEndCommand(() -> m_hopperSub.setShooting(),
-        () -> m_hopperSub.disableShooting(), m_hopperSub));
+    m_driverController.rightTrigger().onTrue(new InstantCommand(() -> {
+      m_shooterSub.setTargetFlywheelVelocity(Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
+      new WaitUntilCommand(() -> m_shooterSub.isAtTargetFlywheelVelocity());
+      m_hopperSub.setEscalatorTargetVelocity(Constants.Hopper.kEscalatorFeedSpeed);
+      new WaitUntilCommand(() -> m_hopperSub.isEscalatorAtTargetVelocity());
+      m_hopperSub.setSingulatorPower(Constants.Hopper.kSingulatorMaxPower);
+    }, m_shooterSub, m_hopperSub));
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading 
