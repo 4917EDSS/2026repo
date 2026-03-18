@@ -97,7 +97,7 @@ public class IntakeSub extends SubsystemBase {
   public void init() {
     m_logger.info("Initializing IntakeSub Subsystem");
     disableDeployAutomation();
-    setDeployPower(0.0);
+    setDeployVoltage(0.0);
     m_beltMotor.set(0.0);
     SmartDashboard.putNumber("totalVolts", 0.0);
   }
@@ -113,17 +113,8 @@ public class IntakeSub extends SubsystemBase {
     runDeployAngleControl(m_deployAutomationEnabled);
   }
 
-  public void setBeltPower(double power) {
-    m_beltMotor.set(power);
-  }
-
   public void setBeltVoltage(double volts) {
     m_beltMotor.setVoltage(volts);
-  }
-
-  public void setDeployPower(double power) {
-    SmartDashboard.putNumber("Intake Deploy Power", m_deployMotor.get());
-    m_deployMotor.set(power);
   }
 
   public void setDeployVoltage(double volts) {
@@ -155,7 +146,7 @@ public class IntakeSub extends SubsystemBase {
 
   public void disableDeployAutomation() {
     m_deployAutomationEnabled = false;
-    setDeployPower(0.0);
+    setDeployVoltage(0.0);
   }
 
   public void setTargetDeployAngle(double angleDeg) {
@@ -183,7 +174,7 @@ public class IntakeSub extends SubsystemBase {
     SmartDashboard.putNumber("totalVolts", totalVolts);
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
-    MathUtil.clamp(totalVolts, -Constants.Intake.kDeployMaxPower * 12, Constants.Intake.kDeployMaxPower * 12);
+    MathUtil.clamp(totalVolts, -Constants.Intake.kDeployMaxVoltage, Constants.Intake.kDeployMaxVoltage);
 
     // Sets 'safety zones' so that we don't bash into our limits
     // if(currentAngle <= Constants.Intake.kDeployInAngleDeg + Constants.Intake.kDeploySafetyZoneSize
@@ -224,7 +215,7 @@ public class IntakeSub extends SubsystemBase {
   public void runDeploySysIdVolts(double volts) {
 
     // Make sure we don't exceed our maxiumum allowed power (relative to 12.0 volts)
-    volts = MathUtil.clamp(volts, -(Constants.Intake.kDeployMaxPower * 12.0), Constants.Intake.kDeployMaxPower * 12.0);
+    volts = MathUtil.clamp(volts, -(Constants.Intake.kDeployMaxVoltage), Constants.Intake.kDeployMaxVoltage);
 
     setDeployVoltage(volts);
   }

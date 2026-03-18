@@ -153,9 +153,9 @@ public class ShooterSub extends SubsystemBase {
     disableYawAutomation();
     m_pitchHasBeenReset = false;
     m_yawHasBeenReset = false;
-    setFlywheelPower(0.0);
-    setPitchPower(0.0);
-    setYawPower(0.0);
+    setFlywheelVoltage(0.0);
+    setPitchVoltage(0.0);
+    setYawVoltage(0.0);
   }
 
   @Override
@@ -256,20 +256,6 @@ public class ShooterSub extends SubsystemBase {
   //   System.out.println("yaw" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
   // }
 
-  public void setYawPower(double power) {
-    SmartDashboard.putNumber("Sht Yaw Power", power);
-    m_yawMotor.set(power);
-  }
-
-  public void setPitchPower(double power) {
-    SmartDashboard.putNumber("Sht Ptc Power", power);
-    m_pitchMotor.set(power);
-  }
-
-  public void setFlywheelPower(double power) {
-    m_flywheelMotorL.set(power);
-    // Motor 2 should follow motor 1
-  }
 
   public void setYawVoltage(double volts) {
     m_yawMotor.setVoltage(volts);
@@ -370,7 +356,7 @@ public class ShooterSub extends SubsystemBase {
 
   public void disableYawAutomation() {
     m_yawAutomationEnabled = false;
-    setYawPower(0.0);
+    setYawVoltage(0.0);
   }
 
   public void setTargetYawAngle(double angleDeg) {
@@ -406,7 +392,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("pidvolts", pidVolts);
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
-    totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxPower * 12, Constants.Shooter.kYawMaxPower * 12);
+    totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxVoltage, Constants.Shooter.kYawMaxVoltage);
 
     if(setPower && !Double.isNaN(totalVolts)) {
       //setYawVoltage(totalVolts);
@@ -420,7 +406,7 @@ public class ShooterSub extends SubsystemBase {
 
   public void disablePitchAutomation() {
     m_pitchAutomationEnabled = false;
-    setPitchPower(0.0);
+    setPitchVoltage(0.0);
   }
 
   public void setTargetPitchAngle(double angleDeg) {
@@ -451,7 +437,7 @@ public class ShooterSub extends SubsystemBase {
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
     totalVolts =
-        MathUtil.clamp(totalVolts, -Constants.Shooter.kPitchMaxPower * 12, Constants.Shooter.kPitchMaxPower * 12);
+        MathUtil.clamp(totalVolts, -Constants.Shooter.kPitchMaxVoltage, Constants.Shooter.kPitchMaxVoltage);
 
     if(setPower && !Double.isNaN(totalVolts)) {
       setPitchVoltage(totalVolts);
@@ -508,7 +494,7 @@ public class ShooterSub extends SubsystemBase {
     }
     //set the volts
     setYawVoltage(
-        MathUtil.clamp(volts, -(Constants.Shooter.kYawMaxPower * 12.0), (Constants.Shooter.kYawMaxPower * 12.0)));
+        MathUtil.clamp(volts, -(Constants.Shooter.kYawMaxVoltage), (Constants.Shooter.kYawMaxVoltage)));
   }
 
   public Command yawSysIdQuasistatic(SysIdRoutine.Direction dir) {
@@ -544,7 +530,7 @@ public class ShooterSub extends SubsystemBase {
     }
     //set the volts
     setPitchVoltage(
-        MathUtil.clamp(volts, -(Constants.Shooter.kPitchMaxPower * 12.0), (Constants.Shooter.kPitchMaxPower * 12.0)));
+        MathUtil.clamp(volts, -(Constants.Shooter.kPitchMaxVoltage), (Constants.Shooter.kPitchMaxVoltage)));
   }
 
   public Command pitchSysIdQuasistatic(SysIdRoutine.Direction dir) {
@@ -580,8 +566,8 @@ public class ShooterSub extends SubsystemBase {
 
     // Check if we're at max power
     volts =
-        MathUtil.clamp(volts, -(Constants.Shooter.kFlywheelMaxPower * 12.0),
-            (Constants.Shooter.kFlywheelMaxPower * 12.0));
+        MathUtil.clamp(volts, -(Constants.Shooter.kFlywheelMaxVoltage),
+            (Constants.Shooter.kFlywheelMaxVoltage));
     setFlywheelVoltage(volts);
   }
 

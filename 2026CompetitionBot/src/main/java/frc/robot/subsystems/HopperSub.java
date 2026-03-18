@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.logging.Logger;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -26,8 +25,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 
 public class HopperSub extends SubsystemBase {
-  private static Logger m_logger = Logger.getLogger(ClimbSub.class.getName());
-
   // IMPORTANT: The term singulator refers to the mechanism in the hopper which aligns the balls. 
   // The escalator forces the balls into the shooter.
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kHopperSingulatorMotor);
@@ -96,7 +93,6 @@ public class HopperSub extends SubsystemBase {
   }
 
   public void init() {
-    m_logger.info("Initializing HopperSub Subsystem");
     disableEscalatorAutomation();
     setEscalatorVoltage(0.0);
     setSingulatorVoltage(0.0);
@@ -154,18 +150,9 @@ public class HopperSub extends SubsystemBase {
     System.out.println("Escalator" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
   }
 
-  public void setSingulatorPower(double power) {
-    // Disable TalonFX velocity control to stop interferring 
-    m_singulatorMotor.set(power);
-  }
-
   public void setSingulatorVoltage(double volts) {
     SmartDashboard.putNumber("Hop Sin Volts", volts);
     m_singulatorMotor.setVoltage(volts);
-  }
-
-  public void setEscalatorPower(double power) {
-    m_escalatorMotor.set(power);
   }
 
   public void setEscalatorVoltage(double volts) {
@@ -282,8 +269,8 @@ public class HopperSub extends SubsystemBase {
 
   ////////////////////////////// Escalator SysId and Tests //////////////////////////////
   private void runEscalatorSysIdVolts(double volts) {
-    volts = MathUtil.clamp(volts, -(Constants.Hopper.kEscalatorMaxPower * 12.0),
-        (Constants.Hopper.kEscalatorMaxPower * 12.0));
+    volts = MathUtil.clamp(volts, -(Constants.Hopper.kEscalatorMaxVoltage),
+        (Constants.Hopper.kEscalatorMaxVoltage));
     setEscalatorVoltage(volts);
     // TODO: Implement this
   }
@@ -314,9 +301,9 @@ public class HopperSub extends SubsystemBase {
 
   ////////////////////////////// Singulator SysId and Tests //////////////////////////////
   public void runSingulatorSysIdVolts(double volts) {
-    //check if we're at max power
-    setSingulatorVoltage(MathUtil.clamp(volts, -(Constants.Hopper.kSingulatorMaxPower * 12.0),
-        (Constants.Hopper.kSingulatorMaxPower * 12.0)));
+    //check if we're at max voltage
+    setSingulatorVoltage(MathUtil.clamp(volts, -(Constants.Hopper.kSingulatorMaxVoltage),
+        (Constants.Hopper.kSingulatorMaxVoltage)));
   }
 
   public Command singulatorSysIdQuasistaticCmd(SysIdRoutine.Direction dir) {
