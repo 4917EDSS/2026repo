@@ -89,7 +89,7 @@ public final class Constants {
   public static class Hopper {
     // TODO:  Set all the values correctly
     public static final double kSingulatorEncoderToRpsConversionFactor = 2.5; // Gearing TBD
-    public static final double kSingulatorMaxVelocityRotPerSec = 20.0; // Throughput must be slower than Escalator to avoid jams
+    public static final double kSingulatorMaxVelocityRps = 20.0; // Throughput must be slower than Escalator to avoid jams
     public static final double kSinglatorRpsToMpsConversionFactor = 0.63403070014 * 0.6; //  // 4 inches diamater to metters / 2
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 120.0;
@@ -101,7 +101,7 @@ public final class Constants {
     public static final double kSingulatorKD = 0.0;
 
     public static final double kEscalatorEncoderToRpsConversionFactor = 3.0;
-    public static final double kEscalatorFeedSpeed = 30.0;
+    public static final double kEscalatorFeedSpeedRps = 30.0;
     public static final double kEscalatorMaxVelocityRotPerSec = 31.0; // Throughput must be faster than Singulator but slower than Shooter to avoid jams
     public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795 / 2; //  inches diamater to meters / 2
     public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2
