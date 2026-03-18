@@ -374,7 +374,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setTargetYawAngle(double angleDeg) {
-    angleDeg %= 360;
+    angleDeg = (angleDeg + 180) % 360;
     if(angleDeg > Constants.Shooter.kYawMaxAngleDeg) {
       angleDeg = 155.0;
     }
