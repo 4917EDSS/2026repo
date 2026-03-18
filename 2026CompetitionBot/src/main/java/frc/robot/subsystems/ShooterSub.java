@@ -204,7 +204,7 @@ public class ShooterSub extends SubsystemBase {
       }
     }
 
-    if(isAtYawAtCWLimit() && (getYawAngleDeg() > 10 || getYawAngleDeg() < -10)) {
+    if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 10 || getYawAngleDeg() < -10)) {
       m_yawSwitchHitCounter += 1;
       if(m_yawSwitchHitCounter == 3) {
         resetYawEncoder();
@@ -360,7 +360,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setTargetYawAngle(double angleDeg) {
-    angleDeg = angleDeg + 180;
+    angleDeg = angleDeg % 360;
     if(Constants.Shooter.kYawDeadzoneMin < angleDeg && angleDeg > Constants.Shooter.kYawDeadzoneMax) {
       angleDeg = 205.0;
     }

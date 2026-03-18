@@ -157,6 +157,7 @@ void UnknownMessageCallback(uint32_t id, const frc::CANData& data) {
 void sensorInit(int numSensors) {
   // Sensor status - default to true for each sensor because they might not be all connected
   bool sensorStatus = true;
+  bool sensorBroken[4] = {false, false, false, false};
 
   // Define the global variable with the number of sensors that we are operating with
   numSensorsOperating = numSensors;
@@ -175,21 +176,46 @@ void sensorInit(int numSensors) {
     if(!initializeRangeSensor(rangeSensors[i], adresses[i], xshuts[i])) {
       // If a sensor is clapped, stop! 
       sensorStatus = false;
+      sensorBroken[i] = true;
       break;
     }
   }
 
   // One of the sensors is clapped, stop the initialization process
   if (!sensorStatus) {
-    // Display the clapped sensors warning
-    drawClapped();
-
+    // Find the clapped sensor
+    int clappedSensor;
+    for(int i = 0; i < 4; i++) {
+      // If we have found the false sensor in the array, save the index at which it was found
+      if (sensorBroken[i]) {
+        clappedSensor = i;
+      }
+    }
+    
     // Flash LED to make it more obvoius
     while(true) {
       digitalWrite(redLed, HIGH);
-      delay(500);
+      display.clearDisplay();
+      // Display the clapped sensors warning
+      drawClapped();
+
+      delay(1000);
+      
       digitalWrite(redLed, LOW);
-      delay(500);
+      // Display the number that's broken
+      display.clearDisplay();
+      display.setTextSize(2);      // Normal 1:1 pixel scale
+      display.setTextColor(SSD1306_WHITE); // Draw white text
+      display.setCursor(0, 0);     // Start at top-left corner
+      display.cp437(true);         // Use full 256 char 'Code Page 437' font
+      
+      char buffer[100];
+      sprintf(buffer, "SENSOR %d", clappedSensor+1);
+      
+      display.write(buffer);
+      display.display();
+
+      delay(1000);
     }
     
     //while(1);
@@ -411,6 +437,5 @@ void drawClapped(void) {
     0,
     clapped_warning_bmp, 128, 32, 1);
   display.display();
-  delay(1000);
 }
 

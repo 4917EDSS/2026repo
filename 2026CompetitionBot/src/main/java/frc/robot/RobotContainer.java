@@ -166,7 +166,7 @@ public class RobotContainer {
                     () -> m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps)))
                 .andThen(new WaitUntilCommand(() -> m_hopperSub.isEscalatorAtTargetVelocity()))
                 .andThen(
-                    new InstantCommand(() -> m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorMaxVoltage)))
+                    new InstantCommand(() -> m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorFeedVoltage)))
                 .andThen(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage))));
 
 
