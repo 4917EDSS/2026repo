@@ -92,6 +92,8 @@ public final class Constants {
     public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxCurrent = 120.0;
     public static final double kDeployMaxVoltage = 6.0;
+    public static final double kDeployRetractVoltage = 2.0; //voltage for retracting intake
+    public static final double kDeployDeployVoltage = 2.0; //voltage for deploying intake
     public static final double kDeployKS = 0.8;
     public static final double kDeployKG = 0.0;
     public static final double kDeployKP = 0.028;
