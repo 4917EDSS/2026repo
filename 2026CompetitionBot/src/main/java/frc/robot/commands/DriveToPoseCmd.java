@@ -96,7 +96,7 @@ public class DriveToPoseCmd extends Command {
       rotPower = 0.0;
     }
 
-    System.out.println(m_error.getRotation().getDegrees());
+    //System.out.println(m_error.getRotation().getDegrees());
 
     m_drivetrainSub.setControl(m_autoDrive.withVelocityX(-xPower).withVelocityY(-yPower).withRotationalRate(rotPower));
   }
@@ -113,8 +113,8 @@ public class DriveToPoseCmd extends Command {
     if((Math.abs(m_error.getX()) < xThreshold)
         && (Math.abs(m_error.getY()) < yThreshold)
         && (Math.abs(m_error.getRotation().getDegrees()) < rotThreshold)) {
-      System.out.println(
-          "##########################################################################################################");
+      //System.out.println(
+      // "##########################################################################################################");
       return true;
     }
     return false;

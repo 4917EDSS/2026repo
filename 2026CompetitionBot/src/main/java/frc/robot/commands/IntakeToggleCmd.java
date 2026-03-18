@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 
 /*
@@ -15,20 +14,18 @@ import frc.robot.subsystems.IntakeSub;
  */
 public class IntakeToggleCmd extends Command {
   private final IntakeSub m_intakeSub;
-  private final HopperSub m_hopperSub;
   private Boolean m_deploy;
 
   /** Creates a new IntakeDeployCmd. */
-  public IntakeToggleCmd(HopperSub hopperSub, IntakeSub intakeSub) {
+  public IntakeToggleCmd(IntakeSub intakeSub) {
     m_intakeSub = intakeSub;
-    m_hopperSub = hopperSub;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSub);
   }
 
-  public IntakeToggleCmd(HopperSub hopperSub, IntakeSub intakeSub, Boolean deploy) {
-    this(hopperSub, intakeSub);
+  public IntakeToggleCmd(IntakeSub intakeSub, Boolean deploy) {
+    this(intakeSub);
     m_deploy = deploy;
   }
 

@@ -30,7 +30,6 @@ public class VisionSub extends SubsystemBase {
   private static String LEFT = "limelight-left";
   private static String MIDDLE = "limelight-middle";
   private static String RIGHT = "limelight-right";
-  private static String currentLimelight;
   private static Logger m_logger = Logger.getLogger(VisionSub.class.getName());
 
   // Variables to track field posistion
@@ -140,7 +139,6 @@ public class VisionSub extends SubsystemBase {
       botposeblue = m_botposeblueL.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", true);
       updateOdometryLeft(m_drivetrainSub.getState());
-      currentLimelight = LEFT;
 
     } else {
       id = m_tidR.getInteger(0);
@@ -156,7 +154,6 @@ public class VisionSub extends SubsystemBase {
       botposeblue = m_botposeblueR.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", false);
       updateOdometryRight(m_drivetrainSub.getState());
-      currentLimelight = RIGHT;
     }
 
     // This method will be called once per scheduler run
@@ -184,13 +181,9 @@ public class VisionSub extends SubsystemBase {
         && ticksSincePoseUpdate >= 300) {
       m_drivetrainSub.resetPose(getEstimatedPose());
       ticksSincePoseUpdate = 0;
-      System.out.println("Robot Pose Updated!");
     } else {
       ticksSincePoseUpdate++;
     }
-
-    System.out.println(a + ", " + ticksSincePoseUpdate);
-
   }
 
   public Pose2d getTagPose2d() {
@@ -225,18 +218,18 @@ public class VisionSub extends SubsystemBase {
   }
 
   public Pose2d getEstimatedPose() {
-    System.out.println(botposeblue[0] + ", " + botposeblue[1]);
     return new Pose2d(botposeblue[0], botposeblue[1], m_drivetrainSub.getPose().getRotation());
   }
 
-  public double calculateStandardDeviation() {
+  public double calculateStandardDeviation(int numOfTags) {
+    double numOfTagsDouble = numOfTags;
     double distFromTag = new Translation3d(botposeTarget[0], botposeTarget[1], botposeTarget[2]).getNorm();
     double areaOfTag = a;
-    double calculatedSTD = Constants.Vision.kStandardDeviation
+    double calculatedSTD = (Constants.Vision.kStandardDeviation
         + (distFromTag - Constants.Vision.kDistanceTrustThreshold) * Constants.Vision.kDistanceWeight
-        - (areaOfTag - Constants.Vision.kAreaTrustThreshold) * Constants.Vision.kAreaWeight;
+        - (areaOfTag - Constants.Vision.kAreaTrustThreshold) * Constants.Vision.kAreaWeight) / numOfTagsDouble;
     SmartDashboard.putNumber("std", calculatedSTD);
-    return MathUtil.clamp(calculatedSTD, 0.2, 1.0);
+    return MathUtil.clamp(calculatedSTD, 0.0, 10.0);
   }
 
   private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
@@ -251,7 +244,7 @@ public class VisionSub extends SubsystemBase {
     if(timestamp > m_previousTimestamp) {
       m_previousTimestamp = timestamp;
 
-      double standardDeviation = calculateStandardDeviation(); // 0.7 is a good starting value according to limelight docs.
+      double standardDeviation = calculateStandardDeviation(mt2.tagCount); // 0.7 is a good starting value according to limelight docs.
 
       if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than
                                                                             // 360 degrees per second, ignore vision
