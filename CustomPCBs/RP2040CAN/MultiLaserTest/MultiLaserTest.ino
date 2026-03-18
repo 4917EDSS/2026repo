@@ -135,24 +135,18 @@ void sensorInit(int numSensors) {
 
   // One of the sensors is clapped, stop the initialization process
   if (!sensorStatus) {
-    /*
-    // Display shenanigans (TELL THE PIT CREW THE SENSORS ARE CLAPPED)
-    display.clearDisplay();
-    display.setTextSize(1);      // Normal 1:1 pixel scale
-    display.setTextColor(SSD1306_WHITE); // Draw white text
-    display.setCursor(0, 0);     // Start at top-left corner
-    display.cp437(true);         // Use full 256 char 'Code Page 437' font
-    display.write("CONNECTED SENSORS \nCLAPPED!");
-    display.display();
-    */
+    // Display the clapped sensors warning
     drawClapped();
 
+    // Flash LED to make it more obvoius
     while(true) {
       digitalWrite(redLed, HIGH);
       delay(500);
       digitalWrite(redLed, LOW);
       delay(500);
     }
+    
+    //while(1);
   }
 
   // Start the sensors that we need to intitialize (connected ones)
