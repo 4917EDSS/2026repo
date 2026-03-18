@@ -71,11 +71,14 @@ public class ShooterSub extends SubsystemBase {
   private boolean m_pitchHasBeenReset = false;
   private boolean m_yawHasBeenReset = false;
   private int m_yawSwitchHitCounter = 0;
+  private double m_pitchKS;
+  private double m_pitchKG;
+  private double m_yawKS;
 
   private double m_lastYawEncoderRots = 0.0;
   private double m_currentYawEncoderRots = 0.0;
   private double m_deltaYaw = 0.0;
-  private int m_yawRotationCount = 0;
+  private int m_yawRotationCount = 3;
 
   /** Creates a new ShooterSub. */
   public ShooterSub() { // Motor Configs need to be tested
@@ -170,6 +173,8 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
     SmartDashboard.putNumber("Sht Yaw Power", m_yawMotor.get());
     SmartDashboard.putNumber("Sht Yaw Amps", m_yawMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Sht Yaw Enc Rot", m_currentYawEncoderRots);
+    SmartDashboard.putNumber("Yaw Rot Count", m_yawRotationCount);
     // Yaw power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Ptc Auto", m_pitchAutomationEnabled);
@@ -194,7 +199,7 @@ public class ShooterSub extends SubsystemBase {
       m_pitchHasBeenReset = true;
     }
 
-    if(!m_yawHasBeenReset && isAtYawAtCWLimit()) {
+    if(!m_yawHasBeenReset && isAtYawAtCCWLimit()) {
       m_yawSwitchHitCounter += 1;
 
       if(m_yawSwitchHitCounter == 3) {
@@ -204,13 +209,13 @@ public class ShooterSub extends SubsystemBase {
       }
     }
 
-    if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 10 || getYawAngleDeg() < -10)) {
-      m_yawSwitchHitCounter += 1;
-      if(m_yawSwitchHitCounter == 3) {
-        resetYawEncoder();
-        m_yawSwitchHitCounter = 0;
-      }
-    }
+    // if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 10 || getYawAngleDeg() < -10)) {
+    //   m_yawSwitchHitCounter += 1;
+    //   if(m_yawSwitchHitCounter == 3) {
+    //     resetYawEncoder();
+    //     m_yawSwitchHitCounter = 0;
+    //   }
+    // }
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
@@ -241,20 +246,19 @@ public class ShooterSub extends SubsystemBase {
 
   }
 
-  // public void setPitchTuningConstants(double kS, double kV, double kP, double kI, double kD, double kG) {
-  //   m_pitchFeedforward.setKg(kG);
-  //   m_pitchFeedforward.setKv(kV);
-  //   m_pitchFeedforward.setKs(kS);
-  //   m_pitchPidController.setPID(kP, kI, kD);
-  //   System.out.println("pitch" + kS + "," + kV + "," + kP + "," + kI + "," + kD + "," + kG);
-  // }
+  public void setPitchTuningConstants(double kS, double kG, double kP, double kI, double kD) {
+    m_pitchKS = kS;
+    // m_pitchFeedforward.setKv(kV);
+    m_pitchKG = kG;
+    m_pitchPidController.setPID(kP, kI, kD);
+    System.out.println("pitch" + "," + "," + kP + "," + kI + "," + kD);
+  }
 
-  // public void setYawTuningConstants(double kS, double kV, double kP, double kI, double kD) {
-  //   m_yawFeedforward.setKv(kV);
-  //   m_yawFeedforward.setKs(kS);
-  //   m_yawPidController.setPID(kP, kI, kD);
-  //   System.out.println("yaw" + kS + "," + kV + "," + kP + "," + kI + "," + kD + ",");
-  // }
+  public void setYawTuningConstants(double kS, double kP, double kI, double kD) {
+    m_yawKS = kS;
+    m_yawPidController.setPID(kP, kI, kD);
+    System.out.println("yaw" + kS + "," + kP + "," + kI + "," + kD + ",");
+  }
 
 
   public void setYawVoltage(double volts) {
@@ -272,7 +276,8 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public double getYawAngleDeg() {
-    return (m_yawRotationCount + m_currentYawEncoderRots) * Constants.Shooter.kYawEncoderToDegConversionFactor;
+    return ((m_yawRotationCount + m_currentYawEncoderRots) * Constants.Shooter.kYawEncoderToDegConversionFactor
+        + Constants.Shooter.kYawEncoderToDegConversionFactor / 2);
   }
 
   public double getYawVelocityDegPerSec() {
@@ -306,9 +311,9 @@ public class ShooterSub extends SubsystemBase {
     // Checks if the current rotation is far from 0, if so sets our rotation count to -1
     // This stops us from accidentaly missing entire rotations
     if(currentRots > 0.75) {
-      m_yawRotationCount = -1;
+      m_yawRotationCount = 3;
     } else {
-      m_yawRotationCount = 0;
+      m_yawRotationCount = 4;
     }
     m_lastYawEncoderRots = currentRots;
     m_currentYawEncoderRots = currentRots;
@@ -360,13 +365,14 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void setTargetYawAngle(double angleDeg) {
-    angleDeg = angleDeg % 360;
-    if(Constants.Shooter.kYawDeadzoneMin < angleDeg && angleDeg > Constants.Shooter.kYawDeadzoneMax) {
+    SmartDashboard.putNumber("angledeg", angleDeg);
+    angleDeg = angleDeg % 360.0;
+    if(Constants.Shooter.kYawDeadzoneMin < angleDeg && angleDeg < Constants.Shooter.kYawDeadzoneMax) {
       angleDeg = 205.0;
     }
     m_targetYawAngleDeg = angleDeg;
     m_yawPidController.setSetpoint(angleDeg);
-    runYawControl(false);
+    runYawControl(true);
     enableYawAutomation();
   }
 
@@ -384,7 +390,7 @@ public class ShooterSub extends SubsystemBase {
 
     double currentAngle = getYawAngleDeg();
     double pidVolts = m_yawPidController.calculate(currentAngle);
-    double ffVolts = Constants.Shooter.kYawKS * Math.signum(pidVolts);
+    double ffVolts = m_yawKS * Math.signum(pidVolts);
     double totalVolts = pidVolts;
     if(!m_yawPidController.atSetpoint()) {
       totalVolts += ffVolts;
@@ -395,7 +401,7 @@ public class ShooterSub extends SubsystemBase {
     totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxVoltage, Constants.Shooter.kYawMaxVoltage);
 
     if(setPower && !Double.isNaN(totalVolts)) {
-      //setYawVoltage(totalVolts);
+      setYawVoltage(totalVolts);
     }
   }
 
@@ -412,7 +418,7 @@ public class ShooterSub extends SubsystemBase {
   public void setTargetPitchAngle(double angleDeg) {
     m_targetPitchAngleDeg =
         MathUtil.clamp(angleDeg, Constants.Shooter.kPitchMinAngleDeg + 2, Constants.Shooter.kPitchMaxAngleDeg - 2);
-    m_pitchPidController.reset();
+    // m_pitchPidController.reset();
     m_pitchPidController.setSetpoint(angleDeg);
     runPitchControl(true);
     enablePitchAutomation();
@@ -431,7 +437,8 @@ public class ShooterSub extends SubsystemBase {
 
     double currentAngle = getPitchAngleDeg();
     double pidVolts = m_pitchPidController.calculate(currentAngle);
-    double ffVolts = Constants.Shooter.kPitchKS * Math.signum(pidVolts) + Constants.Shooter.kPitchKG;
+    double kGVolts = m_pitchKG * Math.cos(-currentAngle / 180 * Math.PI);
+    double ffVolts = m_pitchKS * Math.signum(pidVolts) + kGVolts;
     double totalVolts = pidVolts + ffVolts;
 
 

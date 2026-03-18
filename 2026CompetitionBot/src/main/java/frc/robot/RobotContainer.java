@@ -150,8 +150,8 @@ public class RobotContainer {
     // Driver Left Trigger
     m_driverController.leftTrigger()
         .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage), m_intakeSub)
-            .andThen(new IntakeSetPositionCmd(-45.0, 2.0, m_intakeSub)));
-    //  .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
+            .andThen(new IntakeSetPositionCmd(Constants.Intake.kDeployOutAngleDeg, 2.0, m_intakeSub)
+                .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
 
     // Driver Right Trigger
     m_driverController.rightTrigger().onTrue(
@@ -185,7 +185,7 @@ public class RobotContainer {
 
     // Driver POV Down
     m_driverController.povDown()
-        .onTrue(new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(5.0), m_shooterSub));
+        .onTrue(new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(40.0), m_shooterSub));
 
     // Driver POV Left
     m_driverController.povLeft()
@@ -220,8 +220,8 @@ public class RobotContainer {
             () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
 
     // Operator Y
-    m_operatorController.y().whileTrue(new StartEndCommand(() -> m_shooterSub.setTargetYawAngle(205.0),
-        () -> m_shooterSub.setTargetYawAngle(25.0), m_shooterSub));
+    m_operatorController.y().whileTrue(new StartEndCommand(() -> m_shooterSub.setTargetYawAngle(230.0),
+        () -> m_shooterSub.setTargetYawAngle(80.0), m_shooterSub));
 
     // Operator Left Bumper
     m_operatorController.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorVoltage(-2.0),
@@ -265,12 +265,11 @@ public class RobotContainer {
         new StartEndCommand(() -> m_shooterSub.setPitchVoltage(-2.0), () -> m_shooterSub.setPitchVoltage(0.0),
             m_shooterSub)));
 
-    // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_intakeSub.setDeployTuningConstants( //this is just for tuning, delete for competitions
+    // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setYawTuningConstants( //this is just for tuning, delete for competitions
     //     SmartDashboard.getNumber("kS", 0.0),
-    //     SmartDashboard.getNumber("kG", 0.0),
     //     SmartDashboard.getNumber("kP", 0.0),
     //     SmartDashboard.getNumber("kI", 0.0),
-    //     SmartDashboard.getNumber("kD", 0.0)), m_hopperSub));
+    //     SmartDashboard.getNumber("kD", 0.0)), m_shooterSub));
 
     // Operator POV Left
 

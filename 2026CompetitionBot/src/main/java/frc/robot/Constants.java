@@ -105,7 +105,7 @@ public final class Constants {
   public static class Shooter {
     // TODO:  Set all the values correctly
     public static final double kYawEncoderToDegConversionFactor = 180.0 / 2.2429;
-    public static final double kYawEncoderOffset = 0.0206;
+    public static final double kYawEncoderOffset = 0.9238491;
     public static final double kYawMinAngleDeg = 0.0;
     public static final double kYawMaxAngleDeg = 360.0;
     public static final double kYawMaxCurrent = 40.0;
@@ -115,8 +115,8 @@ public final class Constants {
     public static final double kYawMaxAccelerationDegPerSec = 36.0;
     public static final double kYawDeadzoneMin = 0.0;
     public static final double kYawDeadzoneMax = 50.0;
-    public static final double kYawKS = 1.5;
-    public static final double kYawKP = 0.03; //0.1;
+    public static final double kYawKS = 0.5;
+    public static final double kYawKP = 0.13;
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.0;
 
@@ -128,10 +128,10 @@ public final class Constants {
     public static final double kPitchTolerance = 1.0;
     public static final double kPitchMaxVelocityDegPerSec = 5.0;
     public static final double kPitchMaxAccelerationDegPerSec = 120.0;
-    public static final double kPitchKS = 0.5;
-    public static final double kPitchKG = 0.45;
+    public static final double kPitchKS = 0.03;
+    public static final double kPitchKG = 0.37;
     public static final double kPitchKV = 0.0;
-    public static final double kPitchKP = 0.35;
+    public static final double kPitchKP = 0.6;
     public static final double kPitchKI = 0.0;
     public static final double kPitchKD = 0.0;
 
