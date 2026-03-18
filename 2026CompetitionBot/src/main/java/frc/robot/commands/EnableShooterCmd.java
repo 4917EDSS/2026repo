@@ -44,7 +44,7 @@ public class EnableShooterCmd extends Command {
     while(!m_hopperSub.isEscalatorAtTargetVelocity()) {
 
     }
-    m_hopperSub.setSingulatorPower(Constants.Hopper.kSingulatorMaxPower);
+    m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorMaxVoltage);
     m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
   }
 
