@@ -25,7 +25,6 @@ import frc.robot.commands.AimCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
 import frc.robot.commands.IntakeToggleCmd;
 import frc.robot.commands.KillAllCmd;
-import frc.robot.commands.ShootCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.DrivetrainSub;
@@ -98,8 +97,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("IntakeDeployCmd", new IntakeToggleCmd(m_intakeSub, true));
 
     NamedCommands.registerCommand("IntakeRetractCmd", new IntakeToggleCmd(m_intakeSub, false));
-
-    NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub));
 
     NamedCommands.registerCommand("AimCmd", (new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub)));
 
