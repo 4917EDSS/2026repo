@@ -117,19 +117,19 @@ public class RobotContainer {
     m_driverController.a()
         .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub));
 
-    // // Driver B
+    // Driver B
     m_driverController.b().whileTrue(
         new StartEndCommand(() -> m_intakeSub.setDeployVoltage(-1.5), () -> {
           m_intakeSub.setDeployVoltage(0.0);
           m_intakeSub.disableDeployAutomation();
         }, m_intakeSub));
 
-    // // Driver X
+    // Driver X
     m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));
 
-    // // Driver Y
+    // Driver Y
     m_driverController.y()
-        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltVoltage), m_intakeSub));
+        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage), m_intakeSub));
 
     // Driver Left Bumper
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0)));

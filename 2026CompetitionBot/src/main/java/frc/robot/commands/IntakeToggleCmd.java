@@ -45,7 +45,7 @@ public class IntakeToggleCmd extends Command {
     if(m_deploy) {
       // If our previous target angle was in, deploy the intake
       m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployOutAngleDeg);
-      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltVoltage);
+      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
     } else {
       // If our previous target angle was out, retract the intake
       m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployInAngleDeg);
