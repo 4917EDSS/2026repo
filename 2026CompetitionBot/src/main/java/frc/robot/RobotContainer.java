@@ -150,13 +150,15 @@ public class RobotContainer {
                 .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
 
     // Driver Right Trigger
-    m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_shooterSub.setTargetFlywheelVelocity(70.0))
-        .andThen(new WaitUntilCommand(() -> m_shooterSub.isAtTargetFlywheelVelocity()))
-        .andThen(new InstantCommand(
-            () -> m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps)))
-        .andThen(new WaitUntilCommand(() -> m_hopperSub.isEscalatorAtTargetVelocity()))
-        .andThen(new InstantCommand(() -> m_hopperSub.setSingulatorPower(Constants.Hopper.kSingulatorMaxPower)))
-        .andThen(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage))));
+    m_driverController.rightTrigger().onTrue(
+        new InstantCommand(
+            () -> m_shooterSub.setTargetFlywheelVelocity(Constants.Shooter.kFlywheelTargetVelocityRotsPerSec))
+                .andThen(new WaitUntilCommand(() -> m_shooterSub.isAtTargetFlywheelVelocity()))
+                .andThen(new InstantCommand(
+                    () -> m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps)))
+                .andThen(new WaitUntilCommand(() -> m_hopperSub.isEscalatorAtTargetVelocity()))
+                .andThen(new InstantCommand(() -> m_hopperSub.setSingulatorPower(Constants.Hopper.kSingulatorMaxPower)))
+                .andThen(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage))));
 
 
     // Driver Back
