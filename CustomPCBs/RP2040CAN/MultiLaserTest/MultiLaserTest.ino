@@ -168,7 +168,7 @@ bool initializeRangeSensor(Adafruit_VL53L0X &sensor, uint8_t address, int xshut)
 
 void setup() {
   // Give the OLED time to boot
-  delay(1000);
+  delay(1500);
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
