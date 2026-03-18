@@ -181,6 +181,7 @@ public class RobotContainer {
     m_driverController.povLeft()
         .onTrue(
             new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(40.0), m_shooterSub));
+
     // Driver Left Stick
     m_driverController.leftStick()
         .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
@@ -208,57 +209,61 @@ public class RobotContainer {
         new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(25.0),
             () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
 
-
     // Operator Y
     m_operatorController.y().whileTrue(new StartEndCommand(() -> m_shooterSub.setTargetYawAngle(205.0),
         () -> m_shooterSub.setTargetYawAngle(25.0), m_shooterSub));
 
-
     // Operator Left Bumper
+    m_operatorController.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorVoltage(-2.0),
+        () -> m_hopperSub.setSingulatorVoltage(0.0), m_hopperSub));
 
     // Operator Right Bumper
+    m_operatorController.rightBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorVoltage(2.0),
+        () -> m_hopperSub.setSingulatorVoltage(0.0), m_hopperSub));
 
     // Operator Left Trigger
     m_operatorController.leftTrigger()
         .whileTrue(new InstantCommand(() -> m_hopperSub.disableEscalatorAutomation())
-            .andThen(new StartEndCommand(() -> m_hopperSub.setEscalatorTargetVelocity(150.0),
-                () -> m_hopperSub.setEscalatorTargetVelocity(0.0), m_hopperSub)));
+            .andThen(new StartEndCommand(() -> m_hopperSub.setEscalatorVoltage(2.0),
+                () -> m_hopperSub.setEscalatorVoltage(0.0), m_hopperSub)));
 
     // Operator Right Trigger
     m_operatorController.rightTrigger()
         .whileTrue(new InstantCommand(() -> m_shooterSub.disableFlywheelAutomation())
-            .andThen(new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(90.0),
-                () -> m_shooterSub.setTargetFlywheelVelocity(0.0), m_shooterSub)));
+            .andThen(new StartEndCommand(() -> m_shooterSub.setFlywheelVoltage(2.0),
+                () -> m_shooterSub.setFlywheelVoltage(0.0), m_shooterSub)));
 
     // Operator Back
-    m_operatorController.back().whileTrue(new StartEndCommand(() -> m_intakeSub.setDeployVoltage(2.0),
-        () -> m_intakeSub.setDeployVoltage(0.0), m_intakeSub));
+    m_operatorController.back().whileTrue(new InstantCommand(() -> m_shooterSub.disableYawAutomation()).andThen(
+        new StartEndCommand(() -> m_shooterSub.setYawVoltage(-2.0), () -> m_shooterSub.setYawVoltage(0.0),
+            m_shooterSub)));
 
     // Operator Start
-    m_operatorController.start().whileTrue(new StartEndCommand(() -> m_intakeSub.setDeployVoltage(-2.0),
-        () -> m_intakeSub.setDeployVoltage(0.0), m_intakeSub));
+    m_operatorController.start().whileTrue(new InstantCommand(() -> m_shooterSub.disableYawAutomation()).andThen(
+        new StartEndCommand(() -> m_shooterSub.setYawVoltage(2.0), () -> m_shooterSub.setYawVoltage(0.0),
+            m_shooterSub)));
 
     // Operator POV Up
-    m_operatorController.povUp().onTrue(
-        new InstantCommand(() -> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployInAngleDeg), m_intakeSub));
+    m_operatorController.povUp().onTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation()).andThen(
+        new StartEndCommand(() -> m_shooterSub.setPitchVoltage(2.0), () -> m_shooterSub.setPitchVoltage(0.0),
+            m_shooterSub)));
 
     // Operator POV Right
-    m_operatorController.povRight().whileTrue(
-        new StartEndCommand(() -> m_shooterSub.setYawVoltage(-2.0), () -> m_shooterSub.setYawVoltage(0.0),
-            m_shooterSub));
 
     // Operator POV Down
-    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_intakeSub.setDeployTuningConstants( //this is just for tuning, delete for competitions
-        SmartDashboard.getNumber("kS", 0.0),
-        SmartDashboard.getNumber("kG", 0.0),
-        SmartDashboard.getNumber("kP", 0.0),
-        SmartDashboard.getNumber("kI", 0.0),
-        SmartDashboard.getNumber("kD", 0.0)), m_hopperSub));
+    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation()).andThen(
+        new StartEndCommand(() -> m_shooterSub.setPitchVoltage(-2.0), () -> m_shooterSub.setPitchVoltage(0.0),
+            m_shooterSub)));
+
+    // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_intakeSub.setDeployTuningConstants( //this is just for tuning, delete for competitions
+    //     SmartDashboard.getNumber("kS", 0.0),
+    //     SmartDashboard.getNumber("kG", 0.0),
+    //     SmartDashboard.getNumber("kP", 0.0),
+    //     SmartDashboard.getNumber("kI", 0.0),
+    //     SmartDashboard.getNumber("kD", 0.0)), m_hopperSub));
 
     // Operator POV Left
-    m_operatorController.povLeft().whileTrue(
-        new StartEndCommand(() -> m_shooterSub.setYawVoltage(2.0), () -> m_shooterSub.setYawVoltage(0.0),
-            m_shooterSub));
+
     // Operator Left Stick
     m_operatorController.leftStick()
         .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
