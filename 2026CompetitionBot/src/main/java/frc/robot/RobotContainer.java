@@ -139,23 +139,24 @@ public class RobotContainer {
       m_hopperSub.disableEscalatorAutomation();
       m_hopperSub.setSingulatorPower(0.0);
       m_shooterSub.disableFlywheelAutomation();
-    }, m_shooterSub, m_hopperSub));
+      m_intakeSub.setBeltVoltage(0.0);
+    }, m_shooterSub, m_hopperSub, m_intakeSub));
 
     // Driver Left Trigger
     m_driverController.leftTrigger()
-        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(10.0))
+        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage))
             .andThen(new InstantCommand(() -> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployOutAngleDeg))
                 .andThen(new WaitUntilCommand(() -> m_intakeSub.isAtTargetDeployAngle()))
                 .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
 
     // Driver Right Trigger
-    m_driverController.rightTrigger().onTrue(new InstantCommand(() -> {
-      m_shooterSub.setTargetFlywheelVelocity(Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
-      new WaitUntilCommand(() -> m_shooterSub.isAtTargetFlywheelVelocity());
-      m_hopperSub.setEscalatorTargetVelocity(Constants.Hopper.kEscalatorFeedSpeed);
-      new WaitUntilCommand(() -> m_hopperSub.isEscalatorAtTargetVelocity());
-      m_hopperSub.setSingulatorPower(Constants.Hopper.kSingulatorMaxPower);
-    }, m_shooterSub, m_hopperSub));
+    m_driverController.rightTrigger().onTrue(new InstantCommand(() -> m_shooterSub.setTargetFlywheelVelocity(70.0))
+        .andThen(new WaitUntilCommand(() -> m_shooterSub.isAtTargetFlywheelVelocity()))
+        .andThen(new InstantCommand(() -> m_hopperSub.setEscalatorTargetVelocity(Constants.Hopper.kEscalatorFeedSpeed)))
+        .andThen(new WaitUntilCommand(() -> m_hopperSub.isEscalatorAtTargetVelocity()))
+        .andThen(new InstantCommand(() -> m_hopperSub.setSingulatorPower(Constants.Hopper.kSingulatorMaxPower)))
+        .andThen(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage))));
+
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading 
