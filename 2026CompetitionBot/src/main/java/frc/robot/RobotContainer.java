@@ -143,7 +143,7 @@ public class RobotContainer {
 
     // Driver Left Trigger
     m_driverController.leftTrigger()
-        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(10.0))
+        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(6.0))
             .andThen(new InstantCommand(() -> m_intakeSub.setTargetDeployAngle(Constants.Intake.kDeployOutAngleDeg))
                 .andThen(new WaitUntilCommand(() -> m_intakeSub.isAtTargetDeployAngle()))
                 .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
@@ -152,7 +152,7 @@ public class RobotContainer {
     m_driverController.rightTrigger().onTrue(new InstantCommand(() -> {
       m_shooterSub.setTargetFlywheelVelocity(Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
       new WaitUntilCommand(() -> m_shooterSub.isAtTargetFlywheelVelocity());
-      m_hopperSub.setEscalatorTargetVelocity(Constants.Hopper.kEscalatorFeedSpeed);
+      m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps);
       new WaitUntilCommand(() -> m_hopperSub.isEscalatorAtTargetVelocity());
       m_hopperSub.setSingulatorPower(Constants.Hopper.kSingulatorMaxPower);
     }, m_shooterSub, m_hopperSub));
