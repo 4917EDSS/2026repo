@@ -45,13 +45,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Drive Away From Centre"
+                        "pathName": null
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "EnableShooterCmd"
+                        "name": null
                       }
                     },
                     {
@@ -63,7 +63,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "DisableShooterCmd"
+                        "name": null
                       }
                     },
                     {
@@ -75,7 +75,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "EnableShooterCmd"
+                        "name": null
                       }
                     }
                   ]

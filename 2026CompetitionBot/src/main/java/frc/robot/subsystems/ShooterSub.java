@@ -159,6 +159,9 @@ public class ShooterSub extends SubsystemBase {
     setFlywheelVoltage(0.0);
     setPitchVoltage(0.0);
     setYawVoltage(0.0);
+
+    SmartDashboard.putNumber("Sht Set Pitch Deg", 0.0);
+    SmartDashboard.putNumber("Sht Set Flywheel Rps", 0.0);
   }
 
   @Override
@@ -384,6 +387,11 @@ public class ShooterSub extends SubsystemBase {
 
     // Make sure we don't exceed our maxiumum allowed power (in volts, up to 12V)
     totalVolts = MathUtil.clamp(totalVolts, -Constants.Shooter.kYawMaxVoltage, Constants.Shooter.kYawMaxVoltage);
+
+    //Ensure motor doesn't get undervolted by setting voltage to zero if less than ks
+    if(Math.abs(totalVolts) < m_yawKS) {
+      totalVolts = 0.0;
+    }
 
     if(setPower && !Double.isNaN(totalVolts)) {
       setYawVoltage(totalVolts);
