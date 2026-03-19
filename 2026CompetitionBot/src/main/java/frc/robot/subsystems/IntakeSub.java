@@ -138,6 +138,12 @@ public class IntakeSub extends SubsystemBase {
     m_deployMotor.setPosition(resetAngleDeg);
   }
 
+  public boolean inDeploySafetyZone() {
+    if(Math.abs(getDeployAngleDeg() - Constants.Intake.kDeployInAngleDeg) < Constants.Intake.kDeployInToleranceDeg) {
+      return true;
+    }
+    return false;
+  }
 
   ////////////////////////////// Deploy automation //////////////////////////////
   public void enableDeployAutomation() {

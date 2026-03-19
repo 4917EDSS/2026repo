@@ -112,7 +112,8 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("HitLimitSwitchesCmd", new HitLimitSwitchesCmd(m_shooterSub));
 
-    NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub, m_shooterSub));
+    NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub));
+
 
     NamedCommands.registerCommand("IntakeBumpLiftCmd", new IntakeBumpLiftCmd(m_intakeSub));
   }
