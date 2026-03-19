@@ -185,6 +185,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putBoolean("Sht Ptc Auto", m_pitchAutomationEnabled);
     SmartDashboard.putNumber("Sht Ptc Target", m_targetPitchAngleDeg);
     SmartDashboard.putNumber("Sht Ptc Angle", getPitchAngleDeg());
+    SmartDashboard.putBoolean("Sht Ptc Enc Set", m_pitchHasBeenReset);
     SmartDashboard.putBoolean("Sht Ptc Up Lmt", isAtPitchUpperLimit());
     SmartDashboard.putBoolean("Sht Ptc Down Lmt", isAtPitchLowerLimit());
     // Pitch power sent to dashboard in setPower
