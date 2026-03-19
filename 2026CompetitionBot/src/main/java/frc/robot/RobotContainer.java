@@ -108,7 +108,8 @@ public class RobotContainer {
                 m_intakeSub),
             new HoldShooterCmd(m_shooterSub)));
 
-    NamedCommands.registerCommand("AimCmd", (new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub)));
+    NamedCommands.registerCommand("AimCmd",
+        (new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub)));
 
     NamedCommands.registerCommand("HitLimitSwitchesCmd", new HitLimitSwitchesCmd(m_shooterSub));
 
@@ -126,8 +127,6 @@ public class RobotContainer {
     // Driver A
     m_driverController.a()
         .onTrue(new IntakeBumpLiftCmd(m_intakeSub));
-    // m_driverController.a()
-    //     .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub));
 
     // Driver B
     m_driverController.b()
@@ -186,8 +185,7 @@ public class RobotContainer {
 
     // Driver POV Left
     m_driverController.povLeft()
-        .onTrue(
-            new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(40.0), m_shooterSub));
+        .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub));
 
     // Driver Left Stick
     m_driverController.leftStick()

@@ -71,21 +71,21 @@ public class ShooterSub extends SubsystemBase {
   private boolean m_pitchHasBeenReset = false;
   private boolean m_yawHasBeenReset = false;
   private int m_yawSwitchHitCounter = 0;
-  private double m_pitchKS;
-  private double m_pitchKG;
-  private double m_yawKS;
+  private double m_pitchKS = Constants.Shooter.kPitchKS;
+  private double m_pitchKG = Constants.Shooter.kPitchKG;
+  private double m_yawKS = Constants.Shooter.kYawKS;
 
   private double m_lastYawEncoderRots = 0.0;
   private double m_currentYawEncoderRots = 0.0;
   private double m_deltaYaw = 0.0;
-  private int m_yawRotationCount = 3;
+  private int m_yawRotationCount = 10;
   private boolean m_inDeadZone;
 
   /** Creates a new ShooterSub. */
   public ShooterSub() { // Motor Configs need to be tested
     SparkMaxConfig yawMotorConfig = new SparkMaxConfig();
     yawMotorConfig
-        .inverted(false) // Set to true to invert the forward motor direction
+        .inverted(true) // Set to true to invert the forward motor direction
         .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor);
@@ -96,6 +96,7 @@ public class ShooterSub extends SubsystemBase {
     yawMotorConfig.absoluteEncoder.positionConversionFactor(1.0);
     yawMotorConfig.absoluteEncoder.zeroOffset(Constants.Shooter.kYawEncoderOffset);
     yawMotorConfig.absoluteEncoder.inverted(true);
+    yawMotorConfig.absoluteEncoder.zeroCentered(true);
 
     m_yawMotor.configure(yawMotorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
@@ -233,9 +234,10 @@ public class ShooterSub extends SubsystemBase {
     m_deltaYaw = m_currentYawEncoderRots - m_lastYawEncoderRots;
     // Detect yaw wraparound
     if(m_deltaYaw > 0.75) {
+
       m_yawRotationCount--; // wrapped backward
     } else if(m_deltaYaw < -0.75) {
-      m_yawRotationCount++;; // wrapped forward
+      m_yawRotationCount++; // wrapped forward
     }
 
     m_lastYawEncoderRots = m_currentYawEncoderRots;
@@ -262,11 +264,11 @@ public class ShooterSub extends SubsystemBase {
     System.out.println("pitch" + "," + "," + kP + "," + kI + "," + kD);
   }
 
-  public void setYawTuningConstants(double kS, double kP, double kI, double kD) {
-    m_yawKS = kS;
-    m_yawPidController.setPID(kP, kI, kD);
-    System.out.println("yaw" + kS + "," + kP + "," + kI + "," + kD + ",");
-  }
+  // public void setYawTuningConstants(double kS, double kP, double kI, double kD) {
+  //   m_yawKS = kS;
+  //   m_yawPidController.setPID(kP, kI, kD);
+  //   System.out.println("yaw" + kS + "," + kP + "," + kI + "," + kD + ",");
+  // }
 
 
   public void setYawVoltage(double volts) {
@@ -284,8 +286,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public double getYawAngleDeg() {
-    return ((m_yawRotationCount + m_currentYawEncoderRots) * Constants.Shooter.kYawEncoderToDegConversionFactor
-        + Constants.Shooter.kYawEncoderToDegConversionFactor / 2);
+    return ((m_yawRotationCount + m_currentYawEncoderRots + 0.5) * Constants.Shooter.kYawEncoderToDegConversionFactor); //adjust from -0.5 to 0.5 -> 0.0, to 1.0
   }
 
   public double getYawVelocityDegPerSec() {
@@ -363,7 +364,7 @@ public class ShooterSub extends SubsystemBase {
 
   public void setTargetYawAngle(double angleDeg) {
     SmartDashboard.putNumber("angledeg", angleDeg);
-    angleDeg = angleDeg % 360.0;
+    angleDeg = (angleDeg + 360) % 360.0;
     if(Constants.Shooter.kYawDeadzoneMin < angleDeg && angleDeg < Constants.Shooter.kYawDeadzoneMax) {
       angleDeg = 205.0;
       m_inDeadZone = true;
@@ -404,6 +405,8 @@ public class ShooterSub extends SubsystemBase {
     if(Math.abs(totalVolts) < m_yawKS) {
       totalVolts = 0.0;
     }
+
+    SmartDashboard.putNumber("totalVoltsYaw", totalVolts);
 
     if(setPower && !Double.isNaN(totalVolts)) {
       setYawVoltage(totalVolts);

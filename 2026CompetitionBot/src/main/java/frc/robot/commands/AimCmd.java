@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.Constants.Intake;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
@@ -22,9 +23,11 @@ public class AimCmd extends Command {
   private final ShooterAimingCalcs m_shooterAimingCalcs;
 
   /** Creates a new AimCmd. */
-  public AimCmd(ShooterSub shooterSub, ShooterAimingCalcs shooterAimingCalcs, DrivetrainSub drivetrainSub) {
+  public AimCmd(ShooterSub shooterSub, ShooterAimingCalcs shooterAimingCalcs, DrivetrainSub drivetrainSub,
+      IntakeSub intakeSub) {
     m_drivetrainSub = drivetrainSub;
     m_shooterSub = shooterSub;
+    m_intakeSub = intakeSub;
     m_shooterAimingCalcs = shooterAimingCalcs;
     addRequirements(m_shooterSub);
   }
