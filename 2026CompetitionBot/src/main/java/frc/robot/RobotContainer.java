@@ -22,8 +22,6 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimCmd;
-import frc.robot.commands.DisableShooterCmd;
-import frc.robot.commands.EnableShooterCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
 import frc.robot.commands.IntakeSetPositionCmd;
 import frc.robot.commands.IntakeBumpLiftCmd;
@@ -111,10 +109,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("HitLimitSwitchesCmd", new HitLimitSwitchesCmd(m_shooterSub));
 
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub));
-
-    // TODO: delete these commands. We should only be using AimCmd and ShootCmd
-    NamedCommands.registerCommand("EnableShooterCmd", new EnableShooterCmd(m_intakeSub, m_hopperSub, m_shooterSub));
-    NamedCommands.registerCommand("DisableShooterCmd", new DisableShooterCmd(m_intakeSub, m_hopperSub, m_shooterSub));
 
     NamedCommands.registerCommand("IntakeBumpLiftCmd", new IntakeBumpLiftCmd(m_intakeSub));
 
