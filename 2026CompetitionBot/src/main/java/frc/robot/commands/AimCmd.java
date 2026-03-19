@@ -40,9 +40,7 @@ public class AimCmd extends Command {
   public void execute() {
 
 
-    if(Math.abs(
-        m_intakeSub.getDeployAngleDeg()
-            - Constants.Intake.kDeployInAngleDeg) < Constants.Intake.kDeployInToleranceDeg) {
+    if(m_intakeSub.inDeploySafetyZone()) {
       m_shooterSub.disableFlywheelAutomation();
       m_shooterSub.disablePitchAutomation();
       m_shooterSub.disableYawAutomation();
