@@ -339,21 +339,6 @@ public class ShooterSub extends SubsystemBase {
     return m_pitchMotor.getForwardLimitSwitch().isPressed();
   }
 
-  public double getContinuousYawAngle(double currentAngle) {
-    double delta = currentAngle - m_lastYawEncoderRots;
-
-    // Detect wraparound
-    if(delta > 180) {
-      m_yawRotationCount--; // wrapped backward
-    } else if(delta < -180) {
-      m_yawRotationCount++; // wrapped forward
-    }
-
-    m_lastYawEncoderRots = currentAngle;
-
-    return m_yawRotationCount * 360 + currentAngle;
-  }
-
   ////////////////////////////// Yaw automation //////////////////////////////
   public void enableYawAutomation() {
     m_yawAutomationEnabled = true;
