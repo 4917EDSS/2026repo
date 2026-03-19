@@ -83,31 +83,33 @@ public class ShooterSub extends SubsystemBase {
 
   /** Creates a new ShooterSub. */
   public ShooterSub() { // Motor Configs need to be tested
-    SparkMaxConfig motorConfig = new SparkMaxConfig();
-    motorConfig
+    SparkMaxConfig yawMotorConfig = new SparkMaxConfig();
+    yawMotorConfig
         .inverted(false) // Set to true to invert the forward motor direction
         .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor);
-    motorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
+    yawMotorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
         .reverseLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor));
 
     // Yaw absolute encoder configuration
-    motorConfig.absoluteEncoder.positionConversionFactor(1.0);
-    motorConfig.absoluteEncoder.zeroOffset(Constants.Shooter.kYawEncoderOffset);
+    yawMotorConfig.absoluteEncoder.positionConversionFactor(1.0);
+    yawMotorConfig.absoluteEncoder.zeroOffset(Constants.Shooter.kYawEncoderOffset);
+    yawMotorConfig.absoluteEncoder.inverted(true);
 
-    m_yawMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
+    m_yawMotor.configure(yawMotorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
 
-    motorConfig
+    SparkMaxConfig pitchMotorConfig = new SparkMaxConfig();
+    pitchMotorConfig
         .inverted(true) // Set to true to invert the forward motor direction
         .smartCurrentLimit((int) Constants.Shooter.kPitchMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
             .positionConversionFactor(Constants.Shooter.kPitchEncoderToDegConversionFactor);
-    motorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
+    pitchMotorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
         .reverseLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor));
 
-    m_pitchMotor.configure(motorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
+    m_pitchMotor.configure(pitchMotorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
 
     TalonFXConfigurator talonFXConfigurator1 = m_flywheelMotorL.getConfigurator();
