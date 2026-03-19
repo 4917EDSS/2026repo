@@ -28,6 +28,7 @@ import frc.robot.commands.HitLimitSwitchesCmd;
 import frc.robot.commands.IntakeSetPositionCmd;
 import frc.robot.commands.IntakeBumpLiftCmd;
 import frc.robot.commands.KillAllCmd;
+import frc.robot.commands.ShootCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.DrivetrainSub;

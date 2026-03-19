@@ -28,13 +28,13 @@ public class ShootCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_hopperSub.setEscalatorPower(Constants.Hopper.kEscalatorFeedSpeedRps);
+    m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps);
   }
 
   public void execute() {
     if(Math.abs(m_hopperSub.getEscalatorVelocityRotPerSec()
         - Constants.Hopper.kEscalatorFeedSpeedRps) <= Constants.Hopper.kEscalatorVelocityToleranceRotPerSec) {
-      m_hopperSub.setSingulatorPower(Constants.Hopper.kSingulatorMaxPower);
+      m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorFeedVoltage);
     }
   }
 
