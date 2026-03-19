@@ -159,16 +159,8 @@ public class RobotContainer {
         .onTrue(new IntakeSetPositionCmd(Constants.Intake.kDeployOutAngleDeg, 2.0, m_intakeSub));
 
     // Driver Right Trigger
-    m_driverController.rightTrigger().onTrue(
-        new InstantCommand(
-            () -> m_shooterSub.setTargetFlywheelVelocity(Constants.Shooter.kFlywheelTargetVelocityRotsPerSec))
-                .andThen(new WaitUntilCommand(() -> m_shooterSub.isAtTargetFlywheelVelocity()))
-                .andThen(new InstantCommand(
-                    () -> m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps)))
-                .andThen(new WaitUntilCommand(() -> m_hopperSub.isEscalatorAtTargetVelocity()))
-                .andThen(
-                    new InstantCommand(() -> m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorFeedVoltage)))
-                .andThen(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage))));
+    m_driverController.rightTrigger().whileTrue(
+        new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub));
 
 
     // Driver Back
