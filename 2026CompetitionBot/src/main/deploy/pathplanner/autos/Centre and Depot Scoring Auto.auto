@@ -37,21 +37,9 @@
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeRollersOnCmd"
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "Already Over Bump to Centre"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeRollersOffCmd"
                       }
                     },
                     {
@@ -76,12 +64,6 @@
                       "type": "named",
                       "data": {
                         "name": "DisableShooterCmd"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeRollersOnCmd"
                       }
                     },
                     {

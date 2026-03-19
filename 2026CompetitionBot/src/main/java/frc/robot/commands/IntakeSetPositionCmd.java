@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSub;
 
 /*
@@ -29,6 +30,11 @@ public class IntakeSetPositionCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    if(m_targetPositionDeg == Constants.Intake.kDeployInAngleDeg) {
+      m_intakeSub.setBeltVoltage(0.0);
+    } else {
+      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
+    }
     m_direction = 1.0;
     m_intakeSub.disableDeployAutomation();
     if(m_intakeSub.getDeployAngleDeg() >= m_targetPositionDeg) {
