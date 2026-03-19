@@ -34,7 +34,7 @@ public class HitLimitSwitchesCmd extends Command {
     m_shooterSub.disableYawAutomation();
 
     m_shooterSub.setPitchVoltage(-1.2);
-    m_shooterSub.setYawVoltage(-2.4);
+    m_shooterSub.setYawVoltage(2.4);
 
   }
 
@@ -47,7 +47,7 @@ public class HitLimitSwitchesCmd extends Command {
       m_shooterSub.setPitchVoltage(0.0);
       m_isAtPitchLimit = true;
     }
-    if(m_shooterSub.isAtYawAtCWLimit()) {
+    if(m_shooterSub.isAtYawAtCCWLimit()) {
       m_shooterSub.setYawVoltage(0.0);
       m_isAtYawLimit = true;
     }
