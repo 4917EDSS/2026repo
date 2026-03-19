@@ -218,13 +218,13 @@ public class VisionSub extends SubsystemBase {
   }
 
   private void updateOdometryRight(SwerveDriveState swerveDriveState) {
-    //updateOdemetry(swerveDriveState, LEFT);
-    updateOdemetry(swerveDriveState, RIGHT);
+    //updateOdometry(swerveDriveState, LEFT);
+    updateOdometry(swerveDriveState, RIGHT);
   }
 
   private void updateOdometryLeft(SwerveDriveState swerveDriveState) {
-    //updateOdemetry(swerveDriveState, RIGHT);
-    updateOdemetry(swerveDriveState, LEFT);
+    //updateOdometry(swerveDriveState, RIGHT);
+    updateOdometry(swerveDriveState, LEFT);
   }
 
   public Pose2d getEstimatedPose() {
@@ -242,7 +242,7 @@ public class VisionSub extends SubsystemBase {
     return MathUtil.clamp(calculatedSTD, 0.0, 10.0);
   }
 
-  private void updateOdemetry(SwerveDriveState swerveDriveState, String camera) {
+  private void updateOdometry(SwerveDriveState swerveDriveState, String camera) {
     LimelightHelpers.SetRobotOrientation(camera, m_drivetrainSub.getState().Pose.getRotation().getDegrees(), 0, 0, 0,
         0, 0);
     mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
