@@ -118,13 +118,13 @@ public class VisionSub extends SubsystemBase {
   }
 
   public void init() {
-    if(GameData.getAlliance().equals(Alliance.Red)) {
-      LimelightHelpers.setCameraPose_RobotSpace(LEFT, 0.0, 0.39, 0.62, 0.0, 0.0, -90.0);
-      LimelightHelpers.setCameraPose_RobotSpace(RIGHT, 0.0, -0.39, 0.62, 0.0, 0.0, 90.0);
-    } else {
-      LimelightHelpers.setCameraPose_RobotSpace(LEFT, 0.0, -0.39, 0.62, 0.0, 0.0, 90.0);
-      LimelightHelpers.setCameraPose_RobotSpace(RIGHT, 0.0, 0.39, 0.62, 0.0, 0.0, -90.0);
-    }
+    // if(GameData.getAlliance().equals(Alliance.Red)) {
+    //   LimelightHelpers.setCameraPose_RobotSpace(LEFT, 0.0, 0.39, 0.62, 0.0, 0.0, -90.0);
+    //   LimelightHelpers.setCameraPose_RobotSpace(RIGHT, 0.0, -0.39, 0.62, 0.0, 0.0, 90.0);
+    // } else {
+    //   LimelightHelpers.setCameraPose_RobotSpace(LEFT, 0.0, -0.39, 0.62, 0.0, 0.0, 90.0);
+    //   LimelightHelpers.setCameraPose_RobotSpace(RIGHT, 0.0, 0.39, 0.62, 0.0, 0.0, -90.0);
+    // }
 
     m_logger.info("Initializing VisionSub Subsystem");
     SmartDashboard.putData("FieldLLRight", m_fieldLLRight);
@@ -181,19 +181,19 @@ public class VisionSub extends SubsystemBase {
     //SmartDashboard.putNumber("rot estimate", getEstimatedPose().getRotation().getDegrees());
     // SmartDashboard.putString("Main Limelight:", "none");
 
-    chassisSpeeds = m_drivetrainSub.getRobotRelativeSpeeds();
+    //   chassisSpeeds = m_drivetrainSub.getRobotRelativeSpeeds();
 
-    if(Math
-        .sqrt(Math.pow(chassisSpeeds.vxMetersPerSecond, 2)
-            + Math.pow(chassisSpeeds.vxMetersPerSecond, 2)) < 2.0
-        && Math.abs(chassisSpeeds.omegaRadiansPerSecond) < Math.PI
-        && a >= 0.3
-        && ticksSincePoseUpdate >= 300) {
-      m_drivetrainSub.resetPose(getEstimatedPose());
-      ticksSincePoseUpdate = 0;
-    } else {
-      ticksSincePoseUpdate++;
-    }
+    //   if(Math
+    //       .sqrt(Math.pow(chassisSpeeds.vxMetersPerSecond, 2)
+    //           + Math.pow(chassisSpeeds.vxMetersPerSecond, 2)) < 2.0
+    //       && Math.abs(chassisSpeeds.omegaRadiansPerSecond) < Math.PI
+    //       && a >= 0.3
+    //       && ticksSincePoseUpdate >= 300) {
+    //     m_drivetrainSub.resetPose(getEstimatedPose());
+    //     ticksSincePoseUpdate = 0;
+    //   } else {
+    //     ticksSincePoseUpdate++;
+    //   }
   }
 
   public Pose2d getTagPose2d() {
