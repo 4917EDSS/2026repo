@@ -45,13 +45,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": null
+                        "pathName": "Drive Away from Centre"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": null
+                        "name": "ShootCmd"
                       }
                     },
                     {
@@ -61,21 +61,9 @@
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": null
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "Drive To Depot"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": null
                       }
                     }
                   ]

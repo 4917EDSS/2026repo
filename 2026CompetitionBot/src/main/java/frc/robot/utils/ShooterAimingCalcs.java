@@ -160,10 +160,10 @@ public class ShooterAimingCalcs {
     double flywheelVelocity = pitchAngleDegAndFlywheelVelocity[1];
     //double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
     double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg);
-    double offsetX = velocityX * tof; //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
-    double offsetY = velocityY * tof;
+    // double offsetX = velocityX * tof; //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
+    // double offsetY = velocityY * tof;
     //double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
-    Pose2d offsetPos = new Pose2d(target.getX() + offsetX, target.getY() + offsetY, new Rotation2d(0.0));
+    Pose2d offsetPos = new Pose2d(target.getX(), target.getY(), new Rotation2d(0.0)); // Pose2d offsetPos = new Pose2d(target.getX() + offsetX, target.getY() + offsetY, new Rotation2d(0.0));
     double[] pitchAndVelocity =
         calculateShooterPitchDegrees(current, offsetPos, calculateShooterFlywheelRps(current, offsetPos), isLobbing);
     double[] trajectoriesArray = {pitchAndVelocity[0], calculateShooterYawDegrees(current, offsetPos),

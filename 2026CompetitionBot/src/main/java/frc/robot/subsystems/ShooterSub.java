@@ -317,7 +317,7 @@ public class ShooterSub extends SubsystemBase {
   public void resetYawEncoder() {
     double currentRots = m_yawAbsoluteEncoder.getPosition();
 
-    // Checks if the current rotation is far from 0, if so sets our rotation count to -1
+    // Checks if the current rotation is far from 0, if so sets our rotation count to 3
     // This stops us from accidentaly missing entire rotations
     if(currentRots > 0.75) {
       m_yawRotationCount = 3;

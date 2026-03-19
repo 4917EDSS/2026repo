@@ -79,6 +79,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("kI", 0.0);
     SmartDashboard.putNumber("kD", 0.0);
     SmartDashboard.putNumber("kG", 0.0);
+
+
     // Note that X (coordinate) is defined as forward according to WPILib convention,
     // and Y (coordinate) is defined as to the left according to WPILib convention.
     m_drivetrainSub.setDefaultCommand(
@@ -146,21 +148,19 @@ public class RobotContainer {
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0)));
 
     // Driver Right Bumper
-    m_driverController.rightBumper().whileTrue(new InstantCommand(() -> {
+    m_driverController.rightBumper().onTrue(new InstantCommand(() -> {
       m_hopperSub.disableEscalatorAutomation();
       m_hopperSub.setSingulatorVoltage(0.0);
       m_shooterSub.disableFlywheelAutomation();
-      m_intakeSub.setBeltVoltage(0.0);
-    }, m_shooterSub, m_hopperSub, m_intakeSub));
+    }, m_shooterSub, m_hopperSub));
 
     // Driver Left Trigger
     m_driverController.leftTrigger()
         .onTrue(new IntakeSetPositionCmd(Constants.Intake.kDeployOutAngleDeg, 2.0, m_intakeSub));
 
     // Driver Right Trigger
-    m_driverController.rightTrigger().whileTrue(
+    m_driverController.rightTrigger().onTrue(
         new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub));
-
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading 
@@ -249,7 +249,7 @@ public class RobotContainer {
             m_shooterSub)));
 
     // Operator POV Up
-    m_operatorController.povUp().onTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation()).andThen(
+    m_operatorController.povUp().whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation()).andThen(
         new StartEndCommand(() -> m_shooterSub.setPitchVoltage(2.0), () -> m_shooterSub.setPitchVoltage(0.0),
             m_shooterSub)));
 
@@ -262,7 +262,7 @@ public class RobotContainer {
                         m_shooterAimingCalcs.getDistanceToHub(m_visionSub.getEstimatedPose()))))));
 
     // Operator POV Down
-    m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation()).andThen(
+    m_operatorController.povDown().whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation()).andThen(
         new StartEndCommand(() -> m_shooterSub.setPitchVoltage(-2.0), () -> m_shooterSub.setPitchVoltage(0.0),
             m_shooterSub)));
 

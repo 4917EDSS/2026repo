@@ -113,7 +113,6 @@ public class HopperSub extends SubsystemBase {
     SmartDashboard.putNumber("Escalator Out Mps", getOutputEscalatorVelocityMetersPerSec());
     SmartDashboard.putNumber("Escalator Power", m_escalatorMotor.get());
     SmartDashboard.putBoolean("isFull", isFull());
-
   }
 
   public void enableShooting() {
