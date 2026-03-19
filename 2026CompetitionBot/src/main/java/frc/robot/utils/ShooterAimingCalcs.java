@@ -21,15 +21,15 @@ public class ShooterAimingCalcs {
     // Key is distance to target in metres
     // Value is flywheel speed in rps
     m_distanceToFlywheelMap.put(0.0, Constants.Shooter.kFlywheelMinVelocityRotsPerSec); // Change this to minimum flywheel speed
-    m_distanceToFlywheelMap.put(1.5, 60.0);
-    m_distanceToFlywheelMap.put(2.0, 63.0);
-    m_distanceToFlywheelMap.put(2.5, 55.0);
-    m_distanceToFlywheelMap.put(3.0, 60.0);
-    m_distanceToFlywheelMap.put(3.5, 65.0);
-    m_distanceToFlywheelMap.put(4.0, 70.0);
-    m_distanceToFlywheelMap.put(4.5, 78.0);
-    m_distanceToFlywheelMap.put(5.0, 68.0);
-    m_distanceToFlywheelMap.put(5.5, 67.0);
+    m_distanceToFlywheelMap.put(1.5, 63.0);
+    m_distanceToFlywheelMap.put(2.0, 66.0);
+    m_distanceToFlywheelMap.put(2.5, 58.0);
+    m_distanceToFlywheelMap.put(3.0, 63.0);
+    m_distanceToFlywheelMap.put(3.5, 68.0);
+    m_distanceToFlywheelMap.put(4.0, 73.0);
+    m_distanceToFlywheelMap.put(4.5, 81.0);
+    m_distanceToFlywheelMap.put(5.0, 71.0);
+    m_distanceToFlywheelMap.put(5.5, 70.0);
     m_distanceToFlywheelMap.put(16.540988, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
 
     //This will need to be derived experementally, currentlty based on theoretical values

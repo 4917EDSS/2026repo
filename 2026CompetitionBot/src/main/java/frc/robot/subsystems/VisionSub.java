@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.GameData;
 import frc.robot.utils.LimelightHelpers;
+import frc.robot.utils.ShooterAimingCalcs;
 
 public class VisionSub extends SubsystemBase {
 
@@ -38,6 +39,7 @@ public class VisionSub extends SubsystemBase {
   private final Field2d m_fieldLLRight = new Field2d();
   private final Field2d m_fieldLLLeft = new Field2d();
 
+  ShooterAimingCalcs m_shooterAimingCalcs = new ShooterAimingCalcs();
   LimelightHelpers.PoseEstimate mt2;
   double m_previousTimestamp = 0.0;// Map<String, Double> m_previousTimestamps = Map.of(LEFT, 0.0);//, RIGHT, 0.0);
   DrivetrainSub m_drivetrainSub = null;
@@ -174,6 +176,10 @@ public class VisionSub extends SubsystemBase {
     SmartDashboard.putNumber("Vi Tag Area", a);
     SmartDashboard.putNumber("Vi Pipeline", pipeline);
     SmartDashboard.putString("Vi Pipetype", pipetype);
+
+
+    SmartDashboard.putNumber("Est Dist", m_shooterAimingCalcs.getDistanceToHub(getEstimatedPose()));
+
 
     //SmartDashboard.putNumber("x estimate", getEstimatedPose().getX());
     //SmartDashboard.putNumber("y estimate", getEstimatedPose().getY());
