@@ -18,11 +18,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
+import frc.robot.commands.HoldShooterCmd;
 import frc.robot.commands.IntakeSetPositionCmd;
 import frc.robot.commands.IntakeBumpLiftCmd;
 import frc.robot.commands.KillAllCmd;
@@ -101,8 +103,10 @@ public class RobotContainer {
             m_intakeSub));
 
     NamedCommands.registerCommand("IntakeRetractCmd",
-        new IntakeSetPositionCmd(Constants.Intake.kDeployInAngleDeg, Constants.Intake.kDeployRetractVoltage,
-            m_intakeSub));
+        new ParallelCommandGroup(
+            new IntakeSetPositionCmd(Constants.Intake.kDeployInAngleDeg, Constants.Intake.kDeployRetractVoltage,
+                m_intakeSub),
+            new HoldShooterCmd(m_shooterSub)));
 
     NamedCommands.registerCommand("AimCmd", (new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub)));
 
@@ -126,8 +130,10 @@ public class RobotContainer {
 
     // Driver B
     m_driverController.b()
-        .onTrue(new IntakeSetPositionCmd(Constants.Intake.kDeployInAngleDeg, Constants.Intake.kDeployRetractVoltage,
-            m_intakeSub));
+        .onTrue(new ParallelCommandGroup(
+            new IntakeSetPositionCmd(Constants.Intake.kDeployInAngleDeg, Constants.Intake.kDeployRetractVoltage,
+                m_intakeSub),
+            new HoldShooterCmd(m_shooterSub)));
 
     // Driver X
     m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));

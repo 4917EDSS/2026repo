@@ -88,6 +88,7 @@ public final class Constants {
     public static final double kDeployEncoderToDegConversionFactor = 2.72244; // Gearing is 0.014368 (approx 1:69.5)
     public static final double kDeployInAngleDeg = -90.0;
     public static final double kDeployBumpAngleDeg = -45.0; //it will never get to this angle (this is on purpose)
+    public static final double kDeployInToleranceDeg = 20.0;
     public static final double kDeployOutAngleDeg = 8.8;
     public static final double kDeployToleranceDeg = 1.0;
     public static final double kDeployMaxCurrent = 120.0;

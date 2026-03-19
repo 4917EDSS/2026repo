@@ -5,7 +5,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSub;
+import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
 import frc.robot.utils.ShooterAimingCalcs;
 
@@ -16,6 +18,7 @@ import frc.robot.utils.ShooterAimingCalcs;
 public class AimCmd extends Command {
   private DrivetrainSub m_drivetrainSub;
   private ShooterSub m_shooterSub;
+  private IntakeSub m_intakeSub;
   private final ShooterAimingCalcs m_shooterAimingCalcs;
 
   /** Creates a new AimCmd. */
@@ -37,6 +40,14 @@ public class AimCmd extends Command {
   public void execute() {
     m_shooterSub.setPitchYawFlywheelTarget(
         m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getRobotRelativeSpeeds()));
+
+    if(Math.abs(
+        m_intakeSub.getDeployAngleDeg()
+            - Constants.Intake.kDeployInAngleDeg) < Constants.Intake.kDeployInToleranceDeg) {
+      m_shooterSub.disableFlywheelAutomation();
+      m_shooterSub.disablePitchAutomation();
+      m_shooterSub.disableYawAutomation();
+    } ;
   }
 
   // Called once the command ends or is interrupted.

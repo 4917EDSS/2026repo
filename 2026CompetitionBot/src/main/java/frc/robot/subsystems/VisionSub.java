@@ -148,7 +148,7 @@ public class VisionSub extends SubsystemBase {
       botpose = m_botposeL.getDoubleArray(new double[8]);
       botposeblue = m_botposeblueL.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", true);
-      updateOdometryLeft(m_drivetrainSub.getState());
+
 
     } else {
       id = m_tidR.getInteger(0);
@@ -163,8 +163,11 @@ public class VisionSub extends SubsystemBase {
       botpose = m_botposeR.getDoubleArray(new double[8]);
       botposeblue = m_botposeblueR.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", false);
-      updateOdometryRight(m_drivetrainSub.getState());
+
     }
+
+    updateOdometryLeft(m_drivetrainSub.getState());
+    updateOdometryRight(m_drivetrainSub.getState());
 
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Vi Primary ID", id);
@@ -254,7 +257,6 @@ public class VisionSub extends SubsystemBase {
     if(timestamp > m_previousTimestamp) {
       m_previousTimestamp = timestamp;
 
-      double standardDeviation = calculateStandardDeviation(mt2.tagCount); // 0.7 is a good starting value according to limelight docs.
 
       if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than
                                                                             // 360 degrees per second, ignore vision
@@ -266,6 +268,8 @@ public class VisionSub extends SubsystemBase {
         return;
       }
       //standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 15.0);
+
+      double standardDeviation = calculateStandardDeviation(mt2.tagCount); // 0.7 is a good starting value according to limelight docs.
 
       m_drivetrainSub.addVisionMeasurement(
           mt2.pose,
