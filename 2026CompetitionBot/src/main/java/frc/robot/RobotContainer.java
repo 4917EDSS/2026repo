@@ -79,6 +79,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("kI", 0.0);
     SmartDashboard.putNumber("kD", 0.0);
     SmartDashboard.putNumber("kG", 0.0);
+
+    SmartDashboard.putNumber("Est Dist", m_shooterAimingCalcs.getDistanceToHub(m_visionSub.getEstimatedPose()));
     // Note that X (coordinate) is defined as forward according to WPILib convention,
     // and Y (coordinate) is defined as to the left according to WPILib convention.
     m_drivetrainSub.setDefaultCommand(
