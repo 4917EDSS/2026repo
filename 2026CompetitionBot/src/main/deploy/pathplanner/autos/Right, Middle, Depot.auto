@@ -25,12 +25,6 @@
                       }
                     },
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "AimCmd"
-                      }
-                    },
-                    {
                       "type": "deadline",
                       "data": {
                         "commands": [
@@ -63,6 +57,12 @@
                             "type": "named",
                             "data": {
                               "name": "IntakeDeployCmd"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "AimCmd"
                             }
                           }
                         ]

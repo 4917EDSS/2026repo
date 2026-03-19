@@ -50,8 +50,8 @@ ID 2 for Hopper Empty
 ID 3 for Hopper Full    ### ToF BOARD ###
 ID 4 for Climb
 */
-#define CAN_DEVICE_ID 1
-#define CAN_DEVICE_API 0x123
+#define CAN_DEVICE_ID 3
+#define CAN_DEVICE_API 0x124
 
 int numSensorsOperating;
 
