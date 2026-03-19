@@ -80,7 +80,6 @@ public class RobotContainer {
     SmartDashboard.putNumber("kD", 0.0);
     SmartDashboard.putNumber("kG", 0.0);
 
-    SmartDashboard.putNumber("Est Dist", m_shooterAimingCalcs.getDistanceToHub(m_visionSub.getEstimatedPose()));
     // Note that X (coordinate) is defined as forward according to WPILib convention,
     // and Y (coordinate) is defined as to the left according to WPILib convention.
     m_drivetrainSub.setDefaultCommand(
@@ -258,10 +257,10 @@ public class RobotContainer {
     // Operator POV Right
     m_operatorController.povRight().onTrue(
         new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(m_shooterAimingCalcs
-            .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceToHub(m_visionSub.getEstimatedPose()))))
+            .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))
                 .andThen(new InstantCommand(
                     () -> m_shooterSub.setTargetFlywheelVelocity(m_shooterAimingCalcs.getInterpolatedFlywheelVelocity(
-                        m_shooterAimingCalcs.getDistanceToHub(m_visionSub.getEstimatedPose()))))));
+                        m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))));
 
     // Operator POV Down
     m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation()).andThen(

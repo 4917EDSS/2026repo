@@ -183,6 +183,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Sht Yaw Amps", m_yawMotor.getOutputCurrent());
     SmartDashboard.putNumber("Sht Yaw Enc Rot", m_currentYawEncoderRots);
     SmartDashboard.putNumber("Yaw Rot Count", m_yawRotationCount);
+
     // Yaw power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Ptc Auto", m_pitchAutomationEnabled);
