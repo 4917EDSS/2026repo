@@ -23,7 +23,7 @@ public class AimCmd extends Command {
     m_drivetrainSub = drivetrainSub;
     m_shooterSub = shooterSub;
     m_shooterAimingCalcs = shooterAimingCalcs;
-    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(m_shooterSub);
   }
 
   // Called when the command is initially scheduled.
