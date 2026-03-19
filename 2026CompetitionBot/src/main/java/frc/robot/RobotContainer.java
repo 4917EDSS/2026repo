@@ -254,6 +254,12 @@ public class RobotContainer {
             m_shooterSub)));
 
     // Operator POV Right
+    m_operatorController.povRight().onTrue(
+        new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(m_shooterAimingCalcs
+            .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceToHub(m_visionSub.getEstimatedPose()))))
+                .andThen(new InstantCommand(
+                    () -> m_shooterSub.setTargetFlywheelVelocity(m_shooterAimingCalcs.getInterpolatedFlywheelVelocity(
+                        m_shooterAimingCalcs.getDistanceToHub(m_visionSub.getEstimatedPose()))))));
 
     // Operator POV Down
     m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation()).andThen(

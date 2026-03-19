@@ -20,52 +20,54 @@ public class ShooterAimingCalcs {
     //This will need to be derived experementally, currentlty based on theoretical values
     // Key is distance to target in metres
     // Value is flywheel speed in rps
-    m_distanceToFlywheelMap.put(0.0, 40.0); // Change this to minimum flywheel speed
-    m_distanceToFlywheelMap.put(1.0, 40.0);
-    m_distanceToFlywheelMap.put(1.5, 40.0);
-    m_distanceToFlywheelMap.put(2.0, 44.0);
-    m_distanceToFlywheelMap.put(2.5, 48.0);
-    m_distanceToFlywheelMap.put(3.0, 52.0);
-    m_distanceToFlywheelMap.put(3.5, 56.0);
-    m_distanceToFlywheelMap.put(4.0, 60.0);
-    m_distanceToFlywheelMap.put(4.5, 64.0);
+    m_distanceToFlywheelMap.put(0.0, Constants.Shooter.kFlywheelMinVelocityRotsPerSec); // Change this to minimum flywheel speed
+    m_distanceToFlywheelMap.put(1.5, 60.0);
+    m_distanceToFlywheelMap.put(2.0, 63.0);
+    m_distanceToFlywheelMap.put(2.5, 55.0);
+    m_distanceToFlywheelMap.put(3.0, 60.0);
+    m_distanceToFlywheelMap.put(3.5, 65.0);
+    m_distanceToFlywheelMap.put(4.0, 70.0);
+    m_distanceToFlywheelMap.put(4.5, 78.0);
     m_distanceToFlywheelMap.put(5.0, 68.0);
-    m_distanceToFlywheelMap.put(6.0, 76.0);
-    m_distanceToFlywheelMap.put(7.0, 84.0);
-    m_distanceToFlywheelMap.put(8.0, 92.0);
-    m_distanceToFlywheelMap.put(10.0, 100.0);
-    m_distanceToFlywheelMap.put(12.0, 110.0);
-    m_distanceToFlywheelMap.put(14.0, 115.0);
+    m_distanceToFlywheelMap.put(5.5, 67.0);
     m_distanceToFlywheelMap.put(16.540988, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
 
     //This will need to be derived experementally, currentlty based on theoretical values
     // Key is distance to target in metres
     // Value is pitch angle in degrees
     m_distanceToPitchMap.put(0.0, Constants.Shooter.kPitchMaxAngleDeg);
-    m_distanceToPitchMap.put(1.0, 49.6);
-    m_distanceToPitchMap.put(1.5, 46.0);
-    m_distanceToPitchMap.put(2.0, 44.0);
-    m_distanceToPitchMap.put(2.5, 42.0);
-    m_distanceToPitchMap.put(3.0, 40.0);
-    m_distanceToPitchMap.put(3.5, 38.0);
-    m_distanceToPitchMap.put(4.0, 36.0);
-    m_distanceToPitchMap.put(4.5, 34.0);
-    m_distanceToPitchMap.put(5.0, 32.0);
-    m_distanceToPitchMap.put(6.0, 28.0);
-    m_distanceToPitchMap.put(7.0, 24.0);
-    m_distanceToPitchMap.put(8.0, 20.7);
-    m_distanceToPitchMap.put(10.0, 20.7);
-    m_distanceToPitchMap.put(12.0, 20.7);
-    m_distanceToPitchMap.put(14.0, 20.7);
+    m_distanceToPitchMap.put(1.5, 20.8);
+    m_distanceToPitchMap.put(2.0, 24.0);
+    m_distanceToPitchMap.put(2.5, 27.5);
+    m_distanceToPitchMap.put(3.0, 29.0);
+    m_distanceToPitchMap.put(3.5, 30.0);
+    m_distanceToPitchMap.put(4.0, 30.0);
+    m_distanceToPitchMap.put(4.5, 31.0);
+    m_distanceToPitchMap.put(5.0, 33.0);
+    m_distanceToPitchMap.put(5.5, 33.0);
     m_distanceToPitchMap.put(16.540988, Constants.Shooter.kPitchMinAngleDeg);
   }
 
-  public static double getInterpolatedFlywheelVelocity(double distance) {
+  public double getInterpolatedFlywheelVelocity(double distance) {
     return m_distanceToFlywheelMap.get(distance);
   }
 
-  public static double getInterpolatedPitchAngle(double distance) {
+  public double getInterpolatedPitchAngle(double distance) {
     return m_distanceToPitchMap.get(distance);
+  }
+
+  public double getDistanceToHub(Pose2d robot) {
+    Alliance alliance = GameData.getAlliance();
+    Pose2d target;
+
+    if(alliance == Alliance.Blue) {
+      target = new Pose2d(Constants.FieldElements.kBlueHubX, Constants.FieldElements.kBlueHubY, new Rotation2d(0.0));
+    } else {
+      target = new Pose2d(Constants.FieldElements.kRedHubX, Constants.FieldElements.kRedHubY, new Rotation2d(0.0));
+    }
+
+    double distance = target.minus(robot).getTranslation().getNorm();
+    return distance;
   }
 
   public double calculateShooterFlywheelRps(Pose2d current, Pose2d target) {

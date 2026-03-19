@@ -148,8 +148,7 @@ public class VisionSub extends SubsystemBase {
       botpose = m_botposeL.getDoubleArray(new double[8]);
       botposeblue = m_botposeblueL.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", true);
-
-
+      updateOdometryLeft(m_drivetrainSub.getState());
     } else {
       id = m_tidR.getInteger(0);
       t2d = m_t2dR.getDoubleArray(new double[2]);
@@ -163,11 +162,8 @@ public class VisionSub extends SubsystemBase {
       botpose = m_botposeR.getDoubleArray(new double[8]);
       botposeblue = m_botposeblueR.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", false);
-
+      updateOdometryRight(m_drivetrainSub.getState());
     }
-
-    updateOdometryLeft(m_drivetrainSub.getState());
-    updateOdometryRight(m_drivetrainSub.getState());
 
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Vi Primary ID", id);
@@ -184,19 +180,19 @@ public class VisionSub extends SubsystemBase {
     //SmartDashboard.putNumber("rot estimate", getEstimatedPose().getRotation().getDegrees());
     // SmartDashboard.putString("Main Limelight:", "none");
 
-    //   chassisSpeeds = m_drivetrainSub.getRobotRelativeSpeeds();
+    chassisSpeeds = m_drivetrainSub.getRobotRelativeSpeeds();
 
-    //   if(Math
-    //       .sqrt(Math.pow(chassisSpeeds.vxMetersPerSecond, 2)
-    //           + Math.pow(chassisSpeeds.vxMetersPerSecond, 2)) < 2.0
-    //       && Math.abs(chassisSpeeds.omegaRadiansPerSecond) < Math.PI
-    //       && a >= 0.3
-    //       && ticksSincePoseUpdate >= 300) {
-    //     m_drivetrainSub.resetPose(getEstimatedPose());
-    //     ticksSincePoseUpdate = 0;
-    //   } else {
-    //     ticksSincePoseUpdate++;
-    //   }
+    if(Math
+        .sqrt(Math.pow(chassisSpeeds.vxMetersPerSecond, 2)
+            + Math.pow(chassisSpeeds.vxMetersPerSecond, 2)) < 2.0
+        && Math.abs(chassisSpeeds.omegaRadiansPerSecond) < Math.PI
+        && a >= 0.3
+        && ticksSincePoseUpdate >= 300) {
+      m_drivetrainSub.resetPose(getEstimatedPose());
+      ticksSincePoseUpdate = 0;
+    } else {
+      ticksSincePoseUpdate++;
+    }
   }
 
   public Pose2d getTagPose2d() {
