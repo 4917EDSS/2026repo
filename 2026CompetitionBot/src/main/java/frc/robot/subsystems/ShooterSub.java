@@ -79,6 +79,7 @@ public class ShooterSub extends SubsystemBase {
   private double m_currentYawEncoderRots = 0.0;
   private double m_deltaYaw = 0.0;
   private int m_yawRotationCount = 3;
+  private boolean m_inDeadZone;
 
   /** Creates a new ShooterSub. */
   public ShooterSub() { // Motor Configs need to be tested
@@ -159,6 +160,7 @@ public class ShooterSub extends SubsystemBase {
     setFlywheelVoltage(0.0);
     setPitchVoltage(0.0);
     setYawVoltage(0.0);
+    m_inDeadZone = false;
 
     SmartDashboard.putNumber("Sht Set Pitch Deg", 0.0);
     SmartDashboard.putNumber("Sht Set Flywheel Rps", 0.0);
@@ -334,6 +336,10 @@ public class ShooterSub extends SubsystemBase {
     return m_yawMotor.getReverseLimitSwitch().isPressed();
   }
 
+  public boolean isInDeadZone() {
+    return m_inDeadZone;
+  }
+
   public boolean isAtPitchLowerLimit() {
     return m_pitchMotor.getReverseLimitSwitch().isPressed();
   }
@@ -357,6 +363,9 @@ public class ShooterSub extends SubsystemBase {
     angleDeg = angleDeg % 360.0;
     if(Constants.Shooter.kYawDeadzoneMin < angleDeg && angleDeg < Constants.Shooter.kYawDeadzoneMax) {
       angleDeg = 205.0;
+      m_inDeadZone = true;
+    } else {
+      m_inDeadZone = false;
     }
     m_targetYawAngleDeg = angleDeg;
     m_yawPidController.setSetpoint(angleDeg);

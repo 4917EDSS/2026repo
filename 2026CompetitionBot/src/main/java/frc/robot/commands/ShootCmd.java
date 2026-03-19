@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.HopperSub;
+import frc.robot.subsystems.ShooterSub;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -14,13 +15,14 @@ import frc.robot.subsystems.HopperSub;
  */
 public class ShootCmd extends Command {
   HopperSub m_hopperSub;
+  ShooterSub m_shooterSub;
   Boolean m_isAtPitchLimit;
   Boolean m_isAtYawLimit;
 
   /** Creates a new ShooterSubCmd. */
-  public ShootCmd(HopperSub hopperSub) {
+  public ShootCmd(HopperSub hopperSub, ShooterSub shooterSub) {
     m_hopperSub = hopperSub;
-
+    m_shooterSub = shooterSub;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(hopperSub);
   }
@@ -33,8 +35,11 @@ public class ShootCmd extends Command {
 
   public void execute() {
     if(Math.abs(m_hopperSub.getEscalatorVelocityRotPerSec()
-        - Constants.Hopper.kEscalatorFeedSpeedRps) <= Constants.Hopper.kEscalatorVelocityToleranceRotPerSec) {
+        - Constants.Hopper.kEscalatorFeedSpeedRps) <= Constants.Hopper.kEscalatorVelocityToleranceRotPerSec
+        && !m_shooterSub.isInDeadZone()) {
       m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorFeedVoltage);
+    } else {
+      m_hopperSub.setSingulatorVoltage(0.0);
     }
   }
 
