@@ -111,11 +111,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub));
 
     NamedCommands.registerCommand("IntakeBumpLiftCmd", new IntakeBumpLiftCmd(m_intakeSub));
-
-    NamedCommands.registerCommand("IntakeRollersOnCmd",
-        new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage)));
-
-    NamedCommands.registerCommand("IntakeRollersOffCmd", new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0)));
   }
 
   /*
@@ -154,9 +149,7 @@ public class RobotContainer {
 
     // Driver Left Trigger
     m_driverController.leftTrigger()
-        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage), m_intakeSub)
-            .andThen(new IntakeSetPositionCmd(Constants.Intake.kDeployOutAngleDeg, 2.0, m_intakeSub)
-                .andThen(new InstantCommand(() -> m_intakeSub.disableDeployAutomation()))));
+        .onTrue(new IntakeSetPositionCmd(Constants.Intake.kDeployOutAngleDeg, 2.0, m_intakeSub));
 
     // Driver Right Trigger
     m_driverController.rightTrigger().onTrue(
