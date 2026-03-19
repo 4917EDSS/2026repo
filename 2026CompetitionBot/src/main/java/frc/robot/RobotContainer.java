@@ -277,6 +277,10 @@ public class RobotContainer {
     //     SmartDashboard.getNumber("kD", 0.0)), m_shooterSub));
 
     // Operator POV Left
+    m_operatorController.povLeft().onTrue(
+        new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(SmartDashboard.getNumber("Sht Set Pitch Deg", 0.0)))
+            .andThen(new InstantCommand(
+                () -> m_shooterSub.setTargetFlywheelVelocity(SmartDashboard.getNumber("Sht Set Flywheel Rps", 0.0)))));
 
     // Operator Left Stick
     m_operatorController.leftStick()
