@@ -35,7 +35,7 @@ public class ShooterAimingCalcs {
     //This will need to be derived experementally, currentlty based on theoretical values
     // Key is distance to target in metres
     // Value is pitch angle in degrees
-    m_distanceToPitchMap.put(0.0, Constants.Shooter.kPitchMaxAngleDeg);
+    m_distanceToPitchMap.put(0.0, Constants.Shooter.kPitchMinAngleDeg);
     m_distanceToPitchMap.put(1.5, 20.8);
     m_distanceToPitchMap.put(2.0, 24.0);
     m_distanceToPitchMap.put(2.5, 27.5);
@@ -45,7 +45,7 @@ public class ShooterAimingCalcs {
     m_distanceToPitchMap.put(4.5, 31.0);
     m_distanceToPitchMap.put(5.0, 33.0);
     m_distanceToPitchMap.put(5.5, 33.0);
-    m_distanceToPitchMap.put(16.540988, Constants.Shooter.kPitchMinAngleDeg);
+    m_distanceToPitchMap.put(16.540988, Constants.Shooter.kPitchMaxAngleDeg);
   }
 
   public double getInterpolatedFlywheelVelocity(double distance) {
