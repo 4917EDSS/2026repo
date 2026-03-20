@@ -34,10 +34,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.Constants.Shooter;
+import frc.robot.utils.ShooterAimingCalcs;
 
 
 public class ShooterSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(ShooterSub.class.getName());
+  ShooterAimingCalcs m_shooterAimingCalcs;
+  DrivetrainSub m_drivetrainSub;
 
   private final SparkMax m_yawMotor = new SparkMax(Constants.CanIds.kShooterYawMotor, MotorType.kBrushless);
   private final SparkMax m_pitchMotor = new SparkMax(Constants.CanIds.kShooterPitchMotor, MotorType.kBrushless);
@@ -82,7 +86,9 @@ public class ShooterSub extends SubsystemBase {
   private boolean m_inDeadZone;
 
   /** Creates a new ShooterSub. */
-  public ShooterSub() { // Motor Configs need to be tested
+  public ShooterSub(ShooterAimingCalcs shooterAimingCalcs, DrivetrainSub drivetrainSub) { // Motor Configs need to be tested
+    m_shooterAimingCalcs = shooterAimingCalcs;
+    m_drivetrainSub = drivetrainSub;
     SparkMaxConfig yawMotorConfig = new SparkMaxConfig();
     yawMotorConfig
         .inverted(true) // Set to true to invert the forward motor direction
@@ -219,13 +225,13 @@ public class ShooterSub extends SubsystemBase {
       }
     }
 
-    // if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 10 || getYawAngleDeg() < -10)) {
-    //   m_yawSwitchHitCounter += 1;
-    //   if(m_yawSwitchHitCounter == 3) {
-    //     resetYawEncoder();
-    //     m_yawSwitchHitCounter = 0;
-    //   }
-    // }
+    if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 370 || getYawAngleDeg() < -10)) {
+      m_yawSwitchHitCounter += 1;
+      if(m_yawSwitchHitCounter == 3) {
+        resetYawEncoder();
+        m_yawSwitchHitCounter = 0;
+      }
+    }
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
@@ -597,9 +603,13 @@ public class ShooterSub extends SubsystemBase {
 
   //RUN ALL CONTROL ALGORTHMS
   public void setPitchYawFlywheelTarget(double[] trajectoriesArray) {
-    //setTargetPitchAngle(90 - trajectoriesArray[0]);
+    // setTargetPitchAngle(m_shooterAimingCalcs
+    //     .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose())));
+    setTargetPitchAngle(trajectoriesArray[0]);
     setTargetYawAngle(trajectoriesArray[1]);
-    //setTargetFlywheelVelocity(trajectoriesArray[2]);
+    // setTargetFlywheelVelocity(m_shooterAimingCalcs.getInterpolatedFlywheelVelocity(
+    //     m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose())));
+    setTargetFlywheelVelocity(trajectoriesArray[2]);
   }
 
   public void endPitchYawFlywheel() {

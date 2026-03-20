@@ -62,11 +62,12 @@ public class RobotContainer {
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   public final HopperSub m_hopperSub = new HopperSub(m_canSub);
   public final IntakeSub m_intakeSub = new IntakeSub();
-  public final ShooterSub m_shooterSub = new ShooterSub();
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
 
   public final ShooterAimingCalcs m_shooterAimingCalcs = new ShooterAimingCalcs();
-
+  
+  public final ShooterSub m_shooterSub = new ShooterSub(m_shooterAimingCalcs, m_drivetrainSub);
+  
   private SendableChooser<Command> m_Chooser = new SendableChooser<>();
 
   public RobotContainer() {
@@ -78,7 +79,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("kP", 0.0);
     SmartDashboard.putNumber("kI", 0.0);
     SmartDashboard.putNumber("kD", 0.0);
-    SmartDashboard.putNumber("kG", 0.0);
+
 
     
     // Note that X (coordinate) is defined as forward according to WPILib convention,
