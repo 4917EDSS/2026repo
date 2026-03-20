@@ -194,7 +194,7 @@ public class VisionSub extends SubsystemBase {
         && Math.abs(chassisSpeeds.omegaRadiansPerSecond) < Math.PI
         && a >= 0.3
         && ticksSincePoseUpdate >= 300) {
-      m_drivetrainSub.resetPose(getEstimatedPose());
+      //m_drivetrainSub.resetPose(getEstimatedPose());
       ticksSincePoseUpdate = 0;
     } else {
       ticksSincePoseUpdate++;
