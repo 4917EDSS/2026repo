@@ -236,7 +236,7 @@ public class VisionSub extends SubsystemBase {
 
   public double calculateStandardDeviation(int numOfTags) {
     if(numOfTags <= 0) {
-      numOfTags = 1;
+      return 999999.9;
     }
     double numOfTagsDouble = numOfTags;
     double distFromTag = new Translation3d(botposeTarget[0], botposeTarget[1], botposeTarget[2]).getNorm();
@@ -274,7 +274,7 @@ public class VisionSub extends SubsystemBase {
       }
       //standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 15.0);
 
-      double standardDeviation = 0.0;//calculateStandardDeviation(mt2.tagCount); // 0.7 is a good starting value according to limelight docs.
+      double standardDeviation = calculateStandardDeviation(mt2.tagCount); // 0.7 is a good starting value according to limelight docs.
 
       double posDif = m_drivetrainSub.getPose().minus(mt2.pose).getTranslation().getNorm();
       if(Math.abs(posDif) > 2.0) {

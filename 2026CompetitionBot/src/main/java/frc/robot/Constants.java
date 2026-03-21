@@ -164,8 +164,8 @@ public final class Constants {
   public static class Vision {
     public static final double kDistanceTooCloseToDrive = 0.5;
     public static final double kStandardDeviation = 1.0;
-    public static final double kDistanceWeight = 3.0;
-    public static final double kDistanceTrustThreshold = 4.0;
+    public static final double kDistanceWeight = 1.0;
+    public static final double kDistanceTrustThreshold = 2.0;
     public static final double kAreaWeight = 1.5;
     public static final double kAreaTrustThreshold = 0.02;
   }
