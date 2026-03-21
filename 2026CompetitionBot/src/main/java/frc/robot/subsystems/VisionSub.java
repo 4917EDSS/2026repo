@@ -15,12 +15,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.utils.GameData;
 import frc.robot.utils.LimelightHelpers;
 import frc.robot.utils.ShooterAimingCalcs;
 
@@ -237,6 +235,9 @@ public class VisionSub extends SubsystemBase {
   }
 
   public double calculateStandardDeviation(int numOfTags) {
+    if(numOfTags <= 0) {
+      numOfTags = 1;
+    }
     double numOfTagsDouble = numOfTags;
     double distFromTag = new Translation3d(botposeTarget[0], botposeTarget[1], botposeTarget[2]).getNorm();
     double areaOfTag = a;
@@ -260,9 +261,11 @@ public class VisionSub extends SubsystemBase {
       m_previousTimestamp = timestamp;
 
 
-      if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI) // if our angular velocity is greater than
-                                                                            // 360 degrees per second, ignore vision
-                                                                            // updates
+      if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI
+          || 180.0 - Math.abs(m_drivetrainSub.getPigeonGyro().getRoll().getValueAsDouble()) > 4
+          || Math.abs(m_drivetrainSub.getPigeonGyro().getPitch().getValueAsDouble()) > 4) // if our angular velocity is greater than
+      // 360 degrees per second, ignore vision
+      // updates
       {
         return;
       }
@@ -271,8 +274,13 @@ public class VisionSub extends SubsystemBase {
       }
       //standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 15.0);
 
-      double standardDeviation = calculateStandardDeviation(mt2.tagCount); // 0.7 is a good starting value according to limelight docs.
+      double standardDeviation = 0.0;//calculateStandardDeviation(mt2.tagCount); // 0.7 is a good starting value according to limelight docs.
 
+      double posDif = m_drivetrainSub.getPose().minus(mt2.pose).getTranslation().getNorm();
+      if(Math.abs(posDif) > 2.0) {
+        m_logger.info("jump distance: " + posDif);
+        return;
+      }
       m_drivetrainSub.addVisionMeasurement(
           mt2.pose,
           // Always pass 999999 as the last argument, as megatag 2 requires heading as
@@ -282,7 +290,7 @@ public class VisionSub extends SubsystemBase {
           com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp),
           VecBuilder.fill(standardDeviation, standardDeviation, 9999999));
       //Logging limelight pose
-      if(camera == LEFT) {
+      if(camera.equals(LEFT)) {
         m_fieldLLLeft.setRobotPose(mt2.pose);
       } else {
         m_fieldLLRight.setRobotPose(mt2.pose);

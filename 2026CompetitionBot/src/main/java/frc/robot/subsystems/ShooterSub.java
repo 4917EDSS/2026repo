@@ -48,7 +48,7 @@ public class ShooterSub extends SubsystemBase {
   private final TalonFX m_flywheelMotorL = new TalonFX(Constants.CanIds.kShooterFlywheelMotorL); // Make ABSOLUTELY sure its left
   private final TalonFX m_flywheelMotorR = new TalonFX(Constants.CanIds.kShooterFlywheelMotorR);
 
-  private final SparkAbsoluteEncoder m_yawAbsoluteEncoder = m_yawMotor.getAbsoluteEncoder();
+  // private final SparkAbsoluteEncoder m_yawAbsoluteEncoder = m_yawMotor.getAbsoluteEncoder();
 
   // Part of old 
   // private final SimpleMotorFeedforward m_yawFeedforward =
@@ -79,10 +79,10 @@ public class ShooterSub extends SubsystemBase {
   private double m_pitchKG = Constants.Shooter.kPitchKG;
   private double m_yawKS = Constants.Shooter.kYawKS;
 
-  private double m_lastYawEncoderRots = 0.0;
-  private double m_currentYawEncoderRots = 0.0;
-  private double m_deltaYaw = 0.0;
-  private int m_yawRotationCount = 10;
+  // private double m_lastYawEncoderRots = 0.0;
+  // private double m_currentYawEncoderRots = 0.0;
+  // private double m_deltaYaw = 0.0;
+  // private int m_yawRotationCount = 10;
   private boolean m_inDeadZone;
 
   /** Creates a new ShooterSub. */
@@ -94,15 +94,15 @@ public class ShooterSub extends SubsystemBase {
         .inverted(true) // Set to true to invert the forward motor direction
         .smartCurrentLimit((int) Constants.Shooter.kYawMaxCurrent) // Current limit in amps
         .idleMode(IdleMode.kBrake).encoder
-            .positionConversionFactor(Constants.Shooter.kYawEncoderToDegConversionFactor);
+            .positionConversionFactor(Constants.Shooter.kYawRelativeEncoderConversion);
     yawMotorConfig.apply(new LimitSwitchConfig().forwardLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor)
         .reverseLimitSwitchTriggerBehavior(Behavior.kStopMovingMotor));
 
     // Yaw absolute encoder configuration
-    yawMotorConfig.absoluteEncoder.positionConversionFactor(1.0);
-    yawMotorConfig.absoluteEncoder.zeroOffset(Constants.Shooter.kYawEncoderOffset);
-    yawMotorConfig.absoluteEncoder.inverted(true);
-    yawMotorConfig.absoluteEncoder.zeroCentered(true);
+    // yawMotorConfig.absoluteEncoder.positionConversionFactor(1.0);
+    // yawMotorConfig.absoluteEncoder.zeroOffset(Constants.Shooter.kYawEncoderOffset);
+    // yawMotorConfig.absoluteEncoder.inverted(true);
+    // yawMotorConfig.absoluteEncoder.zeroCentered(true);
 
     m_yawMotor.configure(yawMotorConfig, com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
@@ -187,8 +187,8 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Sht Yaw Target", m_targetYawAngleDeg);
     SmartDashboard.putNumber("Sht Yaw Power", m_yawMotor.get());
     SmartDashboard.putNumber("Sht Yaw Amps", m_yawMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Sht Yaw Enc Rot", m_currentYawEncoderRots);
-    SmartDashboard.putNumber("Yaw Rot Count", m_yawRotationCount);
+    //SmartDashboard.putNumber("Sht Yaw Enc Rot", m_currentYawEncoderRots);
+    //SmartDashboard.putNumber("Yaw Rot Count", m_yawRotationCount);
 
     // Yaw power sent to dashboard in setPower
 
@@ -237,17 +237,17 @@ public class ShooterSub extends SubsystemBase {
     runPitchControl(m_pitchAutomationEnabled);
     // flywheel control done on talonfx
 
-    m_currentYawEncoderRots = m_yawAbsoluteEncoder.getPosition();
-    m_deltaYaw = m_currentYawEncoderRots - m_lastYawEncoderRots;
-    // Detect yaw wraparound
-    if(m_deltaYaw > 0.75) {
+    // m_currentYawEncoderRots = m_yawAbsoluteEncoder.getPosition();
+    // m_deltaYaw = m_currentYawEncoderRots - m_lastYawEncoderRots;
+    // // Detect yaw wraparound
+    // if(m_deltaYaw > 0.75) {
 
-      m_yawRotationCount--; // wrapped backward
-    } else if(m_deltaYaw < -0.75) {
-      m_yawRotationCount++; // wrapped forward
-    }
+    //   m_yawRotationCount--; // wrapped backward
+    // } else if(m_deltaYaw < -0.75) {
+    //   m_yawRotationCount++; // wrapped forward
+    // }
 
-    m_lastYawEncoderRots = m_currentYawEncoderRots;
+    // m_lastYawEncoderRots = m_currentYawEncoderRots;
   }
 
   public void setFlywheelTuningConstants(double kS, double kV, double kP, double kI, double kD) {
@@ -293,7 +293,7 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public double getYawAngleDeg() {
-    return ((m_yawRotationCount + m_currentYawEncoderRots + 0.5) * Constants.Shooter.kYawEncoderToDegConversionFactor); //adjust from -0.5 to 0.5 -> 0.0, to 1.0
+    return m_yawMotor.getEncoder().getPosition();//((m_yawRotationCount + m_currentYawEncoderRots + 0.5) * Constants.Shooter.kYawEncoderToDegConversionFactor); //adjust from -0.5 to 0.5 -> 0.0, to 1.0
   }
 
   public double getYawVelocityDegPerSec() {
@@ -322,17 +322,19 @@ public class ShooterSub extends SubsystemBase {
   }
 
   public void resetYawEncoder() {
-    double currentRots = m_yawAbsoluteEncoder.getPosition();
+    m_yawMotor.getEncoder().setPosition(360.0);
 
-    // Checks if the current rotation is far from 0, if so sets our rotation count to 3
-    // This stops us from accidentaly missing entire rotations
-    if(currentRots > 0.25) {
-      m_yawRotationCount = 3;
-    } else {
-      m_yawRotationCount = 4;
-    }
-    m_lastYawEncoderRots = currentRots;
-    m_currentYawEncoderRots = currentRots;
+    // double currentRots = m_yawAbsoluteEncoder.getPosition();
+
+    // // Checks if the current rotation is far from 0, if so sets our rotation count to 3
+    // // This stops us from accidentaly missing entire rotations
+    // if(currentRots > 0.25) {
+    //   m_yawRotationCount = 3;
+    // } else {
+    //   m_yawRotationCount = 4;
+    // }
+    // m_lastYawEncoderRots = currentRots;
+    // m_currentYawEncoderRots = currentRots;
   }
 
   public void resetPitchEncoder() {

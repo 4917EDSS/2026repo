@@ -108,6 +108,8 @@ public final class Constants {
   public static class Shooter {
     // TODO:  Set all the values correctly
     public static final double kYawEncoderToDegConversionFactor = 180.0 / 2.2429;
+    public static final double kYawRelativeEncoderConversion = 360.0 / 25.0 / 4.5;
+    //(360.0 / kYawEncoderToDegConversionFactor) / (25.0);
     public static final double kYawEncoderOffset = 0.4496492;
     public static final double kYawMinAngleDeg = 0.0;
     public static final double kYawMaxAngleDeg = 360.0;
@@ -162,10 +164,10 @@ public final class Constants {
   public static class Vision {
     public static final double kDistanceTooCloseToDrive = 0.5;
     public static final double kStandardDeviation = 1.0;
-    public static final double kDistanceWeight = 0.25;
+    public static final double kDistanceWeight = 3.0;
     public static final double kDistanceTrustThreshold = 4.0;
     public static final double kAreaWeight = 1.5;
-    public static final double kAreaTrustThreshold = 0.2;
+    public static final double kAreaTrustThreshold = 0.02;
   }
 
   //////////////////// These are the other constants ////////////////////
@@ -189,9 +191,9 @@ public final class Constants {
     public static final double piecewiseSwapCalculationDistance = 3.5;
     public static final double shooterToHubHeight = 1.0668; // 42 in, not exactly measured
     public static final double kShooterToFloorHeight = 0.762;
-    public static final double kLeftLobY = 1.0;
-    public static final double kRightLobY = 7.0;
-    public static final double kBlueLobX = 1.0;
-    public static final double kRedLobX = 13.0;
+    public static final double kLeftLobY = 2.0;
+    public static final double kRightLobY = 6.0;
+    public static final double kBlueLobX = 3.0;
+    public static final double kRedLobX = 12.5;
   }
 }
