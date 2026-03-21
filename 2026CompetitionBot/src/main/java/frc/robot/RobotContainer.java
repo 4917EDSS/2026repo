@@ -138,12 +138,17 @@ public class RobotContainer {
     m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));
 
     // Driver Y
-    m_driverController.y().onTrue(
-        new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(m_shooterAimingCalcs
-            .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))
-                .andThen(new InstantCommand(
-                    () -> m_shooterSub.setTargetFlywheelVelocity(m_shooterAimingCalcs.getInterpolatedFlywheelVelocity(
-                        m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))));
+    m_driverController.y().whileTrue(new StartEndCommand(() -> {
+      m_shooterSub.setTargetYawAngle(180.0);
+      m_shooterSub.setTargetPitchAngle(24.0);
+      m_shooterSub.setTargetFlywheelVelocity(66.0);
+    }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub));
+    // m_driverController.y().onTrue(
+    //     new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(m_shooterAimingCalcs
+    //         .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))
+    //             .andThen(new InstantCommand(
+    //                 () -> m_shooterSub.setTargetFlywheelVelocity(m_shooterAimingCalcs.getInterpolatedFlywheelVelocity(
+    //                     m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))));
 
     // Driver Left Bumper
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0)));
@@ -171,11 +176,11 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_drivetrainSub.resetPose((m_visionSub.getEstimatedPose()))));
 
     // Driver POV Up
-    m_driverController.povUp().whileTrue(new StartEndCommand(() -> {
-      m_shooterSub.setTargetYawAngle(180.0);
-      m_shooterSub.setTargetPitchAngle(24.0);
-      m_shooterSub.setTargetFlywheelVelocity(66.0);
-    }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub)); // The end of the command is dumb so that we still require the shooterSub
+    // m_driverController.povUp().whileTrue(new StartEndCommand(() -> {
+    //   m_shooterSub.setTargetYawAngle(180.0);
+    //   m_shooterSub.setTargetPitchAngle(24.0);
+    //   m_shooterSub.setTargetFlywheelVelocity(66.0);
+    // }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub)); // The end of the command is dumb so that we still require the shooterSub
 
     // Driver POV Right
 
@@ -260,6 +265,11 @@ public class RobotContainer {
             m_shooterSub)));
 
     // Operator POV Left
+    m_operatorController.povLeft().whileTrue(new StartEndCommand(() -> {
+      m_shooterSub.setTargetYawAngle(180.0);
+      m_shooterSub.setTargetPitchAngle(24.0);
+      m_shooterSub.setTargetFlywheelVelocity(66.0);
+    }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub));
 
     // Operator Left Stick
     m_operatorController.leftStick()

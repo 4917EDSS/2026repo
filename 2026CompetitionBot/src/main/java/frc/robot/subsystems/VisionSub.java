@@ -197,6 +197,7 @@ public class VisionSub extends SubsystemBase {
     } else {
       ticksSincePoseUpdate++;
     }
+
   }
 
   public Pose2d getTagPose2d() {
@@ -248,6 +249,13 @@ public class VisionSub extends SubsystemBase {
     return MathUtil.clamp(calculatedSTD, 0.0, 10.0);
   }
 
+  public static boolean inField(Pose2d pose) {
+    if(pose.getX() < 0.0 || pose.getX() > 17.0 || pose.getY() < 0.0 || pose.getY() > 8.5) {
+      return false;
+    }
+    return true;
+  }
+
   private void updateOdometry(SwerveDriveState swerveDriveState, String camera) {
     LimelightHelpers.SetRobotOrientation(camera, m_drivetrainSub.getState().Pose.getRotation().getDegrees(), 0, 0, 0,
         0, 0);
@@ -279,7 +287,7 @@ public class VisionSub extends SubsystemBase {
       double posDif = m_drivetrainSub.getPose().minus(mt2.pose).getTranslation().getNorm();
       if(Math.abs(posDif) > 2.0) {
         m_logger.info("jump distance: " + posDif);
-        return;
+        //return;
       }
       m_drivetrainSub.addVisionMeasurement(
           mt2.pose,
@@ -294,6 +302,10 @@ public class VisionSub extends SubsystemBase {
         m_fieldLLLeft.setRobotPose(mt2.pose);
       } else {
         m_fieldLLRight.setRobotPose(mt2.pose);
+      }
+
+      if(!inField(m_drivetrainSub.getPose())) {
+        m_drivetrainSub.resetPose((getEstimatedPose()));
       }
 
     }
