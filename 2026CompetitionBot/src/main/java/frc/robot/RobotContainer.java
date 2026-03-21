@@ -278,7 +278,11 @@ public class RobotContainer {
    * Create a list of auto period action choices+
    */
   void autoChooserSetup() {
+    m_Chooser.addOption("Right, Middle, Depot", new PathPlannerAuto("Right, Middle, Depot"));
     m_Chooser.addOption("Centre and Depot Scoring Auto", new PathPlannerAuto("Centre and Depot Scoring Auto"));
+    m_Chooser.addOption("Just Shoot", new PathPlannerAuto("Just Shoot"));
+
+
     SmartDashboard.putData("Auto Choices", m_Chooser);
   }
 

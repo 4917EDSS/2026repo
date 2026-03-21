@@ -218,14 +218,14 @@ public class ShooterSub extends SubsystemBase {
     if(!m_yawHasBeenReset && isAtYawAtCCWLimit()) {
       m_yawSwitchHitCounter += 1;
 
-      if(m_yawSwitchHitCounter == 3) {
+      if(m_yawSwitchHitCounter > 0) {
         resetYawEncoder();
         m_yawSwitchHitCounter = 0;
         m_yawHasBeenReset = true;
       }
     } else if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 370 || getYawAngleDeg() < 350)) {
       m_yawSwitchHitCounter += 1;
-      if(m_yawSwitchHitCounter == 3) {
+      if(m_yawSwitchHitCounter > 0) {
         resetYawEncoder();
         m_yawSwitchHitCounter = 0;
       }

@@ -1,0 +1,50 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "HitLimitSwitchesCmd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Do literally Nothing"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeDeployCmd"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AimCmd"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootCmd"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
