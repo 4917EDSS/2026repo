@@ -152,19 +152,34 @@ public class ShooterAimingCalcs {
   }
 
   public double[] calculationsInMotion(Pose2d current, Pose2d target, ChassisSpeeds velocity, boolean isLobbing) {
-    // double velocityX = velocity.vxMetersPerSecond;
-    // double velocityY = velocity.vyMetersPerSecond;
+
     double distance = (target.minus(current)).getTranslation().getNorm(); //please test this is might break everything because i don't knw if subtracting teh rotations causes issues.
     // double[] pitchAngleDegAndFlywheelVelocity =
     //     calculateShooterPitchDegrees(current, target, calculateShooterFlywheelRps(current, target), isLobbing); don't need this anymore lol, it uses the pure math calcs whcih we didnt get to tune
     double pitchAngleDeg = getInterpolatedPitchAngle(distance);//pitchAngleDegAndFlywheelVelocity[0];
     double flywheelVelocity = getInterpolatedFlywheelVelocity(distance);//pitchAngleDegAndFlywheelVelocity[1];
+    double targetX = target.getX();
+    double targetY = target.getY();
+    double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg);
+    Pose2d offsetPos;
+
+    if(RobotStatus.isCompensateForMotion()) {
+      for(int i = 0; i <= 3; i++) {
+        targetX = (target.getX() + velocity.vxMetersPerSecond) * tof;
+        targetY = (target.getY() + velocity.vyMetersPerSecond) * tof;
+        distance = (new Pose2d(targetX, targetY, new Rotation2d(0.0)).minus(current)).getTranslation().getNorm();
+        pitchAngleDeg = getInterpolatedPitchAngle(distance);
+        flywheelVelocity = getInterpolatedFlywheelVelocity(distance);
+        tof = calculateTimeOfFlight(current, new Pose2d(targetX, targetY, new Rotation2d(0.0)), flywheelVelocity,
+            pitchAngleDeg);
+      }
+    }
     //double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
     // double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg);
     // double offsetX = velocityX * tof; //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
     // double offsetY = velocityY * tof;
     //double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
-    Pose2d offsetPos = new Pose2d(target.getX(), target.getY(), new Rotation2d(0.0)); // Pose2d offsetPos = new Pose2d(target.getX() + offsetX, target.getY() + offsetY, new Rotation2d(0.0));
+    offsetPos = new Pose2d(targetX, targetY, new Rotation2d(0.0)); // Pose2d offsetPos = new Pose2d(target.getX() + offsetX, target.getY() + offsetY, new Rotation2d(0.0));
     // double[] pitchAndVelocity =
     //     calculateShooterPitchDegrees(current, offsetPos, calculateShooterFlywheelRps(current, offsetPos), isLobbing);
     // MIGHT NEEDS TO GET THE NEW PITCH AND FLYWHEEL VELOCITY IF WE RE ADD THE ROBOT VELOCITY COMPENSATION

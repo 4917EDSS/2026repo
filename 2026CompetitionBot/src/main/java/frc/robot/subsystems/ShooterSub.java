@@ -223,14 +223,14 @@ public class ShooterSub extends SubsystemBase {
         m_yawSwitchHitCounter = 0;
         m_yawHasBeenReset = true;
       }
-    }
-
-    if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 370 || getYawAngleDeg() < -10)) {
+    } else if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 370 || getYawAngleDeg() < 350)) {
       m_yawSwitchHitCounter += 1;
       if(m_yawSwitchHitCounter == 3) {
         resetYawEncoder();
         m_yawSwitchHitCounter = 0;
       }
+    } else {
+      m_yawSwitchHitCounter = 0;
     }
 
     runYawControl(m_yawAutomationEnabled);
@@ -326,7 +326,7 @@ public class ShooterSub extends SubsystemBase {
 
     // Checks if the current rotation is far from 0, if so sets our rotation count to 3
     // This stops us from accidentaly missing entire rotations
-    if(currentRots > 0.75) {
+    if(currentRots > 0.25) {
       m_yawRotationCount = 3;
     } else {
       m_yawRotationCount = 4;
@@ -469,7 +469,12 @@ public class ShooterSub extends SubsystemBase {
   ////////////////////////////// Flywheel automation //////////////////////////////
   private void enableFlyhweelAutomation() {
     m_flywheelAutomationEnabled = true;
-    m_flywheelMotorL.setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetFlywheelVelocityRotsPerSec));
+    if(m_targetFlywheelVelocityRotsPerSec < Constants.Shooter.kFlywheelMinVelocityRotsPerSec) {
+      m_flywheelMotorL.setControl(new DutyCycleOut(0.0));
+    } else {
+      m_flywheelMotorL
+          .setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetFlywheelVelocityRotsPerSec));
+    }
   }
 
   public void disableFlywheelAutomation() {

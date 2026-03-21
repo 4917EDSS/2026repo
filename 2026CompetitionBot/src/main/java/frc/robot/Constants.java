@@ -59,7 +59,7 @@ public final class Constants {
     public static final double kSingulatorMaxVelocityRps = 20.0; // Throughput must be slower than Escalator to avoid jams
     public static final double kSinglatorRpsToMpsConversionFactor = 0.63403070014 * 0.6; //  // 4 inches diamater to metters / 2
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
-    public static final double kSingulatorMaxCurrent = 120.0;
+    public static final double kSingulatorMaxCurrent = 60.0;
     public static final double kSingulatorMaxVoltage = 12.0;
     public static final double kSingulatorFeedVoltage = 4.0;
     public static final double kSingulatorKS = 0.25;
@@ -74,7 +74,7 @@ public final class Constants {
     public static final double kInputEscalatorRpsToMpsConversionFactor = 0.1795 / 2; //  inches diamater to meters / 2
     public static final double kOutputEscalatorRpsToMpsConversionFactor = 0.1795 * 5 / 3; //  inches diamater to meters / 2
     public static final double kEscalatorVelocityToleranceRotPerSec = 2;
-    public static final double kEscalatorMaxCurrent = 120.0;
+    public static final double kEscalatorMaxCurrent = 60.0;
     public static final double kEscalatorMaxVoltage = 12.0;
     public static final double kEscalatorKS = 0.37;
     public static final double kEscalatorKV = 0.36; // TODO: Test this value
@@ -86,12 +86,12 @@ public final class Constants {
   public static class Intake {
     // TODO:  Set all the values correctly
     public static final double kDeployEncoderToDegConversionFactor = 2.72244; // Gearing is 0.014368 (approx 1:69.5)
-    public static final double kDeployInAngleDeg = -90.0;
+    public static final double kDeployInAngleDeg = -110.0;
     public static final double kDeployBumpAngleDeg = -45.0; //it will never get to this angle (this is on purpose)
-    public static final double kDeployInToleranceDeg = 20.0;
+    public static final double kDeployInToleranceDeg = 40.0;
     public static final double kDeployOutAngleDeg = 8.8;
     public static final double kDeployToleranceDeg = 1.0;
-    public static final double kDeployMaxCurrent = 120.0;
+    public static final double kDeployMaxCurrent = 60.0;
     public static final double kDeployMaxVoltage = 6.0;
     public static final double kDeployRetractVoltage = 2.0; //voltage for retracting intake
     public static final double kDeployDeployVoltage = 2.0; //voltage for deploying intake
@@ -101,14 +101,14 @@ public final class Constants {
     public static final double kDeployKI = 0.0;
     public static final double kDeployKD = 0.0;
 
-    public static final double kBeltMaxCurrent = 120.0;
+    public static final double kBeltMaxCurrent = 60.0;
     public static final double kBeltTargetVoltage = 7.0;
   }
 
   public static class Shooter {
     // TODO:  Set all the values correctly
     public static final double kYawEncoderToDegConversionFactor = 180.0 / 2.2429;
-    public static final double kYawEncoderOffset = 0.2555554;
+    public static final double kYawEncoderOffset = 0.5307451;
     public static final double kYawMinAngleDeg = 0.0;
     public static final double kYawMaxAngleDeg = 360.0;
     public static final double kYawMaxCurrent = 40.0;
@@ -144,7 +144,7 @@ public final class Constants {
         * (Hopper.kInputEscalatorRpsToMpsConversionFactor / kFlywheelRotsPerSecToMpsConversionFactor);
     public static final double kFlywheelMaxVelocityRotsPerSec = 140.0;
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
-    public static final double kFlywheelMaxCurrent = 120.0;
+    public static final double kFlywheelMaxCurrent = 60.0;
     public static final double kFlywheelMaxVoltage = 12.0;
     public static final double kFlywheelTargetVelocityRotsPerSec = 70.0;
     public static final double kFlywheelKS = 0.055;

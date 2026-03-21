@@ -30,6 +30,8 @@ public class RobotStatus extends Command {
 
   private static FieldPosition previousFieldPosition = FieldPosition.Shoot;
 
+  private static boolean m_compensateForMotion = false;
+
   public static void LeftLob() {
     currentFieldPosition = FieldPosition.LeftLob;
     SmartDashboard.putNumber("Shooting Mode", currentFieldPosition.getValue());
@@ -103,6 +105,18 @@ public class RobotStatus extends Command {
 
   public static boolean wasShooting() {
     return (previousFieldPosition == FieldPosition.Shoot);
+  }
+
+  public static void doCompensateForMotion() {
+    m_compensateForMotion = true;
+  }
+
+  public static void dontCompensateForMotion() {
+    m_compensateForMotion = false;
+  }
+
+  public static boolean isCompensateForMotion() {
+    return m_compensateForMotion;
   }
 
 }

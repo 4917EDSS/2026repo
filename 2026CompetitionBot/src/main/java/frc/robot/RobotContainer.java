@@ -36,6 +36,7 @@ import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
 import frc.robot.subsystems.VisionSub;
+import frc.robot.utils.RobotStatus;
 import frc.robot.utils.ShooterAimingCalcs;
 
 
@@ -65,9 +66,9 @@ public class RobotContainer {
   public final VisionSub m_visionSub = new VisionSub(m_drivetrainSub);
 
   public final ShooterAimingCalcs m_shooterAimingCalcs = new ShooterAimingCalcs();
-  
+
   public final ShooterSub m_shooterSub = new ShooterSub(m_shooterAimingCalcs, m_drivetrainSub);
-  
+
   private SendableChooser<Command> m_Chooser = new SendableChooser<>();
 
   public RobotContainer() {
@@ -81,7 +82,6 @@ public class RobotContainer {
     SmartDashboard.putNumber("kD", 0.0);
 
 
-    
     // Note that X (coordinate) is defined as forward according to WPILib convention,
     // and Y (coordinate) is defined as to the left according to WPILib convention.
     m_drivetrainSub.setDefaultCommand(
@@ -91,11 +91,7 @@ public class RobotContainer {
             .withRotationalRate(-m_driverController.getRightX() * m_maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    // m_shooterSub.setDefaultCommand(new RunCommand(
-    //     () -> m_shooterSub.setPitchAndYawPower(-m_operatorController.getRightY() * 0.25,
-    //         m_operatorController.getLeftX() * 0.25),
-    //     m_shooterSub));
-
+    m_shooterSub.setDefaultCommand(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub));
   }
 
 
@@ -142,8 +138,12 @@ public class RobotContainer {
     m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));
 
     // Driver Y
-    m_driverController.y()
-        .onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage), m_intakeSub));
+    m_driverController.y().onTrue(
+        new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(m_shooterAimingCalcs
+            .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))
+                .andThen(new InstantCommand(
+                    () -> m_shooterSub.setTargetFlywheelVelocity(m_shooterAimingCalcs.getInterpolatedFlywheelVelocity(
+                        m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))));
 
     // Driver Left Bumper
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0)));
@@ -171,22 +171,17 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_drivetrainSub.resetPose((m_visionSub.getEstimatedPose()))));
 
     // Driver POV Up
-    m_driverController.povUp().whileTrue(
-        new StartEndCommand(() -> m_shooterSub.setYawVoltage(-3.0), () -> m_shooterSub.setYawVoltage(0.0),
-            m_shooterSub));
+    m_driverController.povUp().whileTrue(new StartEndCommand(() -> {
+      m_shooterSub.setTargetYawAngle(180.0);
+      m_shooterSub.setTargetPitchAngle(24.0);
+      m_shooterSub.setTargetFlywheelVelocity(66.0);
+    }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub)); // The end of the command is dumb so that we still require the shooterSub
 
-    // // Driver POV Right
-    m_driverController.povRight()
-        .onTrue(new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(21.0), m_shooterSub));
-
+    // Driver POV Right
 
     // Driver POV Down
-    m_driverController.povDown()
-        .onTrue(new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(40.0), m_shooterSub));
 
     // Driver POV Left
-    m_driverController.povLeft()
-        .onTrue(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub));
 
     // Driver Left Stick
     m_driverController.leftStick()
@@ -212,12 +207,13 @@ public class RobotContainer {
 
     // Operator X
     m_operatorController.x().whileTrue(
-        new StartEndCommand(() -> m_shooterSub.setTargetFlywheelVelocity(25.0),
-            () -> m_shooterSub.disableFlywheelAutomation(), m_shooterSub));
+        new StartEndCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage),
+            () -> m_intakeSub.setBeltVoltage(0.0), m_intakeSub));
 
     // Operator Y
-    m_operatorController.y().whileTrue(new StartEndCommand(() -> m_shooterSub.setTargetYawAngle(230.0),
-        () -> m_shooterSub.setTargetYawAngle(80.0), m_shooterSub));
+    m_operatorController.y().whileTrue(
+        new StartEndCommand(() -> m_intakeSub.setBeltVoltage(-4.0), () -> m_intakeSub.setBeltVoltage(0.0),
+            m_intakeSub));
 
     // Operator Left Bumper
     m_operatorController.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorVoltage(-2.0),
@@ -230,23 +226,23 @@ public class RobotContainer {
     // Operator Left Trigger
     m_operatorController.leftTrigger()
         .whileTrue(new InstantCommand(() -> m_hopperSub.disableEscalatorAutomation())
-            .andThen(new StartEndCommand(() -> m_hopperSub.setEscalatorVoltage(2.0),
+            .andThen(new StartEndCommand(() -> m_hopperSub.setEscalatorVoltage(4.0),
                 () -> m_hopperSub.setEscalatorVoltage(0.0), m_hopperSub)));
 
     // Operator Right Trigger
     m_operatorController.rightTrigger()
         .whileTrue(new InstantCommand(() -> m_shooterSub.disableFlywheelAutomation())
-            .andThen(new StartEndCommand(() -> m_shooterSub.setFlywheelVoltage(2.0),
+            .andThen(new StartEndCommand(() -> m_shooterSub.setFlywheelVoltage(6.0),
                 () -> m_shooterSub.setFlywheelVoltage(0.0), m_shooterSub)));
 
     // Operator Back
     m_operatorController.back().whileTrue(new InstantCommand(() -> m_shooterSub.disableYawAutomation()).andThen(
-        new StartEndCommand(() -> m_shooterSub.setYawVoltage(-2.0), () -> m_shooterSub.setYawVoltage(0.0),
+        new StartEndCommand(() -> m_shooterSub.setYawVoltage(2.0), () -> m_shooterSub.setYawVoltage(0.0),
             m_shooterSub)));
 
     // Operator Start
     m_operatorController.start().whileTrue(new InstantCommand(() -> m_shooterSub.disableYawAutomation()).andThen(
-        new StartEndCommand(() -> m_shooterSub.setYawVoltage(2.0), () -> m_shooterSub.setYawVoltage(0.0),
+        new StartEndCommand(() -> m_shooterSub.setYawVoltage(-2.0), () -> m_shooterSub.setYawVoltage(0.0),
             m_shooterSub)));
 
     // Operator POV Up
@@ -255,40 +251,23 @@ public class RobotContainer {
             m_shooterSub)));
 
     // Operator POV Right
-    m_operatorController.povRight().onTrue(
-        new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(m_shooterAimingCalcs
-            .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))
-                .andThen(new InstantCommand(
-                    () -> m_shooterSub.setTargetFlywheelVelocity(m_shooterAimingCalcs.getInterpolatedFlywheelVelocity(
-                        m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))));
+    m_operatorController.povRight().whileTrue(
+        new StartEndCommand(() -> RobotStatus.doCompensateForMotion(), () -> RobotStatus.dontCompensateForMotion()));
 
     // Operator POV Down
     m_operatorController.povDown().whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation()).andThen(
         new StartEndCommand(() -> m_shooterSub.setPitchVoltage(-2.0), () -> m_shooterSub.setPitchVoltage(0.0),
             m_shooterSub)));
 
-    // m_operatorController.povDown().onTrue(new InstantCommand(() -> m_shooterSub.setYawTuningConstants( //this is just for tuning, delete for competitions
-    //     SmartDashboard.getNumber("kS", 0.0),
-    //     SmartDashboard.getNumber("kP", 0.0),
-    //     SmartDashboard.getNumber("kI", 0.0),
-    //     SmartDashboard.getNumber("kD", 0.0)), m_shooterSub));
-
     // Operator POV Left
-    m_operatorController.povLeft().onTrue(
-        new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(SmartDashboard.getNumber("Sht Set Pitch Deg", 0.0)))
-            .andThen(new InstantCommand(
-                () -> m_shooterSub.setTargetFlywheelVelocity(SmartDashboard.getNumber("Sht Set Flywheel Rps", 0.0)))));
 
     // Operator Left Stick
     m_operatorController.leftStick()
         .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
 
-
     // Operator Right Stick
     m_operatorController.rightStick()
         .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
-
-
   }
 
   public Command getAutonomousCommand() {

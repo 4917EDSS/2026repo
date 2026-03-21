@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "HitLimitSwitchesCmd"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -47,26 +53,27 @@
                       "data": {
                         "pathName": "Drive Away from Centre"
                       }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "ShootCmd"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.0
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Drive To Depot"
-                      }
                     }
                   ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootCmd"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Drive To Depot"
                 }
               }
             ]
