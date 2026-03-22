@@ -88,7 +88,7 @@ public class IntakeSub extends SubsystemBase {
     SparkMaxConfig beltMotorConfig = new SparkMaxConfig();
     beltMotorConfig
         .inverted(false) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(100) // Current limit in amps
+        .smartCurrentLimit(60) // Current limit in amps
         .idleMode(IdleMode.kCoast);
 
     m_beltMotor.configure(beltMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -108,6 +108,7 @@ public class IntakeSub extends SubsystemBase {
     SmartDashboard.putBoolean("Intake Auto", m_deployAutomationEnabled);
     SmartDashboard.putNumber("Intake Target Angle", m_targetDeployAngleDeg);
     SmartDashboard.putNumber("Intake Current Angle", getDeployAngleDeg());
+    SmartDashboard.putNumber("Int Belt Current", m_beltMotor.getOutputCurrent());
 
     // Run the deploy-angle PID but only set the motor power if automation is currently enabled
     runDeployAngleControl(m_deployAutomationEnabled);
@@ -115,6 +116,7 @@ public class IntakeSub extends SubsystemBase {
 
   public void setBeltVoltage(double volts) {
     m_beltMotor.setVoltage(volts);
+    SmartDashboard.putNumber("Int Belt Tar Volts", volts);
   }
 
   public void setDeployVoltage(double volts) {

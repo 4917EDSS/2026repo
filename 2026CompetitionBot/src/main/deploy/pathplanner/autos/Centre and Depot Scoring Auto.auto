@@ -29,31 +29,31 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "sequential",
+                            "type": "named",
+                            "data": {
+                              "name": "IntakeBumpLiftCmd"
+                            }
+                          },
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Drive Over Bump"
+                            }
+                          },
+                          {
+                            "type": "deadline",
                             "data": {
                               "commands": [
                                 {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "IntakeBumpLiftCmd"
-                                  }
-                                },
-                                {
                                   "type": "path",
                                   "data": {
-                                    "pathName": "Drive Over Bump"
+                                    "pathName": "Already Over Bump to Centre"
                                   }
                                 },
                                 {
                                   "type": "named",
                                   "data": {
                                     "name": "IntakeDeployCmd"
-                                  }
-                                },
-                                {
-                                  "type": "path",
-                                  "data": {
-                                    "pathName": "Already Over Bump to Centre"
                                   }
                                 }
                               ]

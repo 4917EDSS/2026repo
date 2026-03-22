@@ -223,7 +223,7 @@ public class ShooterSub extends SubsystemBase {
         m_yawSwitchHitCounter = 0;
         m_yawHasBeenReset = true;
       }
-    } else if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 370 || getYawAngleDeg() < 350)) {
+    } else if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 361 || getYawAngleDeg() < 359)) {
       m_yawSwitchHitCounter += 1;
       if(m_yawSwitchHitCounter > 0) {
         resetYawEncoder();

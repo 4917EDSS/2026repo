@@ -89,8 +89,7 @@ public final class Constants {
     public static final double kDeployInAngleDeg = -110.0;
     public static final double kDeployBumpAngleDeg = -45.0; //it will never get to this angle (this is on purpose)
     public static final double kDeployInToleranceDeg = 40.0;
-    public static final double kDeployOutAngleDeg = 8.8;
-    public static final double kDeployToleranceDeg = 1.0;
+    public static final double kDeployOutAngleDeg = 1.0;
     public static final double kDeployMaxCurrent = 60.0;
     public static final double kDeployMaxVoltage = 6.0;
     public static final double kDeployRetractVoltage = 2.0; //voltage for retracting intake
@@ -158,15 +157,13 @@ public final class Constants {
     public static final double kGravity = 9.80665;
 
     public static final double kTurretOffsetX = -0.141;
-    public static final double kTurretOffsetY = -0.127;
+    public static final double kTurretOffsetY = 0.127;
   }
 
   public static class Vision {
     public static final double kDistanceTooCloseToDrive = 0.5;
-    public static final double kStandardDeviation = 1.0;
-    public static final double kDistanceWeight = 1.0;
-    public static final double kDistanceTrustThreshold = 2.0;
-    public static final double kAreaWeight = 1.5;
+    public static final double kStandardDeviation = 0.1;
+    public static final double kDistanceTrustThreshold = 3.0;
     public static final double kAreaTrustThreshold = 0.02;
   }
 

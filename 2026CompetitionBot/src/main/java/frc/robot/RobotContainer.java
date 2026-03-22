@@ -151,7 +151,7 @@ public class RobotContainer {
     //                     m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))));
 
     // Driver Left Bumper
-    m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0)));
+    m_driverController.leftBumper().onTrue(new InstantCommand(() -> m_intakeSub.setBeltVoltage(0.0), m_intakeSub));
 
     // Driver Right Bumper
     m_driverController.rightBumper().onTrue(new InstantCommand(() -> {

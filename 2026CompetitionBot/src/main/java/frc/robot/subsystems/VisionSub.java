@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.LimelightHelpers;
 import frc.robot.utils.ShooterAimingCalcs;
+import frc.robot.utils.LimelightHelpers.PoseEstimate;
 
 public class VisionSub extends SubsystemBase {
 
@@ -135,6 +136,12 @@ public class VisionSub extends SubsystemBase {
 
   @Override
   public void periodic() {
+    LimelightHelpers.SetRobotOrientation(RIGHT, m_drivetrainSub.getState().Pose.getRotation().getDegrees(), 0, 0, 0,
+        0, 0);
+
+    LimelightHelpers.SetRobotOrientation(LEFT, m_drivetrainSub.getState().Pose.getRotation().getDegrees(), 0, 0, 0,
+        0, 0);
+
     if(m_taL.getDouble(0) > m_taR.getDouble(0)) {
       id = m_tidL.getInteger(0);
       t2d = m_t2dL.getDoubleArray(new double[2]);
@@ -235,16 +242,15 @@ public class VisionSub extends SubsystemBase {
     return new Pose2d(botposeblue[0], botposeblue[1], m_drivetrainSub.getPose().getRotation());
   }
 
-  public double calculateStandardDeviation(int numOfTags) {
-    if(numOfTags <= 0) {
+  public double calculateStandardDeviation(PoseEstimate mt2) {
+    if(mt2.tagCount <= 0) {
       return 999999.9;
     }
-    double numOfTagsDouble = numOfTags;
-    double distFromTag = new Translation3d(botposeTarget[0], botposeTarget[1], botposeTarget[2]).getNorm();
-    double areaOfTag = a;
-    double calculatedSTD = (Constants.Vision.kStandardDeviation
-        + (distFromTag - Constants.Vision.kDistanceTrustThreshold) * Constants.Vision.kDistanceWeight
-        - (areaOfTag - Constants.Vision.kAreaTrustThreshold) * Constants.Vision.kAreaWeight) / numOfTagsDouble;
+    double numOfTagsDouble = mt2.tagCount;
+    double distFromTag = mt2.avgTagDist;
+    double calculatedSTD =
+        (Constants.Vision.kStandardDeviation * distFromTag / Constants.Vision.kDistanceTrustThreshold)
+            / numOfTagsDouble;
     SmartDashboard.putNumber("std", calculatedSTD);
     return MathUtil.clamp(calculatedSTD, 0.0, 10.0);
   }
@@ -257,8 +263,6 @@ public class VisionSub extends SubsystemBase {
   }
 
   private void updateOdometry(SwerveDriveState swerveDriveState, String camera) {
-    LimelightHelpers.SetRobotOrientation(camera, m_drivetrainSub.getState().Pose.getRotation().getDegrees(), 0, 0, 0,
-        0, 0);
     mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
     if(mt2 == null) {
       return;
@@ -282,7 +286,7 @@ public class VisionSub extends SubsystemBase {
       }
       //standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 15.0);
 
-      double standardDeviation = calculateStandardDeviation(mt2.tagCount); // 0.7 is a good starting value according to limelight docs.
+      double standardDeviation = 0.0;///calculateStandardDeviation(mt2); // 0.7 is a good starting value according to limelight docs.
 
       double posDif = m_drivetrainSub.getPose().minus(mt2.pose).getTranslation().getNorm();
       if(Math.abs(posDif) > 2.0) {
