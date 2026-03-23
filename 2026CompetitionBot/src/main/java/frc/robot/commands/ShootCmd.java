@@ -20,21 +20,36 @@ public class ShootCmd extends Command {
   ShooterSub m_shooterSub;
   Boolean m_isAtPitchLimit;
   Boolean m_isAtYawLimit;
+  double m_direction;
+  boolean m_withintake;
+
+  public ShootCmd(HopperSub hopperSub, IntakeSub intakeSub, ShooterSub shooterSub) {
+    this(hopperSub, intakeSub, shooterSub, true);
+  }
 
   /** Creates a new ShooterSubCmd. */
-  public ShootCmd(HopperSub hopperSub, IntakeSub intakeSub, ShooterSub shooterSub) {
+  public ShootCmd(HopperSub hopperSub, IntakeSub intakeSub, ShooterSub shooterSub, boolean withintake) {
+
     m_hopperSub = hopperSub;
     m_intakeSub = intakeSub;
     m_shooterSub = shooterSub;
-
+    m_withintake = withintake;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(hopperSub);
+    if(withintake) {
+      addRequirements(hopperSub, intakeSub);
+    } else {
+      addRequirements(hopperSub);
+    }
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps);
+    if(m_withintake) {
+      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
+      m_direction = -1.0;
+    }
   }
 
   public void execute() {
@@ -43,6 +58,14 @@ public class ShootCmd extends Command {
       return;
     }
 
+    if(m_withintake) {
+      if(m_intakeSub.getDeployAngleDeg() < Constants.Intake.kDeployShakeMin) {
+        m_direction = 1.0;
+      } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
+        m_direction = -1.0;
+      }
+      m_intakeSub.setDeployVoltage(m_direction * 2.0);
+    }
     if(Math.abs(m_hopperSub.getEscalatorVelocityRotPerSec()
         - Constants.Hopper.kEscalatorFeedSpeedRps) <= Constants.Hopper.kEscalatorVelocityToleranceRotPerSec
         && !m_shooterSub.isInDeadZone()) {
@@ -56,6 +79,9 @@ public class ShootCmd extends Command {
   @Override
   public void end(boolean interrupted) {
     m_hopperSub.disableShooting();
+    if(m_withintake) {
+      m_intakeSub.setBeltVoltage(0.0);
+    }
   }
 
   // Returns true when the command should end.

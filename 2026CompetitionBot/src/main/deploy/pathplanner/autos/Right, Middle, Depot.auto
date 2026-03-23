@@ -37,7 +37,7 @@
                           {
                             "type": "named",
                             "data": {
-                              "name": "ShootCmd"
+                              "name": "ShootNoIntakeCmd"
                             }
                           }
                         ]
