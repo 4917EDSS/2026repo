@@ -119,13 +119,6 @@ public class VisionSub extends SubsystemBase {
   }
 
   public void init() {
-    // if(GameData.getAlliance().equals(Alliance.Red)) {
-    //   LimelightHelpers.setCameraPose_RobotSpace(LEFT, 0.0, 0.39, 0.62, 0.0, 0.0, -90.0);
-    //   LimelightHelpers.setCameraPose_RobotSpace(RIGHT, 0.0, -0.39, 0.62, 0.0, 0.0, 90.0);
-    // } else {
-    //   LimelightHelpers.setCameraPose_RobotSpace(LEFT, 0.0, -0.39, 0.62, 0.0, 0.0, 90.0);
-    //   LimelightHelpers.setCameraPose_RobotSpace(RIGHT, 0.0, 0.39, 0.62, 0.0, 0.0, -90.0);
-    // }
 
     m_logger.info("Initializing VisionSub Subsystem");
     SmartDashboard.putData("FieldLLRight", m_fieldLLRight);
@@ -185,25 +178,7 @@ public class VisionSub extends SubsystemBase {
 
     SmartDashboard.putNumber("Est Dist", m_shooterAimingCalcs.getDistanceToHub(getEstimatedPose()));
 
-
-    //SmartDashboard.putNumber("x estimate", getEstimatedPose().getX());
-    //SmartDashboard.putNumber("y estimate", getEstimatedPose().getY());
-    //SmartDashboard.putNumber("rot estimate", getEstimatedPose().getRotation().getDegrees());
-    // SmartDashboard.putString("Main Limelight:", "none");
-
     chassisSpeeds = m_drivetrainSub.getRobotRelativeSpeeds();
-
-    if(Math
-        .sqrt(Math.pow(chassisSpeeds.vxMetersPerSecond, 2)
-            + Math.pow(chassisSpeeds.vxMetersPerSecond, 2)) < 2.0
-        && Math.abs(chassisSpeeds.omegaRadiansPerSecond) < Math.PI
-        && a >= 0.3
-        && ticksSincePoseUpdate >= 300) {
-      //m_drivetrainSub.resetPose(getEstimatedPose());
-      ticksSincePoseUpdate = 0;
-    } else {
-      ticksSincePoseUpdate++;
-    }
 
   }
 
@@ -229,12 +204,10 @@ public class VisionSub extends SubsystemBase {
   }
 
   private void updateOdometryRight(SwerveDriveState swerveDriveState) {
-    //updateOdometry(swerveDriveState, LEFT);
     updateOdometry(swerveDriveState, RIGHT);
   }
 
   private void updateOdometryLeft(SwerveDriveState swerveDriveState) {
-    //updateOdometry(swerveDriveState, RIGHT);
     updateOdometry(swerveDriveState, LEFT);
   }
 
@@ -272,19 +245,18 @@ public class VisionSub extends SubsystemBase {
     if(timestamp > m_previousTimestamp) {
       m_previousTimestamp = timestamp;
 
-
-      if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI
-          || 180.0 - Math.abs(m_drivetrainSub.getPigeonGyro().getRoll().getValueAsDouble()) > 4
-          || Math.abs(m_drivetrainSub.getPigeonGyro().getPitch().getValueAsDouble()) > 4) // if our angular velocity is greater than
+      // if our angular velocity is greater than
       // 360 degrees per second, ignore vision
       // updates
+      if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI
+          || 180.0 - Math.abs(m_drivetrainSub.getPigeonGyro().getRoll().getValueAsDouble()) > 4
+          || Math.abs(m_drivetrainSub.getPigeonGyro().getPitch().getValueAsDouble()) > 4) 
       {
         return;
       }
       if(mt2.tagCount == 0 || mt2.avgTagArea == 0) {
         return;
       }
-      //standardDeviation = (standardDeviation / mt2.tagCount) / (mt2.avgTagArea * 15.0);
 
       double standardDeviation = 0.0;///calculateStandardDeviation(mt2); // 0.7 is a good starting value according to limelight docs.
 
