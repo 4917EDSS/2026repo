@@ -83,7 +83,7 @@ public class TunerConstants {
   private static final double kDriveGearRatio = 6.122448979591837;
   private static final double kSteerGearRatio = 12.8;
   //Wheel radius value is with one temporary wheel, it seems to fix for now, it was 2 originally
-  private static final Distance kWheelRadius = Inches.of(2);
+  private static final Distance kWheelRadius = Inches.of(1.9);
 
   private static final boolean kInvertLeftSide = false;
   private static final boolean kInvertRightSide = true;
