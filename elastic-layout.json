@@ -10,21 +10,20 @@
           {
             "title": "Time",
             "x": 0.0,
-            "y": 0.0,
+            "y": 512.0,
             "width": 256.0,
             "height": 256.0,
-            "type": "Text Display",
+            "type": "Large Text Display",
             "properties": {
               "topic": "/SmartDashboard/Time",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "data_type": "double"
             }
           },
           {
             "title": "current rot",
-            "x": 0.0,
-            "y": 384.0,
+            "x": 1536.0,
+            "y": 512.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -36,56 +35,11 @@
             }
           },
           {
-            "title": "current x",
-            "x": 128.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/current x",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "current y",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/current y",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "IsRedAlliance",
-            "x": 128.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/FMSInfo/IsRedAlliance",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "limelight-left",
-            "x": 256.0,
+            "x": 0.0,
             "y": 0.0,
-            "width": 384.0,
-            "height": 384.0,
+            "width": 512.0,
+            "height": 512.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/limelight-left",
@@ -95,10 +49,10 @@
           },
           {
             "title": "limelight-right",
-            "x": 640.0,
+            "x": 512.0,
             "y": 0.0,
-            "width": 384.0,
-            "height": 384.0,
+            "width": 512.0,
+            "height": 512.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/limelight-right",
@@ -110,8 +64,8 @@
             "title": "Field",
             "x": 1024.0,
             "y": 0.0,
-            "width": 768.0,
-            "height": 384.0,
+            "width": 896.0,
+            "height": 512.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",
@@ -126,6 +80,47 @@
               "trajectory_color": 4294967295,
               "show_robot_outside_widget": true
             }
+          },
+          {
+            "title": "Sht Ptc Angle",
+            "x": 1408.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Ptc Angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw Angle",
+            "x": 1280.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Auto Choices",
+            "x": 1024.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto Choices",
+              "period": 0.06,
+              "sort_options": false
+            }
           }
         ]
       }
@@ -139,7 +134,7 @@
             "title": "Shooting Mode",
             "x": 0.0,
             "y": 0.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -196,8 +191,8 @@
           },
           {
             "title": "Sht Fly Target",
-            "x": 128.0,
-            "y": 256.0,
+            "x": 512.0,
+            "y": 640.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -210,16 +205,18 @@
           },
           {
             "title": "Sht Fly Velocity",
-            "x": 128.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 896.0,
+            "height": 512.0,
+            "type": "Graph",
             "properties": {
               "topic": "/SmartDashboard/Sht Fly Velocity",
-              "period": 0.06,
+              "period": 0.033,
               "data_type": "double",
-              "show_submit_button": false
+              "time_displayed": 5.0,
+              "color": 4278238420,
+              "line_width": 2.0
             }
           },
           {
@@ -272,8 +269,8 @@
           },
           {
             "title": "Sht Ptc Target",
-            "x": 512.0,
-            "y": 384.0,
+            "x": 640.0,
+            "y": 640.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -420,6 +417,219 @@
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/Sht Yaw Vel",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Fly Voltage",
+            "x": 0.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Fly Voltage",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "hood angle",
+            "x": 512.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/hood angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "flywheel rps",
+            "x": 640.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/flywheel rps",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Sht Ptc Angle",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Ptc Angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "previousPos",
+            "x": 1024.0,
+            "y": 640.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/previousPos",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "currentPos",
+            "x": 1152.0,
+            "y": 640.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/currentPos",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Est Dist",
+            "x": 384.0,
+            "y": 640.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Est Dist",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Ptc Enc Set",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Ptc Enc Set",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "std",
+            "x": 256.0,
+            "y": 640.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/std",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw Enc Rot",
+            "x": 896.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Enc Rot",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Yaw Rot Count",
+            "x": 1024.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Yaw Rot Count",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw Target",
+            "x": 1152.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Target",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw Angle",
+            "x": 1280.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Ptc Target",
+            "x": 1408.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Ptc Target",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Fly Target",
+            "x": 1536.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Fly Target",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
@@ -707,17 +917,168 @@
             }
           },
           {
-            "title": "deploy velcity",
-            "x": 896.0,
+            "title": "kS",
+            "x": 1152.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/kS",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kG",
+            "x": 1280.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/kG",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kV",
+            "x": 1408.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/kV",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kP",
+            "x": 1536.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/kP",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kI",
+            "x": 1664.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/kI",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kD",
+            "x": 1792.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/kD",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "ffVolts",
+            "x": 256.0,
             "y": 512.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/deploy velcity",
+              "topic": "/SmartDashboard/ffVolts",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "SETPOINT VELO",
+            "x": 1280.0,
+            "y": 384.0,
+            "width": 512.0,
+            "height": 384.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/SmartDashboard/SETPOINT VELO",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 5.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "Intake Deadzone",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Intake Deadzone",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Shooter Deadzone",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter Deadzone",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "in escalator tol",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/in escalator tol",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
@@ -855,32 +1216,6 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
-            }
-          },
-          {
-            "title": "limelight-left",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 512.0,
-            "height": 512.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/limelight-left",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
-          },
-          {
-            "title": "limelight-right",
-            "x": 1152.0,
-            "y": 0.0,
-            "width": 512.0,
-            "height": 512.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/limelight-right",
-              "period": 0.06,
-              "rotation_turns": 0
             }
           }
         ]
@@ -1187,50 +1522,339 @@
       }
     },
     {
-      "name": "Tab 7",
+
+      "name": "Sht Char",
       "grid_layout": {
         "layouts": [],
         "containers": [
           {
-            "title": "Escalator Target",
-            "x": 128.0,
+            "title": "Test Current",
+            "x": 0.0,
             "y": 0.0,
-            "width": 640.0,
-            "height": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test Current",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Test Max Pos",
+            "x": 128.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test Max Pos",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Test % Margin",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test % Margin",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Test Dyn Fwd Volts",
+            "x": 128.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test Dyn Fwd Volts",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Test Dyn Rev Volts",
+            "x": 0.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test Dyn Rev Volts",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Test Max Pos Find Volts",
+            "x": 128.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test Max Pos Find Volts",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Test Max Test Pos",
+            "x": 128.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test Max Test Pos",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Test Min Pos",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test Min Pos",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Test Min Pos Find Volts",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test Min Pos Find Volts",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Test Min Test Pos",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test Min Test Pos",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Test QStatic Step Time",
+            "x": 256.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Test QStatic Step Time",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Sht Yaw Angle",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw CCW",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw CCW",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Sht Yaw CW",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw CW",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Sht Yaw Auto",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Auto",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Sht Yaw Enc Set",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Enc Set",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Sht Yaw Target",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Target",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw Vel",
+            "x": 1024.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Vel",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw Angle",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 512.0,
+            "height": 384.0,
             "type": "Graph",
             "properties": {
-              "topic": "/SmartDashboard/Escalator Target",
+              "topic": "/SmartDashboard/Sht Yaw Angle",
               "period": 0.033,
               "data_type": "double",
-              "time_displayed": 5.0,
-              "min_value": 0.0,
-              "max_value": 95.0,
+              "time_displayed": 30.0,
               "color": 4278238420,
               "line_width": 2.0
             }
           },
           {
-            "title": "Escalator Velocity",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 640.0,
-            "height": 512.0,
+            "title": "Sht Yaw Vel",
+            "x": 1024.0,
+            "y": 256.0,
+            "width": 512.0,
+            "height": 384.0,
             "type": "Graph",
             "properties": {
-              "topic": "/SmartDashboard/Escalator Velocity",
+              "topic": "/SmartDashboard/Sht Yaw Vel",
               "period": 0.033,
               "data_type": "double",
-              "time_displayed": 5.0,
-              "min_value": 0.0,
-              "max_value": 95.0,
+              "time_displayed": 30.0,
               "color": 4278238420,
               "line_width": 2.0
+            }
+          },
+          {
+            "title": "kS",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/kS",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "kV",
+            "x": 1408.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/kV",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
             }
           },
           {
             "title": "kP",
-            "x": 384.0,
-            "y": 512.0,
+            "x": 1536.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -1243,8 +1867,8 @@
           },
           {
             "title": "kI",
-            "x": 512.0,
-            "y": 512.0,
+            "x": 1664.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -1257,8 +1881,8 @@
           },
           {
             "title": "kD",
-            "x": 640.0,
-            "y": 512.0,
+            "x": 1792.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -1270,28 +1894,184 @@
             }
           },
           {
-            "title": "kS",
-            "x": 768.0,
-            "y": 512.0,
+
+            "title": "Sht Yaw Volts",
+            "x": 1536.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/kS",
+              "topic": "/SmartDashboard/Sht Yaw Volts",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
             }
           },
           {
-            "title": "kV",
-            "x": 896.0,
+            "title": "Sht Yaw Volts",
+            "x": 1536.0,
+            "y": 256.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Volts",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 30.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tab 8",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Sht Yaw Enc Rot",
+            "x": 1408.0,
             "y": 512.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/kV",
+              "topic": "/SmartDashboard/Sht Yaw Enc Rot",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Yaw Rot Count",
+            "x": 1280.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Yaw Rot Count",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw Target",
+            "x": 1024.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Target",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Sht Yaw Angle",
+            "x": 1152.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Sht Yaw Angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Field",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 896.0,
+            "height": 512.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/SmartDashboard/Field",
+              "period": 0.06,
+              "field_game": "Rebuilt",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295,
+              "show_robot_outside_widget": true
+            }
+          },
+          {
+            "title": "limelight-left",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 512.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-left",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "limelight-right",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 512.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-right",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "current x",
+            "x": 1024.0,
+            "y": 640.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/current x",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "current y",
+            "x": 1152.0,
+            "y": 640.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/current y",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "current rot",
+            "x": 1280.0,
+            "y": 640.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/current rot",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
