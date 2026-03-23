@@ -26,12 +26,12 @@ public class HitLimitSwitchesCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // TODO: MAKE SURE THESE ALL GO IN THE CORRECT DIRECTION
     m_isAtPitchLimit = false;
     m_isAtYawLimit = false;
 
     m_shooterSub.disablePitchAutomation();
     m_shooterSub.disableYawAutomation();
+    m_shooterSub.unsetYawEncoder(); // unset the yaw encoder
 
     m_shooterSub.setPitchVoltage(-1.2);
     m_shooterSub.setYawVoltage(2.4);
@@ -41,8 +41,6 @@ public class HitLimitSwitchesCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // TODO: PROBABLY ONLY CHECK ONE LIMIT, THE CORRECT ONE
-
     if(m_shooterSub.isAtPitchLowerLimit()) {
       m_shooterSub.setPitchVoltage(0.0);
       m_isAtPitchLimit = true;

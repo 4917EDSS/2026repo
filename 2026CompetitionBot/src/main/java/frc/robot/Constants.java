@@ -111,8 +111,6 @@ public final class Constants {
     public static final double kYawRelativeEncoderConversion = 360.0 / 25.0 / 4.5;
     //(360.0 / kYawEncoderToDegConversionFactor) / (25.0);
     public static final double kYawEncoderOffset = 0.4496492;
-    public static final double kYawMinAngleDeg = 0.0;
-    public static final double kYawMaxAngleDeg = 360.0;
     public static final double kYawMaxCurrent = 40.0;
     public static final double kYawMaxVoltage = 9.0;
     public static final double kYawTolerance = 2.0;
