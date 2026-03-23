@@ -223,15 +223,15 @@ public class ShooterSub extends SubsystemBase {
         m_yawSwitchHitCounter = 0;
         m_yawHasBeenReset = true;
       }
-    } else if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 361 || getYawAngleDeg() < 359)) {
-      m_yawSwitchHitCounter += 1;
-      if(m_yawSwitchHitCounter > 0) {
-        resetYawEncoder();
-        m_yawSwitchHitCounter = 0;
-      }
-    } else {
-      m_yawSwitchHitCounter = 0;
-    }
+    } //else if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 361 || getYawAngleDeg() < 359)) {
+    //   m_yawSwitchHitCounter += 1;
+    //   if(m_yawSwitchHitCounter > 0) {
+    //     resetYawEncoder();
+    //     m_yawSwitchHitCounter = 0;
+    //   }
+    // } else {
+    //   m_yawSwitchHitCounter = 0;
+    // }
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
@@ -335,6 +335,11 @@ public class ShooterSub extends SubsystemBase {
     // }
     // m_lastYawEncoderRots = currentRots;
     // m_currentYawEncoderRots = currentRots;
+  }
+
+  // This is used to run the hit limit switches command and reset the yaw encoder
+  public void unsetYawEncoder() {
+    m_yawHasBeenReset = false;
   }
 
   public void resetPitchEncoder() {
