@@ -66,13 +66,13 @@ public class ShootCmd extends Command {
       }
       m_intakeSub.setDeployVoltage(m_direction * 2.0);
     }
-    if(Math.abs(m_hopperSub.getEscalatorVelocityRotPerSec()
-        - Constants.Hopper.kEscalatorFeedSpeedRps) <= Constants.Hopper.kEscalatorVelocityToleranceRotPerSec
-        && !m_shooterSub.isInDeadZone()) {
-      m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorFeedVoltage);
-    } else {
-      m_hopperSub.setSingulatorVoltage(0.0);
-    }
+    // if(Math.abs(m_hopperSub.getEscalatorVelocityRotPerSec()
+    //     - Constants.Hopper.kEscalatorFeedSpeedRps) <= Constants.Hopper.kEscalatorVelocityToleranceRotPerSec
+    //     && !m_shooterSub.isInDeadZone()) {
+    m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorFeedVoltage);
+    // } else {
+    //   m_hopperSub.setSingulatorVoltage(0.0);
+    // }
   }
 
   // Called once the command ends or is interrupted.

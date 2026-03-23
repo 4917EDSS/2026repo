@@ -374,7 +374,8 @@ public class ShooterSub extends SubsystemBase {
   public void setTargetYawAngle(double angleDeg) {
     SmartDashboard.putNumber("angledeg", angleDeg);
     angleDeg = (angleDeg + 360) % 360.0;
-    if(Constants.Shooter.kYawDeadzoneMin < angleDeg && angleDeg < Constants.Shooter.kYawDeadzoneMax) {
+    if((Constants.Shooter.kYawDeadzoneMin < angleDeg && angleDeg < Constants.Shooter.kYawDeadzoneMax)
+        || angleDeg > Constants.Shooter.kYawDeadzoneMinWrapparound) {
       angleDeg = 205.0;
       m_inDeadZone = true;
     } else {
