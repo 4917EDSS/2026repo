@@ -114,6 +114,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub));
 
+    NamedCommands.registerCommand("ShootNoIntakeCmd", new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub, false));
 
     NamedCommands.registerCommand("IntakeBumpLiftCmd", new IntakeBumpLiftCmd(m_intakeSub));
   }
@@ -129,10 +130,9 @@ public class RobotContainer {
 
     // Driver B
     m_driverController.b()
-        .onTrue(new ParallelCommandGroup(
+        .onTrue(
             new IntakeSetPositionCmd(Constants.Intake.kDeployInAngleDeg, Constants.Intake.kDeployRetractVoltage,
-                m_intakeSub),
-            new HoldShooterCmd(m_shooterSub)));
+                m_intakeSub));
 
     // Driver X
     m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));
