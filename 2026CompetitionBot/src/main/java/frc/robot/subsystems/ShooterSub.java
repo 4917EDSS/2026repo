@@ -436,7 +436,7 @@ public class ShooterSub extends SubsystemBase {
     m_targetPitchAngleDeg =
         MathUtil.clamp(angleDeg, Constants.Shooter.kPitchMinAngleDeg + 2, Constants.Shooter.kPitchMaxAngleDeg - 2);
     // m_pitchPidController.reset();
-    m_pitchPidController.setSetpoint(angleDeg);
+    m_pitchPidController.setSetpoint(m_targetPitchAngleDeg);
     runPitchControl(true);
     enablePitchAutomation();
   }

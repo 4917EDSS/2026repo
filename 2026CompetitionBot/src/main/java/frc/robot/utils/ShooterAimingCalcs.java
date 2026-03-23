@@ -84,9 +84,9 @@ public class ShooterAimingCalcs {
     return (targetYawAngle - robotYawAngle);
   }
 
-  public double calculateTimeOfFlight(Pose2d current, Pose2d target, double flywheelVelocity, double PitchAngleDeg) {
+  public double calculateTimeOfFlight(Pose2d current, Pose2d target, double flywheelVelocity, double pitchAngleDeg) {
     double distanceX = target.minus(current).getTranslation().getNorm();
-    double flywheelVelocityX = flywheelVelocity * Math.cos(PitchAngleDeg);
+    double flywheelVelocityX = flywheelVelocity * Math.cos(Math.toRadians(pitchAngleDeg));
     return distanceX / flywheelVelocityX;
   }
 
@@ -165,8 +165,8 @@ public class ShooterAimingCalcs {
 
     if(RobotStatus.isCompensateForMotion()) {
       for(int i = 0; i <= 3; i++) {
-        targetX = (target.getX() + velocity.vxMetersPerSecond) * tof;
-        targetY = (target.getY() + velocity.vyMetersPerSecond) * tof;
+        targetX = target.getX() + (velocity.vxMetersPerSecond * tof);
+        targetY = target.getY() + (velocity.vyMetersPerSecond * tof);
         distance = (new Pose2d(targetX, targetY, new Rotation2d(0.0)).minus(current)).getTranslation().getNorm();
         pitchAngleDeg = getInterpolatedPitchAngle(distance);
         flywheelVelocity = getInterpolatedFlywheelVelocity(distance);

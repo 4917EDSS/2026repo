@@ -165,7 +165,7 @@ public class RobotContainer {
         .onTrue(new IntakeSetPositionCmd(Constants.Intake.kDeployOutAngleDeg, 2.0, m_intakeSub));
 
     // Driver Right Trigger
-    m_driverController.rightTrigger().onTrue(
+    m_driverController.rightTrigger().whileTrue(
         new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub));
 
     // Driver Back
