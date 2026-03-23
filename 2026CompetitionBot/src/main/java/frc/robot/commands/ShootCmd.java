@@ -64,7 +64,7 @@ public class ShootCmd extends Command {
       } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
         m_direction = -1.0;
       }
-      m_intakeSub.setDeployVoltage(m_direction * 2.0);
+      m_intakeSub.setDeployVoltage(m_direction * 1.5);
     }
     // if(Math.abs(m_hopperSub.getEscalatorVelocityRotPerSec()
     //     - Constants.Hopper.kEscalatorFeedSpeedRps) <= Constants.Hopper.kEscalatorVelocityToleranceRotPerSec
