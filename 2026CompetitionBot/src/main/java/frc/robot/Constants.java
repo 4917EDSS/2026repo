@@ -89,7 +89,7 @@ public final class Constants {
     public static final double kDeployInAngleDeg = -110.0;
     public static final double kDeployBumpAngleDeg = -45.0; //it will never get to this angle (this is on purpose)
     public static final double kDeployInToleranceDeg = 40.0;
-    public static final double kDeployShakeMin = -60.0;
+    public static final double kDeployShakeMin = -20.0;
     public static final double kDeployOutAngleDeg = 1.0;
     public static final double kDeployMaxCurrent = 60.0;
     public static final double kDeployMaxVoltage = 6.0;
