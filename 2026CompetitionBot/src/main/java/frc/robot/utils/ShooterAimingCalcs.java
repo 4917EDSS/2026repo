@@ -178,7 +178,7 @@ public class ShooterAimingCalcs {
             pitchAngleDeg) * 1.5;
       }
     }
-    SmartDashboard.putNumber("tof", tof);
+    SmartDashboard.putNumber("Distance From Hub", distance);
     offsetPos = new Pose2d(targetX, targetY, new Rotation2d(0.0)); // Pose2d offsetPos = new Pose2d(target.getX() + offsetX, target.getY() + offsetY, new Rotation2d(0.0));
     m_targetField.setRobotPose(offsetPos);
     SmartDashboard.putData("targetField", m_targetField);
