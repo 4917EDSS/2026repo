@@ -168,7 +168,7 @@ public class RobotContainer {
 
     // Driver Right Trigger
     m_driverController.rightTrigger().onTrue(
-        new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub, RobotStatus.isIntakeAgitating()));
+        new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub));
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading 

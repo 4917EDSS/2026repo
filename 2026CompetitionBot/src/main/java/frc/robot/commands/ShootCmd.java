@@ -9,6 +9,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
+import frc.robot.utils.RobotStatus;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -46,16 +47,22 @@ public class ShootCmd extends Command {
   @Override
   public void initialize() {
     m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps);
-    if(m_withintake) {
-      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
-      m_direction = -1.0;
-    }
+
   }
 
   public void execute() {
+    m_withintake = RobotStatus.isIntakeAgitating();
+
     if(m_intakeSub.inDeploySafetyZone()) {
       m_hopperSub.setSingulatorVoltage(0.0);
       return;
+    }
+
+    if(m_withintake) {
+      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
+      m_direction = -1.0;
+    } else {
+      m_intakeSub.setBeltVoltage(0.0);
     }
 
     if(m_withintake) {

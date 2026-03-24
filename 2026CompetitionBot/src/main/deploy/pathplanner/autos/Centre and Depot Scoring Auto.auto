@@ -120,6 +120,12 @@
                     }
                   ]
                 }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Centre and Depot Scoring Path"
+                }
               }
             ]
           }

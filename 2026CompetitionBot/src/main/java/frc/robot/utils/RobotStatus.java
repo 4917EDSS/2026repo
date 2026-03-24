@@ -122,13 +122,16 @@ public class RobotStatus extends Command {
 
   public static void doIntakeAgitation() {
     m_intakeAgitation = true;
+    SmartDashboard.putBoolean("intake agitation", m_intakeAgitation);
   }
 
   public static void dontIntakeAgitation() {
     m_intakeAgitation = false;
+    SmartDashboard.putBoolean("intake agitation", m_intakeAgitation);
   }
 
   public static boolean isIntakeAgitating() {
+    SmartDashboard.putBoolean("intake agitation", m_intakeAgitation);
     return m_intakeAgitation;
   }
 }
