@@ -30,7 +30,7 @@ public class ShooterAimingCalcs {
     m_distanceToFlywheelMap.put(3.0, 58.0);
     m_distanceToFlywheelMap.put(3.5, 62.0);
     m_distanceToFlywheelMap.put(4.0, 65.0);
-    m_distanceToFlywheelMap.put(4.5, 72.0);
+    m_distanceToFlywheelMap.put(4.5, 70.0);
     m_distanceToFlywheelMap.put(5.0, 78.0);
     m_distanceToFlywheelMap.put(5.5, 80.0);
     m_distanceToFlywheelMap.put(16.540988, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
@@ -179,6 +179,7 @@ public class ShooterAimingCalcs {
       }
     }
     SmartDashboard.putNumber("tof", tof);
+    SmartDashboard.putNumber("distance From Hub", distance);
     offsetPos = new Pose2d(targetX, targetY, new Rotation2d(0.0)); // Pose2d offsetPos = new Pose2d(target.getX() + offsetX, target.getY() + offsetY, new Rotation2d(0.0));
     m_targetField.setRobotPose(offsetPos);
     SmartDashboard.putData("targetField", m_targetField);

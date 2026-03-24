@@ -21,26 +21,15 @@ public class ShootCmd extends Command {
   ShooterSub m_shooterSub;
   Boolean m_isAtPitchLimit;
   Boolean m_isAtYawLimit;
-  double m_direction;
-  boolean m_withintake;
-
-  public ShootCmd(HopperSub hopperSub, IntakeSub intakeSub, ShooterSub shooterSub) {
-    this(hopperSub, intakeSub, shooterSub, true);
-  }
 
   /** Creates a new ShooterSubCmd. */
-  public ShootCmd(HopperSub hopperSub, IntakeSub intakeSub, ShooterSub shooterSub, boolean withintake) {
+  public ShootCmd(HopperSub hopperSub, IntakeSub intakeSub, ShooterSub shooterSub) {
 
     m_hopperSub = hopperSub;
     m_intakeSub = intakeSub;
     m_shooterSub = shooterSub;
-    m_withintake = withintake;
     // Use addRequirements() here to declare subsystem dependencies.
-    if(withintake) {
-      addRequirements(hopperSub, intakeSub);
-    } else {
-      addRequirements(hopperSub);
-    }
+    addRequirements(hopperSub);
   }
 
   // Called when the command is initially scheduled.
@@ -51,27 +40,9 @@ public class ShootCmd extends Command {
   }
 
   public void execute() {
-    m_withintake = RobotStatus.isIntakeAgitating();
-
     if(m_intakeSub.inDeploySafetyZone()) {
       m_hopperSub.setSingulatorVoltage(0.0);
       return;
-    }
-
-    if(m_withintake) {
-      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
-      m_direction = -1.0;
-    } else {
-      m_intakeSub.setBeltVoltage(0.0);
-    }
-
-    if(m_withintake) {
-      if(m_intakeSub.getDeployAngleDeg() < Constants.Intake.kDeployShakeMin) {
-        m_direction = 1.0;
-      } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
-        m_direction = -1.0;
-      }
-      m_intakeSub.setDeployVoltage(m_direction * 1.5);
     }
     // if(Math.abs(m_hopperSub.getEscalatorVelocityRotPerSec()
     //     - Constants.Hopper.kEscalatorFeedSpeedRps) <= Constants.Hopper.kEscalatorVelocityToleranceRotPerSec
@@ -86,9 +57,6 @@ public class ShootCmd extends Command {
   @Override
   public void end(boolean interrupted) {
     m_hopperSub.disableShooting();
-    if(m_withintake) {
-      m_intakeSub.setBeltVoltage(0.0);
-    }
   }
 
   // Returns true when the command should end.
