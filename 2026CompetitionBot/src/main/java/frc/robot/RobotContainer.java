@@ -29,6 +29,7 @@ import frc.robot.commands.IntakeSetPositionCmd;
 import frc.robot.commands.IntakeBumpLiftCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.ShootCmd;
+import frc.robot.commands.ToggleIntakeAgitation;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.DrivetrainSub;
@@ -167,7 +168,7 @@ public class RobotContainer {
 
     // Driver Right Trigger
     m_driverController.rightTrigger().onTrue(
-        new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub));
+        new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub, RobotStatus.isIntakeAgitating()));
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading 
@@ -187,6 +188,8 @@ public class RobotContainer {
     // }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub)); // The end of the command is dumb so that we still require the shooterSub
 
     // Driver POV Right
+    m_driverController.povRight().onTrue(
+        new ToggleIntakeAgitation());
 
     // Driver POV Down
     m_driverController.povDown().onTrue(

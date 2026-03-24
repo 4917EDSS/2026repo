@@ -31,6 +31,7 @@ public class RobotStatus extends Command {
   private static FieldPosition previousFieldPosition = FieldPosition.Shoot;
 
   private static boolean m_compensateForMotion = false;
+  private static boolean m_intakeAgitation = false;
 
   public static void LeftLob() {
     currentFieldPosition = FieldPosition.LeftLob;
@@ -119,4 +120,15 @@ public class RobotStatus extends Command {
     return m_compensateForMotion;
   }
 
+  public static void doIntakeAgitation() {
+    m_intakeAgitation = true;
+  }
+
+  public static void dontIntakeAgitation() {
+    m_intakeAgitation = false;
+  }
+
+  public static boolean isIntakeAgitating() {
+    return m_intakeAgitation;
+  }
 }
