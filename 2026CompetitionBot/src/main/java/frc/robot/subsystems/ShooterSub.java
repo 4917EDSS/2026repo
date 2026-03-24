@@ -171,8 +171,8 @@ public class ShooterSub extends SubsystemBase {
     setYawVoltage(0.0);
     m_inDeadZone = false;
 
-    SmartDashboard.putNumber("Sht Set Pitch Deg", 0.0);
-    SmartDashboard.putNumber("Sht Set Flywheel Rps", 0.0);
+    SmartDashboard.putNumber("Set Ptc Pos", 0.0);
+    SmartDashboard.putNumber("Set Sht Fly Vel Rps", 0.0);
   }
 
   @Override

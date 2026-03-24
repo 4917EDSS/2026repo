@@ -21,30 +21,30 @@ public class ShooterAimingCalcs {
     // Key is distance to target in metres
     // Value is flywheel speed in rps
     m_distanceToFlywheelMap.put(0.0, Constants.Shooter.kFlywheelMinVelocityRotsPerSec); // Change this to minimum flywheel speed
-    m_distanceToFlywheelMap.put(1.5, 60.0);
-    m_distanceToFlywheelMap.put(2.0, 63.0);
-    m_distanceToFlywheelMap.put(2.5, 55.0);
-    m_distanceToFlywheelMap.put(3.0, 60.0);
-    m_distanceToFlywheelMap.put(3.5, 65.0);
-    m_distanceToFlywheelMap.put(4.0, 70.0);
-    m_distanceToFlywheelMap.put(4.5, 78.0);
-    m_distanceToFlywheelMap.put(5.0, 68.0);
-    m_distanceToFlywheelMap.put(5.5, 67.0);
+    m_distanceToFlywheelMap.put(1.5, 54.0);
+    m_distanceToFlywheelMap.put(2.0, 51.0);
+    m_distanceToFlywheelMap.put(2.5, 54.0);
+    m_distanceToFlywheelMap.put(3.0, 58.0);
+    m_distanceToFlywheelMap.put(3.5, 62.0);
+    m_distanceToFlywheelMap.put(4.0, 65.0);
+    m_distanceToFlywheelMap.put(4.5, 72.0);
+    m_distanceToFlywheelMap.put(5.0, 78.0);
+    m_distanceToFlywheelMap.put(5.5, 80.0);
     m_distanceToFlywheelMap.put(16.540988, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
 
     //This will need to be derived experementally, currentlty based on theoretical values
     // Key is distance to target in metres
     // Value is pitch angle in degrees
-    m_distanceToPitchMap.put(0.0, Constants.Shooter.kPitchMinAngleDeg);
-    m_distanceToPitchMap.put(1.5, 20.8);
-    m_distanceToPitchMap.put(2.0, 24.0);
-    m_distanceToPitchMap.put(2.5, 27.5);
-    m_distanceToPitchMap.put(3.0, 29.0);
-    m_distanceToPitchMap.put(3.5, 30.0);
-    m_distanceToPitchMap.put(4.0, 30.0);
-    m_distanceToPitchMap.put(4.5, 31.0);
-    m_distanceToPitchMap.put(5.0, 33.0);
-    m_distanceToPitchMap.put(5.5, 33.0);
+    m_distanceToPitchMap.put(0.0, 28.0);
+    m_distanceToPitchMap.put(1.5, 28.0);
+    m_distanceToPitchMap.put(2.0, 28.0);
+    m_distanceToPitchMap.put(2.5, 29.0);
+    m_distanceToPitchMap.put(3.0, 32.0);
+    m_distanceToPitchMap.put(3.5, 34.0);
+    m_distanceToPitchMap.put(4.0, 36.0);
+    m_distanceToPitchMap.put(4.5, 37.0);
+    m_distanceToPitchMap.put(5.0, 38.0);
+    m_distanceToPitchMap.put(5.5, 39.0);
     m_distanceToPitchMap.put(16.540988, Constants.Shooter.kPitchMaxAngleDeg);
   }
 

@@ -176,6 +176,9 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_drivetrainSub.resetPose((m_visionSub.getEstimatedPose()))));
 
     // Driver POV Up
+    m_driverController.povUp().onTrue(new InstantCommand(
+        () -> m_shooterSub.setTargetFlywheelVelocity(SmartDashboard.getNumber("Set Sht Fly Vel Rps", 0.0))));
+
     // m_driverController.povUp().whileTrue(new StartEndCommand(() -> {
     //   m_shooterSub.setTargetYawAngle(180.0);
     //   m_shooterSub.setTargetPitchAngle(24.0);
@@ -185,8 +188,11 @@ public class RobotContainer {
     // Driver POV Right
 
     // Driver POV Down
+    m_driverController.povDown().onTrue(
+        new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(SmartDashboard.getNumber("Set Ptc Pos", 0.0))));
 
     // Driver POV Left
+
 
     // Driver Left Stick
     m_driverController.leftStick()
@@ -278,6 +284,8 @@ public class RobotContainer {
     // Operator Right Stick
     m_operatorController.rightStick()
         .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+
+
   }
 
   public Command getAutonomousCommand() {
