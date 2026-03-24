@@ -24,4 +24,9 @@ public class ToggleIntakeAgitation extends InstantCommand {
       RobotStatus.dontIntakeAgitation();
     }
   }
+
+  @Override
+  public void execute() {
+
+  }
 }

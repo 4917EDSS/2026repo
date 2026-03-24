@@ -102,7 +102,7 @@ public final class Constants {
     public static final double kDeployKD = 0.0;
 
     public static final double kBeltMaxCurrent = 40.0;
-    public static final double kBeltTargetVoltage = 7.0;
+    public static final double kBeltTargetVoltage = 8.0;
   }
 
   public static class Shooter {
