@@ -9,10 +9,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 /** Add your docs here. */
 public class ShooterAimingCalcs {
+  private final Field2d m_targetField = new Field2d();
 
   static InterpolatingDoubleTreeMap m_distanceToFlywheelMap = new InterpolatingDoubleTreeMap();
   static InterpolatingDoubleTreeMap m_distanceToPitchMap = new InterpolatingDoubleTreeMap();
@@ -38,7 +41,7 @@ public class ShooterAimingCalcs {
     m_distanceToPitchMap.put(0.0, 28.0);
     m_distanceToPitchMap.put(1.5, 28.0);
     m_distanceToPitchMap.put(2.0, 28.0);
-    m_distanceToPitchMap.put(2.5, 29.0);
+    m_distanceToPitchMap.put(2.5, 30.0);
     m_distanceToPitchMap.put(3.0, 32.0);
     m_distanceToPitchMap.put(3.5, 34.0);
     m_distanceToPitchMap.put(4.0, 36.0);
@@ -86,7 +89,8 @@ public class ShooterAimingCalcs {
 
   public double calculateTimeOfFlight(Pose2d current, Pose2d target, double flywheelVelocity, double pitchAngleDeg) {
     double distanceX = target.minus(current).getTranslation().getNorm();
-    double flywheelVelocityX = flywheelVelocity * Math.cos(Math.toRadians(pitchAngleDeg));
+    double flywheelVelocityX = Constants.Shooter.kFlywheelRotsPerSecToMpsConversionFactor * flywheelVelocity
+        * Math.cos(Math.toRadians(90 - pitchAngleDeg));
     return distanceX / flywheelVelocityX;
   }
 
@@ -160,34 +164,29 @@ public class ShooterAimingCalcs {
     double flywheelVelocity = getInterpolatedFlywheelVelocity(distance);//pitchAngleDegAndFlywheelVelocity[1];
     double targetX = target.getX();
     double targetY = target.getY();
-    double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg);
+    double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg) * 1.5;
     Pose2d offsetPos;
 
     if(RobotStatus.isCompensateForMotion()) {
       for(int i = 0; i <= 3; i++) {
-        targetX = target.getX() + (velocity.vxMetersPerSecond * tof);
-        targetY = target.getY() + (velocity.vyMetersPerSecond * tof);
+        targetX = target.getX() - (velocity.vxMetersPerSecond * tof);
+        targetY = target.getY() - (velocity.vyMetersPerSecond * tof);
         distance = (new Pose2d(targetX, targetY, new Rotation2d(0.0)).minus(current)).getTranslation().getNorm();
         pitchAngleDeg = getInterpolatedPitchAngle(distance);
         flywheelVelocity = getInterpolatedFlywheelVelocity(distance);
         tof = calculateTimeOfFlight(current, new Pose2d(targetX, targetY, new Rotation2d(0.0)), flywheelVelocity,
-            pitchAngleDeg);
+            pitchAngleDeg) * 1.5;
       }
     }
-    //double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
-    // double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg);
-    // double offsetX = velocityX * tof; //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
-    // double offsetY = velocityY * tof;
-    //double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
+    SmartDashboard.putNumber("tof", tof);
     offsetPos = new Pose2d(targetX, targetY, new Rotation2d(0.0)); // Pose2d offsetPos = new Pose2d(target.getX() + offsetX, target.getY() + offsetY, new Rotation2d(0.0));
+    m_targetField.setRobotPose(offsetPos);
+    SmartDashboard.putData("targetField", m_targetField);
     // double[] pitchAndVelocity =
     //     calculateShooterPitchDegrees(current, offsetPos, calculateShooterFlywheelRps(current, offsetPos), isLobbing);
     // MIGHT NEEDS TO GET THE NEW PITCH AND FLYWHEEL VELOCITY IF WE RE ADD THE ROBOT VELOCITY COMPENSATION
     double[] trajectoriesArray = {pitchAngleDeg, calculateShooterYawDegrees(current, offsetPos),
         flywheelVelocity, offsetPos.getX(), offsetPos.getY(), offsetPos.getRotation().getDegrees()};
-
-    //System.out.println(Arrays.toString(trajectoriesArray));
-    //System.out.println(calculateTimeOfFlight(robot));
     return trajectoriesArray;
   }
 

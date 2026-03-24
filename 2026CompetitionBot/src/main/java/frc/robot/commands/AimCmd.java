@@ -49,7 +49,7 @@ public class AimCmd extends Command {
       m_shooterSub.disableYawAutomation();
     } else {
       m_shooterSub.setPitchYawFlywheelTarget(
-          m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getRobotRelativeSpeeds()));
+          m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getFieldRelativeSpeeds()));
     }
   }
 
