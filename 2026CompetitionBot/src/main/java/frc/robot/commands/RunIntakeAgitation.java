@@ -25,23 +25,18 @@ public class RunIntakeAgitation extends InstantCommand {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
+  }
 
   @Override
   public void execute() {
-    m_withintake = RobotStatus.isIntakeAgitating();
-
-    if(m_withintake) {
-      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
-      if(m_intakeSub.getDeployAngleDeg() < Constants.Intake.kDeployShakeMin) {
-        m_direction = 1.0;
-      } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
-        m_direction = -1.0;
-      }
-      m_intakeSub.setDeployVoltage(m_direction * 1.5);
-    } else {
-      m_intakeSub.setBeltVoltage(0.0);
+    if(m_intakeSub.getDeployAngleDeg() < Constants.Intake.kDeployShakeMin) {
+      m_direction = 1.0;
+    } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
+      m_direction = -1.0;
     }
+    m_intakeSub.setDeployVoltage(m_direction * 1.5);
   }
 
   @Override
@@ -52,6 +47,6 @@ public class RunIntakeAgitation extends InstantCommand {
 
   @Override
   public boolean isFinished() {
-    return !RobotStatus.isIntakeAgitating();
+    return false;
   }
 }

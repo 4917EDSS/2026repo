@@ -29,7 +29,6 @@ import frc.robot.commands.IntakeSetPositionCmd;
 import frc.robot.commands.IntakeBumpLiftCmd;
 import frc.robot.commands.KillAllCmd;
 import frc.robot.commands.ShootCmd;
-import frc.robot.commands.ToggleIntakeAgitation;
 import frc.robot.commands.RunIntakeAgitation;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
@@ -187,7 +186,7 @@ public class RobotContainer {
     // }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub)); // The end of the command is dumb so that we still require the shooterSub
 
     // Driver POV Right
-    m_driverController.povRight().onTrue(new ToggleIntakeAgitation());
+    m_driverController.povRight().toggleOnTrue(new RunIntakeAgitation(m_intakeSub));
 
     // Driver POV Down
     m_driverController.povDown().onTrue(
