@@ -33,18 +33,14 @@ public class RunIntakeAgitation extends InstantCommand {
 
     if(m_withintake) {
       m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
-      m_direction = -1.0;
-    } else {
-      m_intakeSub.setBeltVoltage(0.0);
-    }
-
-    if(m_withintake) {
       if(m_intakeSub.getDeployAngleDeg() < Constants.Intake.kDeployShakeMin) {
         m_direction = 1.0;
       } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
         m_direction = -1.0;
       }
       m_intakeSub.setDeployVoltage(m_direction * 1.5);
+    } else {
+      m_intakeSub.setBeltVoltage(0.0);
     }
   }
 
