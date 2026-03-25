@@ -30,8 +30,7 @@ public class RobotStatus extends Command {
 
   private static FieldPosition previousFieldPosition = FieldPosition.Shoot;
 
-  private static boolean m_compensateForMotion = false;
-  private static boolean m_intakeAgitation = false;
+  private static boolean m_compensateForMotion = true;
 
   public static void LeftLob() {
     currentFieldPosition = FieldPosition.LeftLob;
