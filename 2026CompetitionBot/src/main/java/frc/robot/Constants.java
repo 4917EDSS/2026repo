@@ -61,7 +61,7 @@ public final class Constants {
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 60.0;
     public static final double kSingulatorMaxVoltage = 12.0;
-    public static final double kSingulatorFeedVoltage = 4.0;
+    public static final double kSingulatorFeedVoltage = 8.0;
     public static final double kSingulatorKS = 0.25;
     public static final double kSingulatorKV = 0.04;
     public static final double kSingulatorKP = 0.5;
@@ -190,7 +190,7 @@ public final class Constants {
     public static final double kShooterToFloorHeight = 0.762;
     public static final double kLeftLobY = 2.0;
     public static final double kRightLobY = 6.0;
-    public static final double kBlueLobX = 3.0;
-    public static final double kRedLobX = 12.5;
+    public static final double kBlueLobX = 0.5;
+    public static final double kRedLobX = 14.5;
   }
 }

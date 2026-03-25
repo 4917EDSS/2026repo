@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
+import frc.robot.commands.HoldIntakeCmd;
 import frc.robot.commands.HoldShooterCmd;
 import frc.robot.commands.IntakeSetPositionCmd;
 import frc.robot.commands.IntakeBumpLiftCmd;
@@ -94,6 +95,8 @@ public class RobotContainer {
         ));
 
     m_shooterSub.setDefaultCommand(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub));
+
+    m_intakeSub.setDefaultCommand(new HoldIntakeCmd(m_intakeSub));
   }
 
 
@@ -126,7 +129,7 @@ public class RobotContainer {
     ////////////////////////////// Driver Buttons //////////////////////////////
     // Driver A
     m_driverController.a()
-        .onTrue(new IntakeBumpLiftCmd(m_intakeSub));
+        .toggleOnTrue(new RunIntakeAgitation(m_intakeSub));//.onTrue(new IntakeBumpLiftCmd(m_intakeSub));
 
     // Driver B
     m_driverController.b()
@@ -186,7 +189,7 @@ public class RobotContainer {
     // }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub)); // The end of the command is dumb so that we still require the shooterSub
 
     // Driver POV Right
-    m_driverController.povRight().toggleOnTrue(new RunIntakeAgitation(m_intakeSub));
+    //m_driverController.povRight().toggleOnTrue(new RunIntakeAgitation(m_intakeSub));
 
     // Driver POV Down
     m_driverController.povDown().onTrue(

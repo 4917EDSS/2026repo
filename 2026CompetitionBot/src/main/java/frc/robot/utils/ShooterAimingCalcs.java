@@ -27,9 +27,9 @@ public class ShooterAimingCalcs {
     m_distanceToFlywheelMap.put(1.5, 54.0);
     m_distanceToFlywheelMap.put(2.0, 51.0);
     m_distanceToFlywheelMap.put(2.5, 54.0);
-    m_distanceToFlywheelMap.put(3.0, 58.0);
-    m_distanceToFlywheelMap.put(3.5, 62.0);
-    m_distanceToFlywheelMap.put(4.0, 65.0);
+    m_distanceToFlywheelMap.put(3.0, 59.0);
+    m_distanceToFlywheelMap.put(3.5, 64.0);
+    m_distanceToFlywheelMap.put(4.0, 67.0);
     m_distanceToFlywheelMap.put(4.5, 70.0);
     m_distanceToFlywheelMap.put(5.0, 78.0);
     m_distanceToFlywheelMap.put(5.5, 80.0);
@@ -164,18 +164,18 @@ public class ShooterAimingCalcs {
     double flywheelVelocity = getInterpolatedFlywheelVelocity(distance);//pitchAngleDegAndFlywheelVelocity[1];
     double targetX = target.getX();
     double targetY = target.getY();
-    double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg) * 1.5;
+    double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg);
     Pose2d offsetPos;
 
     if(RobotStatus.isCompensateForMotion()) {
       for(int i = 0; i <= 3; i++) {
-        targetX = target.getX() - (velocity.vxMetersPerSecond * tof);
-        targetY = target.getY() - (velocity.vyMetersPerSecond * tof);
+        targetX = target.getX() - (velocity.vxMetersPerSecond * tof * 2.5);
+        targetY = target.getY() - (velocity.vyMetersPerSecond * tof * 1.5);
         distance = (new Pose2d(targetX, targetY, new Rotation2d(0.0)).minus(current)).getTranslation().getNorm();
         pitchAngleDeg = getInterpolatedPitchAngle(distance);
         flywheelVelocity = getInterpolatedFlywheelVelocity(distance);
         tof = calculateTimeOfFlight(current, new Pose2d(targetX, targetY, new Rotation2d(0.0)), flywheelVelocity,
-            pitchAngleDeg) * 1.5;
+            pitchAngleDeg);
       }
     }
     SmartDashboard.putNumber("tof", tof);
