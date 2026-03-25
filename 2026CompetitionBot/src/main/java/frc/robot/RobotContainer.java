@@ -299,6 +299,8 @@ public class RobotContainer {
   void autoChooserSetup() {
     m_Chooser.addOption("Right, Middle, Depot", new PathPlannerAuto("Right, Middle, Depot"));
     m_Chooser.addOption("Centre and Depot Scoring Auto", new PathPlannerAuto("Centre and Depot Scoring Auto"));
+    m_Chooser.addOption("UNTESTED Smooth Centre and Depot Scoring Auto",
+        new PathPlannerAuto("Smooth Centre and Depot Scoring Auto"));
     m_Chooser.addOption("Just Shoot", new PathPlannerAuto("Just Shoot"));
 
 

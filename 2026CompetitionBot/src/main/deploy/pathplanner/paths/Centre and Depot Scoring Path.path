@@ -52,40 +52,40 @@
         "y": 5.230590909090909
       },
       "prevControl": {
-        "x": 6.260170454545454,
-        "y": 5.230590909090909
+        "x": 6.436529516994633,
+        "y": 4.903059033989266
       },
       "nextControl": {
-        "x": 4.667687152439867,
-        "y": 5.230590909090909
+        "x": 4.69514852293551,
+        "y": 5.41970023613484
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.7975568181818182,
-        "y": 5.972681818181818
+        "x": 0.8225402504472268,
+        "y": 5.973935599284436
       },
       "prevControl": {
-        "x": 1.6581761363636358,
-        "y": 6.232928977272727
+        "x": 1.759946437849552,
+        "y": 5.817658489337203
       },
       "nextControl": {
-        "x": -0.06306249999999924,
-        "y": 5.712434659090909
+        "x": 0.5759435931996164,
+        "y": 6.015046286876649
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.806431818181818,
+        "x": 3.5700909090909088,
         "y": 5.869613636363637
       },
       "prevControl": {
-        "x": 3.809724431818182,
-        "y": 6.022927556818182
+        "x": 2.282826475849731,
+        "y": 5.909033989266548
       },
       "nextControl": null,
       "isLocked": false,
@@ -100,6 +100,10 @@
     {
       "waypointRelativePos": 1.76,
       "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 3,
+      "rotationDegrees": -104.51816262312015
     },
     {
       "waypointRelativePos": 4.0015723270440375,
@@ -122,10 +126,10 @@
     },
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 3.770197486535008,
-      "maxWaypointRelativePos": 4.389587073608611,
+      "minWaypointRelativePos": 3.898305084745762,
+      "maxWaypointRelativePos": 4.203389830508476,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 0.3,
         "maxAcceleration": 2.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
