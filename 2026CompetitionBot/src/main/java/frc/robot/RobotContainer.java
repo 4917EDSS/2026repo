@@ -267,7 +267,7 @@ public class RobotContainer {
 
     // Operator POV Right
     m_operatorController.povRight().whileTrue(
-        new StartEndCommand(() -> RobotStatus.doCompensateForMotion(), () -> RobotStatus.dontCompensateForMotion()));
+        new StartEndCommand(() -> RobotStatus.dontCompensateForMotion(), () -> RobotStatus.doCompensateForMotion()));
 
     // Operator POV Down
     m_operatorController.povDown().whileTrue(new InstantCommand(() -> m_shooterSub.disablePitchAutomation()).andThen(
