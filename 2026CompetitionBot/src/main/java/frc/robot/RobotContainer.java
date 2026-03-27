@@ -125,7 +125,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("IntakeBumpLiftCmd", new IntakeBumpLiftCmd(m_intakeSub));
 
-    NamedCommands.registerCommand("RunIntakeAgitation", new RunIntakeAgitation(m_intakeSub, m_drivetrainSub));
+    NamedCommands.registerCommand("RunIntakeAgitation", new RunIntakeAgitation(m_intakeSub, m_driverController));
   }
 
   /*
@@ -135,7 +135,7 @@ public class RobotContainer {
     ////////////////////////////// Driver Buttons //////////////////////////////
     // Driver A
     m_driverController.a()
-        .toggleOnTrue(new RunIntakeAgitation(m_intakeSub, m_drivetrainSub));//.onTrue(new IntakeBumpLiftCmd(m_intakeSub));
+        .toggleOnTrue(new RunIntakeAgitation(m_intakeSub, m_driverController));//.onTrue(new IntakeBumpLiftCmd(m_intakeSub));
 
     // Driver B
     m_driverController.b()
@@ -175,7 +175,7 @@ public class RobotContainer {
 
     // Driver Right Trigger
     m_driverController.rightTrigger().onTrue(new ParallelCommandGroup(
-        new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub), new RunIntakeAgitation(m_intakeSub, m_drivetrainSub)));
+        new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub), new RunIntakeAgitation(m_intakeSub, m_driverController)));
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading 

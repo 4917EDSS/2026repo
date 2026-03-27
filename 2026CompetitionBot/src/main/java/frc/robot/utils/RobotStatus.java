@@ -138,7 +138,7 @@ public class RobotStatus extends Command {
 
   public static double slowDriveClamp() {
     if(isDriveSlow()) {
-      return 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+      return 0.25 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     }
     return 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   }

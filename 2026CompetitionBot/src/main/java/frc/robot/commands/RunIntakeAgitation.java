@@ -5,8 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
-import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.IntakeSub;
 
 // NOTE: Consider using this command inline, rather than writing a subclass. For more
@@ -14,13 +14,13 @@ import frc.robot.subsystems.IntakeSub;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class RunIntakeAgitation extends InstantCommand {
   IntakeSub m_intakeSub;
-  DrivetrainSub m_drivetrainSub;
+  CommandXboxController m_driverController;
   boolean m_withintake;
   double m_direction;
 
-  public RunIntakeAgitation(IntakeSub intakeSub, DrivetrainSub drivetrainSub) {
+  public RunIntakeAgitation(IntakeSub intakeSub, CommandXboxController driverController) {
     m_intakeSub = intakeSub;
-    m_drivetrainSub = drivetrainSub;
+    m_driverController = driverController;
     addRequirements(m_intakeSub);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -39,15 +39,15 @@ public class RunIntakeAgitation extends InstantCommand {
       // Bring the intake in needs more power
       m_direction = -2.0;
     }
-    if(Math.sqrt(Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vxMetersPerSecond, 2)
-        + Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vyMetersPerSecond, 2)) < 0.25) {
+    if(Math.abs(m_driverController.getLeftX()) < 0.05 && Math.abs(m_driverController.getLeftY()) < 0.05
+        && Math.abs(m_driverController.getRightX()) < 0.05) {
       m_intakeSub.setDeployVoltage(m_direction * 1.5);
       m_intakeSub.setBeltVoltage(Constants.Intake.kBeltAgitationVoltage);
-    } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
-      m_intakeSub.setDeployVoltage(1.5);
+    } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployNearlyMax) {
+      m_intakeSub.setDeployVoltage(0.25);
       m_intakeSub.setBeltVoltage(Constants.Intake.kBeltIntakeVoltage);
     } else {
-      m_intakeSub.setDeployVoltage(0.25);
+      m_intakeSub.setDeployVoltage(2.0);
       m_intakeSub.setBeltVoltage(Constants.Intake.kBeltIntakeVoltage);
     }
 
