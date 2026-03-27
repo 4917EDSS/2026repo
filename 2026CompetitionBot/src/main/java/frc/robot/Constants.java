@@ -102,7 +102,8 @@ public final class Constants {
     public static final double kDeployKD = 0.0;
 
     public static final double kBeltMaxCurrent = 40.0;
-    public static final double kBeltTargetVoltage = 8.0;
+    public static final double kBeltIntakeVoltage = 10.0;
+    public static final double kBeltAgitationVoltage = 4.0;
   }
 
   public static class Shooter {
@@ -117,8 +118,8 @@ public final class Constants {
     public static final double kYawMaxVelocityDegPerSec = 30.0;
     public static final double kYawMaxAccelerationDegPerSec = 36.0;
     public static final double kYawDeadzoneMin = 0.0;
-    public static final double kYawDeadzoneMinWrapparound = 358.0;
-    public static final double kYawDeadzoneMax = 47.0;
+    public static final double kYawDeadzoneMinWrapparound = 355.0;
+    public static final double kYawDeadzoneMax = 50.0;
     public static final double kYawKS = 0.3;
     public static final double kYawKP = 0.6;
     public static final double kYawKI = 0.0;

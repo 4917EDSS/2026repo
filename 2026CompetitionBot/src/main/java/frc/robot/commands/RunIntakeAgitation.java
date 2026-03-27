@@ -28,7 +28,7 @@ public class RunIntakeAgitation extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
+
   }
 
   @Override
@@ -36,15 +36,19 @@ public class RunIntakeAgitation extends InstantCommand {
     if(m_intakeSub.getDeployAngleDeg() < Constants.Intake.kDeployShakeMin) {
       m_direction = 1.0;
     } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
-      m_direction = -1.0;
+      // Bring the intake in needs more power
+      m_direction = -2.0;
     }
     if(Math.sqrt(Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vxMetersPerSecond, 2)
         + Math.pow(m_drivetrainSub.getRobotRelativeSpeeds().vyMetersPerSecond, 2)) < 0.25) {
       m_intakeSub.setDeployVoltage(m_direction * 1.5);
+      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltAgitationVoltage);
     } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
       m_intakeSub.setDeployVoltage(1.5);
+      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltIntakeVoltage);
     } else {
       m_intakeSub.setDeployVoltage(0.25);
+      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltIntakeVoltage);
     }
 
   }

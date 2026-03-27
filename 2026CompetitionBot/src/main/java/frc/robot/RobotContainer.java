@@ -228,7 +228,7 @@ public class RobotContainer {
 
     // Operator X
     m_operatorController.x().whileTrue(
-        new StartEndCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage),
+        new StartEndCommand(() -> m_intakeSub.setBeltVoltage(Constants.Intake.kBeltIntakeVoltage),
             () -> m_intakeSub.setBeltVoltage(0.0), m_intakeSub));
 
     // Operator Y
