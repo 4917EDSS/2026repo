@@ -86,9 +86,9 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "wait",
+                            "type": "path",
                             "data": {
-                              "waitTime": 3.0
+                              "pathName": "Drive To Depot"
                             }
                           },
                           {
@@ -107,15 +107,22 @@
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "parallel",
                       "data": {
-                        "pathName": "Drive To Depot"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "ShootCmd"
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "ShootCmd"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "RunIntakeAgitation"
+                            }
+                          }
+                        ]
                       }
                     }
                   ]

@@ -113,14 +113,14 @@ public final class Constants {
     public static final double kYawEncoderOffset = 0.4496492;
     public static final double kYawMaxCurrent = 40.0;
     public static final double kYawMaxVoltage = 9.0;
-    public static final double kYawTolerance = 2.0;
+    public static final double kYawTolerance = 1.0;
     public static final double kYawMaxVelocityDegPerSec = 30.0;
     public static final double kYawMaxAccelerationDegPerSec = 36.0;
     public static final double kYawDeadzoneMin = 0.0;
     public static final double kYawDeadzoneMinWrapparound = 358.0;
     public static final double kYawDeadzoneMax = 47.0;
     public static final double kYawKS = 0.3;
-    public static final double kYawKP = 0.2;
+    public static final double kYawKP = 0.6;
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.0;
 

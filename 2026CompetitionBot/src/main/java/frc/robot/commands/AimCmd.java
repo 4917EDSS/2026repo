@@ -5,8 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.Constants.Intake;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
@@ -49,7 +47,8 @@ public class AimCmd extends Command {
       m_shooterSub.disableYawAutomation();
     } else {
       m_shooterSub.setPitchYawFlywheelTarget(
-          m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getFieldRelativeSpeeds()));
+          m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getPose(),
+              m_drivetrainSub.getFieldRelativeSpeeds()));
     }
   }
 

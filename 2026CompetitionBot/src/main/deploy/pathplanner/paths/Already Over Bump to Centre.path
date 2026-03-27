@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.857965909087121,
-        "y": 7.436249999995832
+        "x": 6.971340909090909,
+        "y": 6.209738636363636
       },
       "isLocked": false,
       "linkedName": "Over Bump"
@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 7.815688729874777,
-        "y": 6.931215909090908
+        "y": 5.9
       },
       "prevControl": {
         "x": 7.805515288661171,
-        "y": 7.421633138440652
+        "y": 6.390417229349744
       },
       "nextControl": {
         "x": 7.82680681817803,
-        "y": 6.395261363636362
+        "y": 5.364045454545455
       },
       "isLocked": false,
       "linkedName": null
@@ -46,7 +46,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0660377358490531,
+      "waypointRelativePos": 0.3930817610062889,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.0754716981132062,
       "rotationDegrees": -90.0
     }
   ],

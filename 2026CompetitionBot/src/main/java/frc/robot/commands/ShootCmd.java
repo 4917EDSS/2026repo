@@ -36,6 +36,7 @@ public class ShootCmd extends Command {
   @Override
   public void initialize() {
     m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps);
+    RobotStatus.driveSlow();
 
   }
 
@@ -57,6 +58,7 @@ public class ShootCmd extends Command {
   @Override
   public void end(boolean interrupted) {
     m_hopperSub.disableShooting();
+    RobotStatus.driveNormal();
   }
 
   // Returns true when the command should end.

@@ -29,7 +29,7 @@ public class HoldIntakeCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_intakeSub.getDeployAngleDeg() < Constants.Intake.kDeployOutAngleDeg) {
+    if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
       m_intakeSub.setDeployVoltage(0.25);
     }
   }

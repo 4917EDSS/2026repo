@@ -13,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
@@ -89,8 +89,12 @@ public class RobotContainer {
     m_drivetrainSub.setDefaultCommand(
         // Drivetrain will execute this command periodically
         m_drivetrainSub.applyRequest(() -> m_drive
-            .withVelocityX(-(m_driverController.getLeftY() * Math.abs(m_driverController.getLeftY()) * m_maxSpeed)) // Drive forward with negative Y (forward)
-            .withVelocityY(-(m_driverController.getLeftX() * Math.abs(m_driverController.getLeftX()) * m_maxSpeed)) // Drive left with negative X (left)
+            .withVelocityX(
+                -MathUtil.clamp((m_driverController.getLeftY() * Math.abs(m_driverController.getLeftY()) * m_maxSpeed),
+                    -RobotStatus.slowDriveClamp(), RobotStatus.slowDriveClamp())) // Drive forward with negative Y (forward)
+            .withVelocityY(
+                -MathUtil.clamp((m_driverController.getLeftX() * Math.abs(m_driverController.getLeftX()) * m_maxSpeed),
+                    -RobotStatus.slowDriveClamp(), RobotStatus.slowDriveClamp())) // Drive left with negative X (left)
             .withRotationalRate(-m_driverController.getRightX() * m_maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
@@ -120,6 +124,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("ShootCmd", new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub));
 
     NamedCommands.registerCommand("IntakeBumpLiftCmd", new IntakeBumpLiftCmd(m_intakeSub));
+
+    NamedCommands.registerCommand("RunIntakeAgitation", new RunIntakeAgitation(m_intakeSub, m_drivetrainSub));
   }
 
   /*
@@ -129,7 +135,7 @@ public class RobotContainer {
     ////////////////////////////// Driver Buttons //////////////////////////////
     // Driver A
     m_driverController.a()
-        .toggleOnTrue(new RunIntakeAgitation(m_intakeSub));//.onTrue(new IntakeBumpLiftCmd(m_intakeSub));
+        .toggleOnTrue(new RunIntakeAgitation(m_intakeSub, m_drivetrainSub));//.onTrue(new IntakeBumpLiftCmd(m_intakeSub));
 
     // Driver B
     m_driverController.b()
@@ -168,8 +174,8 @@ public class RobotContainer {
         .onTrue(new IntakeSetPositionCmd(Constants.Intake.kDeployOutAngleDeg, 2.0, m_intakeSub));
 
     // Driver Right Trigger
-    m_driverController.rightTrigger().onTrue(
-        new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub));
+    m_driverController.rightTrigger().onTrue(new ParallelCommandGroup(
+        new ShootCmd(m_hopperSub, m_intakeSub, m_shooterSub), new RunIntakeAgitation(m_intakeSub, m_drivetrainSub)));
 
     // Driver Back
     m_driverController.back().onTrue(m_drivetrainSub.runOnce(m_drivetrainSub::seedFieldCentric)); // Reset the field-centric heading 
@@ -189,7 +195,7 @@ public class RobotContainer {
     // }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub)); // The end of the command is dumb so that we still require the shooterSub
 
     // Driver POV Right
-    //m_driverController.povRight().toggleOnTrue(new RunIntakeAgitation(m_intakeSub));
+    //m_driverController.povRight().;
 
     // Driver POV Down
     m_driverController.povDown().onTrue(
@@ -305,6 +311,7 @@ public class RobotContainer {
     m_Chooser.addOption("UNTESTED Smooth Centre and Depot Scoring Auto",
         new PathPlannerAuto("Smooth Centre and Depot Scoring Auto"));
     m_Chooser.addOption("Just Shoot", new PathPlannerAuto("Just Shoot"));
+    m_Chooser.addOption("new rs", new PathPlannerAuto("new rs"));
 
 
     SmartDashboard.putData("Auto Choices", m_Chooser);
