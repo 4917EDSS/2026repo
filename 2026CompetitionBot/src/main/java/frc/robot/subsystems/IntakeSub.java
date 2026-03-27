@@ -83,7 +83,7 @@ public class IntakeSub extends SubsystemBase {
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs beltOutputConfigs = new MotorOutputConfigs();
     beltOutputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
-    beltOutputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Invert = Clockwise
+    beltOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Invert = Clockwise
     beltOutputConfigs.NeutralMode = NeutralModeValue.Coast;
     beltTalonFXConfigurator.apply(beltOutputConfigs);
 
