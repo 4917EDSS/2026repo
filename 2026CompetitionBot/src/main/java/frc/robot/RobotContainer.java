@@ -312,6 +312,7 @@ public class RobotContainer {
         new PathPlannerAuto("Smooth Centre and Depot Scoring Auto"));
     m_Chooser.addOption("Just Shoot", new PathPlannerAuto("Just Shoot"));
     m_Chooser.addOption("new rs", new PathPlannerAuto("new rs"));
+    m_Chooser.addOption("new ls", new PathPlannerAuto("new ls"));
 
 
     SmartDashboard.putData("Auto Choices", m_Chooser);
