@@ -30,10 +30,10 @@ public class ShooterAimingCalcs {
     m_distanceToFlywheelMap.put(2.5, 54.0);
     m_distanceToFlywheelMap.put(3.0, 59.0);
     m_distanceToFlywheelMap.put(3.5, 64.0);
-    m_distanceToFlywheelMap.put(4.0, 67.0);
-    m_distanceToFlywheelMap.put(4.5, 70.0);
-    m_distanceToFlywheelMap.put(5.0, 76.0);
-    m_distanceToFlywheelMap.put(5.5, 80.0);
+    m_distanceToFlywheelMap.put(4.0, 68.0);
+    m_distanceToFlywheelMap.put(4.5, 71.0);
+    m_distanceToFlywheelMap.put(5.0, 77.0);
+    m_distanceToFlywheelMap.put(5.5, 81.0);
     m_distanceToFlywheelMap.put(16.540988, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
 
     //This will need to be derived experementally, currentlty based on theoretical values
