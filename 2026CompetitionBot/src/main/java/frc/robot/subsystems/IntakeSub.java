@@ -9,6 +9,8 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -33,6 +35,8 @@ public class IntakeSub extends SubsystemBase {
   private final TalonFX m_deployMotor = new TalonFX(Constants.CanIds.kIntakeDeployMotor);
   private final DutyCycleEncoder m_encoder =
       new DutyCycleEncoder(new DigitalInput(Constants.DioIds.kIntakeEncoder), 360, 338.0);
+
+  VoltageOut voltageRequest = new VoltageOut(0.0).withEnableFOC(true);
 
   private final PIDController m_deployPidController =
       new PIDController(Constants.Intake.kDeployKP, Constants.Intake.kDeployKI, Constants.Intake.kDeployKD);
@@ -114,14 +118,16 @@ public class IntakeSub extends SubsystemBase {
     SmartDashboard.putBoolean("Intake Auto", m_deployAutomationEnabled);
     SmartDashboard.putNumber("Intake Target Angle", m_targetDeployAngleDeg);
     SmartDashboard.putNumber("Intake Current Angle", getDeployAngleDeg());
-    SmartDashboard.putNumber("Int Belt Current", m_beltMotor.getStatorCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Int Belt Amps", m_beltMotor.getStatorCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Int Deploy Amps", m_deployMotor.getStatorCurrent().getValueAsDouble());
 
     // Run the deploy-angle PID but only set the motor power if automation is currently enabled
     runDeployAngleControl(m_deployAutomationEnabled);
   }
 
   public void setBeltVoltage(double volts) {
-    m_beltMotor.setVoltage(volts);
+    voltageRequest.Output = volts;
+    m_beltMotor.setControl(voltageRequest);
     SmartDashboard.putNumber("Int Belt Tar Volts", volts);
   }
 

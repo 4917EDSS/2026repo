@@ -112,7 +112,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "Right Side Centre"
+                              "pathName": "2nd Right Side Centre"
                             }
                           },
                           {
@@ -140,7 +140,7 @@
                                 {
                                   "type": "wait",
                                   "data": {
-                                    "waitTime": 3.0
+                                    "waitTime": 3.4
                                   }
                                 },
                                 {

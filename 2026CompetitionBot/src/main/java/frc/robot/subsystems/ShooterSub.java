@@ -196,6 +196,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putBoolean("Sht Ptc Enc Set", m_pitchHasBeenReset);
     SmartDashboard.putBoolean("Sht Ptc Up Lmt", isAtPitchUpperLimit());
     SmartDashboard.putBoolean("Sht Ptc Down Lmt", isAtPitchLowerLimit());
+    SmartDashboard.putNumber("Shot Ptc Amps", m_pitchMotor.getOutputCurrent());
     // Pitch power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Fly Auto", m_flywheelAutomationEnabled);

@@ -61,7 +61,7 @@ public final class Constants {
     public static final double kSingulatorVelocityToleranceRotPerSec = 0.1;
     public static final double kSingulatorMaxCurrent = 60.0;
     public static final double kSingulatorMaxVoltage = 12.0;
-    public static final double kSingulatorFeedVoltage = 8.0;
+    public static final double kSingulatorFeedVoltage = 7.2;
     public static final double kSingulatorKS = 0.25;
     public static final double kSingulatorKV = 0.04;
     public static final double kSingulatorKP = 0.5;
@@ -103,7 +103,7 @@ public final class Constants {
     public static final double kDeployKD = 0.0;
 
     public static final double kBeltMaxCurrent = 40.0;
-    public static final double kBeltIntakeVoltage = 10.0;
+    public static final double kBeltIntakeVoltage = 9.0;
     public static final double kBeltAgitationVoltage = 4.0;
   }
 
@@ -129,7 +129,7 @@ public final class Constants {
     public static final double kPitchEncoderToDegConversionFactor = 29.0 / 39.29; // Difference between min and max / motor rotations
     public static final double kPitchMinAngleDeg = 18.0;
     public static final double kPitchMaxAngleDeg = 48.0;
-    public static final double kPitchMaxCurrent = 12.0;
+    public static final int kPitchMaxCurrent = 12;
     public static final double kPitchMaxVoltage = 3.6;
     public static final double kPitchTolerance = 1.0;
     public static final double kPitchMaxVelocityDegPerSec = 5.0;
@@ -152,7 +152,7 @@ public final class Constants {
     public static final double kFlywheelTargetVelocityRotsPerSec = 70.0;
     public static final double kFlywheelKS = 0.055;
     public static final double kFlywheelKV = 0.0789;
-    public static final double kFlywheelKP = 0.5;//ADD FLYWHELL PID
+    public static final double kFlywheelKP = 0.45;//ADD FLYWHELL PID
     public static final double kFlywheelKI = 0.1;
     public static final double kFlywheelKD = 0.0;
 
@@ -177,9 +177,9 @@ public final class Constants {
     public static final double kBlueHubY = 4.035;
 
     public static final double kBlueNeutralZoneX = 5.208524;
-    public static final double kBlueAllianceZoneX = 4.014724;
+    public static final double kBlueAllianceZoneX = 4.675;
     public static final double kRedNeutralZoneX = 11.304524;
-    public static final double kRedAllianceZoneX = 12.498324;
+    public static final double kRedAllianceZoneX = 11.856;
     public static final double kLeftSideY = 3.411728;
     public static final double kRightSideY = 4.630928;
   }
@@ -192,7 +192,7 @@ public final class Constants {
     public static final double kShooterToFloorHeight = 0.762;
     public static final double kLeftLobY = 2.0;
     public static final double kRightLobY = 6.0;
-    public static final double kBlueLobX = 0.5;
-    public static final double kRedLobX = 14.5;
+    public static final double kBlueLobX = 1.5;
+    public static final double kRedLobX = 13.5;
   }
 }
