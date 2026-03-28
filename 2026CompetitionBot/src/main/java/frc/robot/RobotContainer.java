@@ -237,11 +237,11 @@ public class RobotContainer {
             m_intakeSub));
 
     // Operator Left Bumper
-    m_operatorController.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorVoltage(-2.0),
+    m_operatorController.leftBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorVoltage(-8.0),
         () -> m_hopperSub.setSingulatorVoltage(0.0), m_hopperSub));
 
     // Operator Right Bumper
-    m_operatorController.rightBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorVoltage(2.0),
+    m_operatorController.rightBumper().whileTrue(new StartEndCommand(() -> m_hopperSub.setSingulatorVoltage(8.0),
         () -> m_hopperSub.setSingulatorVoltage(0.0), m_hopperSub));
 
     // Operator Left Trigger
