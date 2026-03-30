@@ -4,8 +4,11 @@
 
 package frc.robot.utils;
 
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.generated.TunerConstants;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -30,7 +33,9 @@ public class RobotStatus extends Command {
 
   private static FieldPosition previousFieldPosition = FieldPosition.Shoot;
 
-  private static boolean m_compensateForMotion = false;
+  private static boolean m_compensateForMotion = true;
+
+  private static boolean m_slowDrive = false;
 
   public static void LeftLob() {
     currentFieldPosition = FieldPosition.LeftLob;
@@ -119,4 +124,22 @@ public class RobotStatus extends Command {
     return m_compensateForMotion;
   }
 
+  public static void driveSlow() {
+    m_slowDrive = true;
+  }
+
+  public static void driveNormal() {
+    m_slowDrive = false;
+  }
+
+  public static boolean isDriveSlow() {
+    return m_slowDrive;
+  }
+
+  public static double slowDriveClamp() {
+    if(isDriveSlow()) {
+      return 0.4 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+    }
+    return 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  }
 }

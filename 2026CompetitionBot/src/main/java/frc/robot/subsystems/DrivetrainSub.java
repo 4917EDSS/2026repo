@@ -282,6 +282,10 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     return getState().Speeds;
   }
 
+  public ChassisSpeeds getFieldRelativeSpeeds() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getPose().getRotation());
+  }
+
   public void driveRobotRelative(ChassisSpeeds speeds) {
     setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(speeds));
   }
@@ -322,12 +326,14 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     SmartDashboard.putNumber("Velocity bl", states[2].speedMetersPerSecond);
     SmartDashboard.putNumber("Velocity br", states[3].speedMetersPerSecond);
     m_field.setRobotPose(getState().Pose);
+
     SmartDashboard.putString("currentPos", RobotStatus.getCurrentFieldPosition());
     SmartDashboard.putString("previousPos", RobotStatus.getPreviousFieldPosition());
 
     SmartDashboard.putNumber("turret x", getTurretPose().getX());
     SmartDashboard.putNumber("turret y", getTurretPose().getY());
     SmartDashboard.putNumber("turret rot", getTurretPose().getRotation().getDegrees());
+    SmartDashboard.putBoolean("iscompensatingformotions", RobotStatus.isCompensateForMotion());
     //m_field.allianceColor = 
   }
 

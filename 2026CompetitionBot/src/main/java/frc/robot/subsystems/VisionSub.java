@@ -10,7 +10,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -236,6 +235,7 @@ public class VisionSub extends SubsystemBase {
   }
 
   private void updateOdometry(SwerveDriveState swerveDriveState, String camera) {
+    // return;
     mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(camera);
     if(mt2 == null) {
       return;
@@ -250,15 +250,14 @@ public class VisionSub extends SubsystemBase {
       // updates
       if(Math.abs(swerveDriveState.Speeds.omegaRadiansPerSecond) > Math.PI
           || 180.0 - Math.abs(m_drivetrainSub.getPigeonGyro().getRoll().getValueAsDouble()) > 4
-          || Math.abs(m_drivetrainSub.getPigeonGyro().getPitch().getValueAsDouble()) > 4) 
-      {
+          || Math.abs(m_drivetrainSub.getPigeonGyro().getPitch().getValueAsDouble()) > 4) {
         return;
       }
       if(mt2.tagCount == 0 || mt2.avgTagArea == 0) {
         return;
       }
 
-      double standardDeviation = 0.0;///calculateStandardDeviation(mt2); // 0.7 is a good starting value according to limelight docs.
+      double standardDeviation = calculateStandardDeviation(mt2); // 0.7 is a good starting value according to limelight docs.
 
       double posDif = m_drivetrainSub.getPose().minus(mt2.pose).getTranslation().getNorm();
       if(Math.abs(posDif) > 2.0) {
@@ -271,7 +270,7 @@ public class VisionSub extends SubsystemBase {
           // input, so it does not actually calculate heading.
           // Passing in a very large number to that parameter basically tells the Kalman
           // filter to ignore our calculated heading.
-          com.ctre.phoenix6.Utils.fpgaToCurrentTime(timestamp),
+          timestamp,
           VecBuilder.fill(standardDeviation, standardDeviation, 9999999));
       //Logging limelight pose
       if(camera.equals(LEFT)) {

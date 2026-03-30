@@ -9,15 +9,11 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.Units;
@@ -35,10 +31,12 @@ public class IntakeSub extends SubsystemBase {
   private static Logger m_logger = Logger.getLogger(IntakeSub.class.getName());
 
 
-  private final SparkFlex m_beltMotor = new SparkFlex(Constants.CanIds.kIntakeBeltMotor, MotorType.kBrushless);
+  private final TalonFX m_beltMotor = new TalonFX(Constants.CanIds.kIntakeBeltMotor);
   private final TalonFX m_deployMotor = new TalonFX(Constants.CanIds.kIntakeDeployMotor);
   private final DutyCycleEncoder m_encoder =
       new DutyCycleEncoder(new DigitalInput(Constants.DioIds.kIntakeEncoder), 360, 338.0);
+
+  VoltageOut voltageRequest = new VoltageOut(0.0).withEnableFOC(true);
 
   private final PIDController m_deployPidController =
       new PIDController(Constants.Intake.kDeployKP, Constants.Intake.kDeployKI, Constants.Intake.kDeployKD);
@@ -61,6 +59,7 @@ public class IntakeSub extends SubsystemBase {
 
 
     TalonFXConfigurator talonFXConfigurator = m_deployMotor.getConfigurator();
+    TalonFXConfigurator beltTalonFXConfigurator = m_beltMotor.getConfigurator();
     //This is how you set a current limit inside the motor (vs on the input power supply)
     //subject to change
     CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
@@ -79,19 +78,30 @@ public class IntakeSub extends SubsystemBase {
     outputConfigs.NeutralMode = NeutralModeValue.Coast;
     talonFXConfigurator.apply(outputConfigs);
 
-    outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    CurrentLimitsConfigs beltLimitConfigs = new CurrentLimitsConfigs();
+    beltLimitConfigs.StatorCurrentLimit = Constants.Intake.kBeltMaxCurrent;
+    beltLimitConfigs.StatorCurrentLimitEnable = true;
+    beltTalonFXConfigurator.apply(beltLimitConfigs);
+
+    // This is how you can set a deadband, invert the motor rotoation and set brake/coast
+    MotorOutputConfigs beltOutputConfigs = new MotorOutputConfigs();
+    beltOutputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
+    beltOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Invert = Clockwise
+    beltOutputConfigs.NeutralMode = NeutralModeValue.Coast;
+    beltTalonFXConfigurator.apply(beltOutputConfigs);
 
     // Save the configuration to the motor
     // Only persist parameters when configuring the motor on start up as this
     // operation can be slow
 
-    SparkMaxConfig beltMotorConfig = new SparkMaxConfig();
-    beltMotorConfig
-        .inverted(false) // Set to true to invert the forward motor direction
-        .smartCurrentLimit(60) // Current limit in amps
-        .idleMode(IdleMode.kCoast);
+    // SparkMaxConfig beltMotorConfig = new SparkMaxConfig();
+    // beltMotorConfig
+    //     .inverted(false) // Set to true to invert the forward motor direction
+    //     .smartCurrentLimit(60) // Current limit in amps
+    //     .idleMode(IdleMode.kCoast);
 
-    m_beltMotor.configure(beltMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // m_beltMotor.configure(beltMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public void init() {
@@ -108,14 +118,16 @@ public class IntakeSub extends SubsystemBase {
     SmartDashboard.putBoolean("Intake Auto", m_deployAutomationEnabled);
     SmartDashboard.putNumber("Intake Target Angle", m_targetDeployAngleDeg);
     SmartDashboard.putNumber("Intake Current Angle", getDeployAngleDeg());
-    SmartDashboard.putNumber("Int Belt Current", m_beltMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Int Belt Amps", m_beltMotor.getStatorCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Int Deploy Amps", m_deployMotor.getStatorCurrent().getValueAsDouble());
 
     // Run the deploy-angle PID but only set the motor power if automation is currently enabled
     runDeployAngleControl(m_deployAutomationEnabled);
   }
 
   public void setBeltVoltage(double volts) {
-    m_beltMotor.setVoltage(volts);
+    voltageRequest.Output = volts;
+    m_beltMotor.setControl(voltageRequest);
     SmartDashboard.putNumber("Int Belt Tar Volts", volts);
   }
 

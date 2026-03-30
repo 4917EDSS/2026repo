@@ -6,13 +6,17 @@ package frc.robot.utils;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 /** Add your docs here. */
 public class ShooterAimingCalcs {
+  private final Field2d m_targetField = new Field2d();
 
   static InterpolatingDoubleTreeMap m_distanceToFlywheelMap = new InterpolatingDoubleTreeMap();
   static InterpolatingDoubleTreeMap m_distanceToPitchMap = new InterpolatingDoubleTreeMap();
@@ -21,30 +25,30 @@ public class ShooterAimingCalcs {
     // Key is distance to target in metres
     // Value is flywheel speed in rps
     m_distanceToFlywheelMap.put(0.0, Constants.Shooter.kFlywheelMinVelocityRotsPerSec); // Change this to minimum flywheel speed
-    m_distanceToFlywheelMap.put(1.5, 60.0);
-    m_distanceToFlywheelMap.put(2.0, 63.0);
-    m_distanceToFlywheelMap.put(2.5, 55.0);
+    m_distanceToFlywheelMap.put(1.5, 54.0);
+    m_distanceToFlywheelMap.put(2.0, 51.0);
+    m_distanceToFlywheelMap.put(2.5, 54.0);
     m_distanceToFlywheelMap.put(3.0, 60.0);
     m_distanceToFlywheelMap.put(3.5, 65.0);
     m_distanceToFlywheelMap.put(4.0, 70.0);
-    m_distanceToFlywheelMap.put(4.5, 78.0);
-    m_distanceToFlywheelMap.put(5.0, 68.0);
-    m_distanceToFlywheelMap.put(5.5, 67.0);
+    m_distanceToFlywheelMap.put(4.5, 73.0);
+    m_distanceToFlywheelMap.put(5.0, 78.0);
+    m_distanceToFlywheelMap.put(5.5, 83.0);
     m_distanceToFlywheelMap.put(16.540988, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
 
     //This will need to be derived experementally, currentlty based on theoretical values
     // Key is distance to target in metres
     // Value is pitch angle in degrees
-    m_distanceToPitchMap.put(0.0, Constants.Shooter.kPitchMinAngleDeg);
-    m_distanceToPitchMap.put(1.5, 20.8);
-    m_distanceToPitchMap.put(2.0, 24.0);
-    m_distanceToPitchMap.put(2.5, 27.5);
-    m_distanceToPitchMap.put(3.0, 29.0);
-    m_distanceToPitchMap.put(3.5, 30.0);
-    m_distanceToPitchMap.put(4.0, 30.0);
-    m_distanceToPitchMap.put(4.5, 31.0);
-    m_distanceToPitchMap.put(5.0, 33.0);
-    m_distanceToPitchMap.put(5.5, 33.0);
+    m_distanceToPitchMap.put(0.0, 28.0);
+    m_distanceToPitchMap.put(1.5, 28.0);
+    m_distanceToPitchMap.put(2.0, 28.0);
+    m_distanceToPitchMap.put(2.5, 30.0);
+    m_distanceToPitchMap.put(3.0, 32.0);
+    m_distanceToPitchMap.put(3.5, 34.0);
+    m_distanceToPitchMap.put(4.0, 36.0);
+    m_distanceToPitchMap.put(4.5, 37.0);
+    m_distanceToPitchMap.put(5.0, 38.0);
+    m_distanceToPitchMap.put(5.5, 39.0);
     m_distanceToPitchMap.put(16.540988, Constants.Shooter.kPitchMaxAngleDeg);
   }
 
@@ -86,7 +90,8 @@ public class ShooterAimingCalcs {
 
   public double calculateTimeOfFlight(Pose2d current, Pose2d target, double flywheelVelocity, double pitchAngleDeg) {
     double distanceX = target.minus(current).getTranslation().getNorm();
-    double flywheelVelocityX = flywheelVelocity * Math.cos(Math.toRadians(pitchAngleDeg));
+    double flywheelVelocityX = Constants.Shooter.kFlywheelRotsPerSecToMpsConversionFactor * flywheelVelocity / 2 //since only one side of ball is propelled, ball spin and speed is half
+        * Math.cos(Math.toRadians(90 - pitchAngleDeg));
     return distanceX / flywheelVelocityX;
   }
 
@@ -151,47 +156,48 @@ public class ShooterAimingCalcs {
     return returns;
   }
 
-  public double[] calculationsInMotion(Pose2d current, Pose2d target, ChassisSpeeds velocity, boolean isLobbing) {
+  public double[] calculationsInMotion(Pose2d turret, Pose2d centre, Pose2d target, ChassisSpeeds velocity,
+      boolean isLobbing) {
 
-    double distance = (target.minus(current)).getTranslation().getNorm(); //please test this is might break everything because i don't knw if subtracting teh rotations causes issues.
+    double distance = (target.minus(turret)).getTranslation().getNorm(); //please test this is might break everything because i don't knw if subtracting teh rotations causes issues.
     // double[] pitchAngleDegAndFlywheelVelocity =
     //     calculateShooterPitchDegrees(current, target, calculateShooterFlywheelRps(current, target), isLobbing); don't need this anymore lol, it uses the pure math calcs whcih we didnt get to tune
     double pitchAngleDeg = getInterpolatedPitchAngle(distance);//pitchAngleDegAndFlywheelVelocity[0];
     double flywheelVelocity = getInterpolatedFlywheelVelocity(distance);//pitchAngleDegAndFlywheelVelocity[1];
     double targetX = target.getX();
     double targetY = target.getY();
-    double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg);
+    double ccw = Math.signum(velocity.omegaRadiansPerSecond);
+    Translation2d turretVector =
+        new Translation2d(-ccw * (turret.getY() - centre.getY()), ccw * (turret.getX() - centre.getX()))
+            .times(velocity.omegaRadiansPerSecond);
+    double tof = calculateTimeOfFlight(turret, target, flywheelVelocity, pitchAngleDeg);
     Pose2d offsetPos;
 
     if(RobotStatus.isCompensateForMotion()) {
       for(int i = 0; i <= 3; i++) {
-        targetX = target.getX() + (velocity.vxMetersPerSecond * tof);
-        targetY = target.getY() + (velocity.vyMetersPerSecond * tof);
-        distance = (new Pose2d(targetX, targetY, new Rotation2d(0.0)).minus(current)).getTranslation().getNorm();
+        targetX = target.getX() - ((velocity.vxMetersPerSecond + turretVector.getX()) * tof);
+        targetY = target.getY() - ((velocity.vyMetersPerSecond + turretVector.getY()) * tof);
+        distance = (new Pose2d(targetX, targetY, new Rotation2d(0.0)).minus(turret)).getTranslation().getNorm();
         pitchAngleDeg = getInterpolatedPitchAngle(distance);
         flywheelVelocity = getInterpolatedFlywheelVelocity(distance);
-        tof = calculateTimeOfFlight(current, new Pose2d(targetX, targetY, new Rotation2d(0.0)), flywheelVelocity,
+        tof = calculateTimeOfFlight(turret, new Pose2d(targetX, targetY, new Rotation2d(0.0)), flywheelVelocity,
             pitchAngleDeg);
       }
     }
-    //double angularVelocityDegrees = Math.toDegrees(velocity.omegaRadiansPerSecond);
-    // double tof = calculateTimeOfFlight(current, target, flywheelVelocity, pitchAngleDeg);
-    // double offsetX = velocityX * tof; //realistically i dont see a better alternative to just using the current position to calculate the pitch of the shooter since it's necessary calculate the tof. It should be fine, since the value will be close enough to correct but we can always just add a fudge-facor based on our velocity in each direction 
-    // double offsetY = velocityY * tof;
-    //double offsetRot = angularVelocityDegrees * calculateTimeOfFlight(robot);
+    SmartDashboard.putNumber("tof", tof);
+    SmartDashboard.putNumber("distance From Hub", distance);
     offsetPos = new Pose2d(targetX, targetY, new Rotation2d(0.0)); // Pose2d offsetPos = new Pose2d(target.getX() + offsetX, target.getY() + offsetY, new Rotation2d(0.0));
+    m_targetField.setRobotPose(offsetPos);
+    SmartDashboard.putData("targetField", m_targetField);
     // double[] pitchAndVelocity =
     //     calculateShooterPitchDegrees(current, offsetPos, calculateShooterFlywheelRps(current, offsetPos), isLobbing);
     // MIGHT NEEDS TO GET THE NEW PITCH AND FLYWHEEL VELOCITY IF WE RE ADD THE ROBOT VELOCITY COMPENSATION
-    double[] trajectoriesArray = {pitchAngleDeg, calculateShooterYawDegrees(current, offsetPos),
+    double[] trajectoriesArray = {pitchAngleDeg, calculateShooterYawDegrees(turret, offsetPos),
         flywheelVelocity, offsetPos.getX(), offsetPos.getY(), offsetPos.getRotation().getDegrees()};
-
-    //System.out.println(Arrays.toString(trajectoriesArray));
-    //System.out.println(calculateTimeOfFlight(robot));
     return trajectoriesArray;
   }
 
-  public double[] setTargets(Pose2d robot, ChassisSpeeds velocity) {
+  public double[] setTargets(Pose2d turret, Pose2d centre, ChassisSpeeds velocity) {
     Alliance alliance = GameData.getAlliance();
     Pose2d target;
     boolean isLobbing = false;
@@ -207,7 +213,7 @@ public class ShooterAimingCalcs {
               new Rotation2d(0.0));
         }
       } else if(RobotStatus.isShooting()) {
-        target = new Pose2d(Constants.FieldElements.kBlueHubX, Constants.FieldElements.kBlueHubY, robot.getRotation());
+        target = new Pose2d(Constants.FieldElements.kBlueHubX, Constants.FieldElements.kBlueHubY, turret.getRotation());
       } else {
         if(RobotStatus.wasLobbing()) {
           isLobbing = true;
@@ -255,6 +261,6 @@ public class ShooterAimingCalcs {
         }
       }
     }
-    return calculationsInMotion(robot, target, velocity, isLobbing);
+    return calculationsInMotion(turret, centre, target, velocity, isLobbing);
   }
 }

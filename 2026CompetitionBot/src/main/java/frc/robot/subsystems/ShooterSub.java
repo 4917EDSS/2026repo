@@ -17,7 +17,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -34,7 +33,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.Constants.Shooter;
 import frc.robot.utils.ShooterAimingCalcs;
 
 
@@ -171,8 +169,8 @@ public class ShooterSub extends SubsystemBase {
     setYawVoltage(0.0);
     m_inDeadZone = false;
 
-    SmartDashboard.putNumber("Sht Set Pitch Deg", 0.0);
-    SmartDashboard.putNumber("Sht Set Flywheel Rps", 0.0);
+    SmartDashboard.putNumber("Set Ptc Pos", 0.0);
+    SmartDashboard.putNumber("Set Sht Fly Vel Rps", 0.0);
   }
 
   @Override
@@ -198,6 +196,7 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putBoolean("Sht Ptc Enc Set", m_pitchHasBeenReset);
     SmartDashboard.putBoolean("Sht Ptc Up Lmt", isAtPitchUpperLimit());
     SmartDashboard.putBoolean("Sht Ptc Down Lmt", isAtPitchLowerLimit());
+    SmartDashboard.putNumber("Shot Ptc Amps", m_pitchMotor.getOutputCurrent());
     // Pitch power sent to dashboard in setPower
 
     SmartDashboard.putBoolean("Sht Fly Auto", m_flywheelAutomationEnabled);
@@ -223,15 +222,15 @@ public class ShooterSub extends SubsystemBase {
         m_yawSwitchHitCounter = 0;
         m_yawHasBeenReset = true;
       }
-    } else if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 361 || getYawAngleDeg() < 359)) {
-      m_yawSwitchHitCounter += 1;
-      if(m_yawSwitchHitCounter > 0) {
-        resetYawEncoder();
-        m_yawSwitchHitCounter = 0;
-      }
-    } else {
-      m_yawSwitchHitCounter = 0;
-    }
+    } //else if(isAtYawAtCCWLimit() && (getYawAngleDeg() > 361 || getYawAngleDeg() < 359)) {
+    //   m_yawSwitchHitCounter += 1;
+    //   if(m_yawSwitchHitCounter > 0) {
+    //     resetYawEncoder();
+    //     m_yawSwitchHitCounter = 0;
+    //   }
+    // } else {
+    //   m_yawSwitchHitCounter = 0;
+    // }
 
     runYawControl(m_yawAutomationEnabled);
     runPitchControl(m_pitchAutomationEnabled);
@@ -337,6 +336,11 @@ public class ShooterSub extends SubsystemBase {
     // m_currentYawEncoderRots = currentRots;
   }
 
+  // This is used to run the hit limit switches command and reset the yaw encoder
+  public void unsetYawEncoder() {
+    m_yawHasBeenReset = false;
+  }
+
   public void resetPitchEncoder() {
     m_pitchMotor.getEncoder().setPosition(Constants.Shooter.kPitchMinAngleDeg);
   }
@@ -374,7 +378,8 @@ public class ShooterSub extends SubsystemBase {
   public void setTargetYawAngle(double angleDeg) {
     SmartDashboard.putNumber("angledeg", angleDeg);
     angleDeg = (angleDeg + 360) % 360.0;
-    if(Constants.Shooter.kYawDeadzoneMin < angleDeg && angleDeg < Constants.Shooter.kYawDeadzoneMax) {
+    if((Constants.Shooter.kYawDeadzoneMin < angleDeg && angleDeg < Constants.Shooter.kYawDeadzoneMax)
+        || angleDeg > Constants.Shooter.kYawDeadzoneMinWrapparound) {
       angleDeg = 205.0;
       m_inDeadZone = true;
     } else {

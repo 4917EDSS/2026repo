@@ -33,7 +33,7 @@ public class IntakeSetPositionCmd extends Command {
     if(m_targetPositionDeg == Constants.Intake.kDeployInAngleDeg) {
       m_intakeSub.setBeltVoltage(0.0);
     } else {
-      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltTargetVoltage);
+      m_intakeSub.setBeltVoltage(Constants.Intake.kBeltIntakeVoltage);
     }
     m_direction = 1.0;
     m_intakeSub.disableDeployAutomation();

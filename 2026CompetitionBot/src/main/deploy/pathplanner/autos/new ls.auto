@@ -25,29 +25,29 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "sequential",
+                      "type": "parallel",
                       "data": {
                         "commands": [
                           {
-                            "type": "named",
-                            "data": {
-                              "name": "IntakeBumpLiftCmd"
-                            }
-                          },
-                          {
                             "type": "path",
                             "data": {
-                              "pathName": "Drive Over Bump"
+                              "pathName": "Left Side Centre"
                             }
                           },
                           {
-                            "type": "deadline",
+                            "type": "sequential",
                             "data": {
                               "commands": [
                                 {
-                                  "type": "path",
+                                  "type": "named",
                                   "data": {
-                                    "pathName": "Already Over Bump to Centre"
+                                    "name": "IntakeBumpLiftCmd"
+                                  }
+                                },
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 1.1
                                   }
                                 },
                                 {
@@ -55,24 +55,17 @@
                                   "data": {
                                     "name": "IntakeDeployCmd"
                                   }
-                                }
-                              ]
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "IntakeBumpLiftCmd"
-                            }
-                          },
-                          {
-                            "type": "parallel",
-                            "data": {
-                              "commands": [
+                                },
                                 {
-                                  "type": "path",
+                                  "type": "wait",
                                   "data": {
-                                    "pathName": "Drive Away from Centre"
+                                    "waitTime": 3.2
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeBumpLiftCmd"
                                   }
                                 }
                               ]
@@ -86,21 +79,71 @@
                       "data": {
                         "commands": [
                           {
-                            "type": "path",
+                            "type": "wait",
                             "data": {
-                              "pathName": "Drive To Depot"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "IntakeDeployCmd"
+                              "waitTime": 4.0
                             }
                           },
                           {
                             "type": "named",
                             "data": {
                               "name": "ShootCmd"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "RunIntakeAgitation"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "2nd Left Side Centre"
+                            }
+                          },
+                          {
+                            "type": "sequential",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeBumpLiftCmd"
+                                  }
+                                },
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 1.1
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeDeployCmd"
+                                  }
+                                },
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 3.6
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeBumpLiftCmd"
+                                  }
+                                }
+                              ]
                             }
                           }
                         ]

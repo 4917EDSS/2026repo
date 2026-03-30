@@ -9,6 +9,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
+import frc.robot.utils.RobotStatus;
 
 /*
  * You should consider using the more terse Command factories API instead
@@ -23,10 +24,10 @@ public class ShootCmd extends Command {
 
   /** Creates a new ShooterSubCmd. */
   public ShootCmd(HopperSub hopperSub, IntakeSub intakeSub, ShooterSub shooterSub) {
+
     m_hopperSub = hopperSub;
     m_intakeSub = intakeSub;
     m_shooterSub = shooterSub;
-
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(hopperSub);
   }
@@ -35,6 +36,8 @@ public class ShootCmd extends Command {
   @Override
   public void initialize() {
     m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps);
+    RobotStatus.driveSlow();
+
   }
 
   public void execute() {
@@ -42,20 +45,20 @@ public class ShootCmd extends Command {
       m_hopperSub.setSingulatorVoltage(0.0);
       return;
     }
-
-    if(Math.abs(m_hopperSub.getEscalatorVelocityRotPerSec()
-        - Constants.Hopper.kEscalatorFeedSpeedRps) <= Constants.Hopper.kEscalatorVelocityToleranceRotPerSec
-        && !m_shooterSub.isInDeadZone()) {
-      m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorFeedVoltage);
-    } else {
-      m_hopperSub.setSingulatorVoltage(0.0);
-    }
+    // if(Math.abs(m_hopperSub.getEscalatorVelocityRotPerSec()
+    //     - Constants.Hopper.kEscalatorFeedSpeedRps) <= Constants.Hopper.kEscalatorVelocityToleranceRotPerSec
+    //     && !m_shooterSub.isInDeadZone()) {
+    m_hopperSub.setSingulatorVoltage(Constants.Hopper.kSingulatorFeedVoltage);
+    // } else {
+    //   m_hopperSub.setSingulatorVoltage(0.0);
+    // }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_hopperSub.disableShooting();
+    RobotStatus.driveNormal();
   }
 
   // Returns true when the command should end.

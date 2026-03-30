@@ -11,6 +11,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -30,6 +31,7 @@ public class HopperSub extends SubsystemBase {
   private final TalonFX m_singulatorMotor = new TalonFX(Constants.CanIds.kHopperSingulatorMotor);
   private final TalonFX m_escalatorMotor = new TalonFX(Constants.CanIds.kHopperEscalatorMotor);
 
+  VoltageOut voltageRequest = new VoltageOut(0.0).withEnableFOC(true);
 
   private final CanSub m_canSub;
 
@@ -106,12 +108,14 @@ public class HopperSub extends SubsystemBase {
     SmartDashboard.putNumber("Singulator Velocity", getSingulatorVelocityRotPerSec());
     SmartDashboard.putNumber("Singulator Vel Mps", getSingulatorVelocityMetersPerSec());
     SmartDashboard.putNumber("Singulator Power", m_singulatorMotor.get());
+    SmartDashboard.putNumber("Singulator Amps", m_singulatorMotor.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putBoolean("Escalator Auto", m_escalatorAutomationEnabled);
     SmartDashboard.putNumber("Escalator Target", m_targetEscalatorVelocityRps);
     SmartDashboard.putNumber("Escalator Velocity", getEscalatorVelocityRotPerSec());
     SmartDashboard.putNumber("Escalator In Mps", getInputEscalatorVelocityMetersPerSec());
     SmartDashboard.putNumber("Escalator Out Mps", getOutputEscalatorVelocityMetersPerSec());
     SmartDashboard.putNumber("Escalator Power", m_escalatorMotor.get());
+    SmartDashboard.putNumber("Escalator Amps", m_escalatorMotor.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putBoolean("isFull", isFull());
   }
 
@@ -150,8 +154,9 @@ public class HopperSub extends SubsystemBase {
   }
 
   public void setSingulatorVoltage(double volts) {
+    voltageRequest.Output = volts;
     SmartDashboard.putNumber("Hop Sin Volts", volts);
-    m_singulatorMotor.setVoltage(volts);
+    m_singulatorMotor.setControl(voltageRequest);
   }
 
   public void setEscalatorVoltage(double volts) {
