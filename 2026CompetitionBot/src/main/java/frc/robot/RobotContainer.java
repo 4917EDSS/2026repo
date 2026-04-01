@@ -15,6 +15,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,11 +27,11 @@ import frc.robot.commands.AimCmd;
 import frc.robot.commands.HitLimitSwitchesCmd;
 import frc.robot.commands.HoldIntakeCmd;
 import frc.robot.commands.HoldShooterCmd;
-import frc.robot.commands.IntakeSetPositionCmd;
 import frc.robot.commands.IntakeBumpLiftCmd;
+import frc.robot.commands.IntakeSetPositionCmd;
 import frc.robot.commands.KillAllCmd;
-import frc.robot.commands.ShootCmd;
 import frc.robot.commands.RunIntakeAgitation;
+import frc.robot.commands.ShootCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CanSub;
 import frc.robot.subsystems.DrivetrainSub;
@@ -43,6 +44,9 @@ import frc.robot.utils.ShooterAimingCalcs;
 
 
 public class RobotContainer {
+  // Power Distribution access
+  PowerDistribution m_pd = new PowerDistribution();
+
   // Swerve variables
   private double m_maxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double m_maxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -352,5 +356,10 @@ public class RobotContainer {
       if(m_stopVibratingTime.isBefore(Instant.now())) {
         disableVibration();
       }
+  }
+
+  public void periodic() {
+    SmartDashboard.putNumber("PD Total Amps", m_pd.getTotalCurrent());
+    SmartDashboard.putNumber("PD Voltage", m_pd.getVoltage());
   }
 }
