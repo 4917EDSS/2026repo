@@ -325,6 +325,16 @@ public class DrivetrainSub extends TunerSwerveDrivetrain implements Subsystem {
     SmartDashboard.putNumber("Velocity fr", states[1].speedMetersPerSecond);
     SmartDashboard.putNumber("Velocity bl", states[2].speedMetersPerSecond);
     SmartDashboard.putNumber("Velocity br", states[3].speedMetersPerSecond);
+    // For drivetrain current (amps) logging
+    // SmartDashboard.putNumber("Drv FL Amps", getModule(0).getDriveMotor().getStatorCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Drv FR Amps", getModule(1).getDriveMotor().getStatorCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Drv BL Amps", getModule(2).getDriveMotor().getStatorCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Drv BR Amps", getModule(3).getDriveMotor().getStatorCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Trn FL Amps", getModule(0).getSteerMotor().getStatorCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Trn FR Amps", getModule(1).getSteerMotor().getStatorCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Trn BL Amps", getModule(2).getSteerMotor().getStatorCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Trn BR Amps", getModule(3).getSteerMotor().getStatorCurrent().getValueAsDouble());
+
     m_field.setRobotPose(getState().Pose);
 
     SmartDashboard.putString("currentPos", RobotStatus.getCurrentFieldPosition());

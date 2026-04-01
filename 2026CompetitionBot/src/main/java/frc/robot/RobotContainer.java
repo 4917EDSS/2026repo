@@ -61,7 +61,7 @@ public class RobotContainer {
   private Instant m_stopVibratingTime = null;
 
   // The robot's subsystems and commands are defined here
-  public final CanSub m_canSub = new CanSub(1);
+  public final CanSub m_canSub = new CanSub(1); // TODO:  Can we remove this?
   public final DrivetrainSub m_drivetrainSub = TunerConstants.createDrivetrain();
   public final HopperSub m_hopperSub = new HopperSub(m_canSub);
   public final IntakeSub m_intakeSub = new IntakeSub();

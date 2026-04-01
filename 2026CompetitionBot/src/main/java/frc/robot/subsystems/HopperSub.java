@@ -279,11 +279,11 @@ public class HopperSub extends SubsystemBase {
     // TODO: Implement this
   }
 
-  private Command escalatorSysIdQuasistaticCmd(SysIdRoutine.Direction dir) {
+  public Command escalatorSysIdQuasistaticCmd(SysIdRoutine.Direction dir) {
     return m_escalatorSysIdRoutine.quasistatic(dir);
   }
 
-  private Command escalatorSysIdDynamicCmd(SysIdRoutine.Direction dir) {
+  public Command escalatorSysIdDynamicCmd(SysIdRoutine.Direction dir) {
     return m_escalatorSysIdRoutine.dynamic(dir);
   }
 
