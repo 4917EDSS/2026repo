@@ -102,8 +102,8 @@ public final class Constants {
     public static final double kDeployKI = 0.0;
     public static final double kDeployKD = 0.0;
 
-    public static final double kBeltMaxCurrent = 40.0;
-    public static final double kBeltIntakeVoltage = 9.0;
+    public static final double kBeltMaxCurrent = 60.0;
+    public static final double kBeltIntakeVoltage = 12.0;
     public static final double kBeltAgitationVoltage = 4.0;
   }
 

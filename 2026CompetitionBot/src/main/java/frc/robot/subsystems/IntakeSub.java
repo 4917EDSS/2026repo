@@ -33,7 +33,7 @@ public class IntakeSub extends SubsystemBase {
   private final TalonFX m_beltMotor = new TalonFX(Constants.CanIds.kIntakeBeltMotor);
   private final TalonFX m_deployMotor = new TalonFX(Constants.CanIds.kIntakeDeployMotor);
   private final DutyCycleEncoder m_encoder =
-      new DutyCycleEncoder(new DigitalInput(Constants.DioIds.kIntakeEncoder), 360, 338.0);
+      new DutyCycleEncoder(new DigitalInput(Constants.DioIds.kIntakeEncoder), 360, (338.0 + 120.0 + 120.0) % 360);
 
   VoltageOut voltageRequest = new VoltageOut(0.0).withEnableFOC(true);
 
@@ -55,7 +55,6 @@ public class IntakeSub extends SubsystemBase {
     //     .idleMode(IdleMode.kCoast).encoder
     //         .positionConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor)
     //         .velocityConversionFactor(Constants.Intake.kDeployEncoderToDegConversionFactor / 60);
-
 
     TalonFXConfigurator talonFXConfigurator = m_deployMotor.getConfigurator();
     TalonFXConfigurator beltTalonFXConfigurator = m_beltMotor.getConfigurator();
@@ -86,7 +85,7 @@ public class IntakeSub extends SubsystemBase {
     // This is how you can set a deadband, invert the motor rotoation and set brake/coast
     MotorOutputConfigs beltOutputConfigs = new MotorOutputConfigs();
     beltOutputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
-    beltOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Invert = Clockwise
+    beltOutputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Invert = Clockwise
     beltOutputConfigs.NeutralMode = NeutralModeValue.Coast;
     beltTalonFXConfigurator.apply(beltOutputConfigs);
 
