@@ -31,6 +31,15 @@ python -m pip install -r requirements.txt
 python current-analyser.py
 ```
 
+## Build A Standalone EXE
+
+```powershell
+python -m pip install -r requirements.txt -r requirements-build.txt
+python build_exe.py
+```
+
+The built executable will be created in `dist\RobotCurrentAnalyser.exe`.
+
 ## Notes
 
 - If your CSV has a usable time column, select it from the dropdown.

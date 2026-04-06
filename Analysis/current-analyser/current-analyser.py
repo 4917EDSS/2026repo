@@ -73,6 +73,8 @@ class TelemetryAnalyserApp(tk.Tk):
         self.raw_df: "pd.DataFrame | None" = None
         self.analysis_result: AnalysisResult | None = None
         self.field_vars: dict[str, tk.BooleanVar] = {}
+        self.summary_sort_column: str | None = None
+        self.summary_sort_descending = True
 
         self.keyword_var = tk.StringVar(value="amps")
         self.time_column_var = tk.StringVar(value=FALLBACK_TIME_LABEL)
@@ -145,25 +147,11 @@ class TelemetryAnalyserApp(tk.Tk):
             row=3, column=0, sticky="ew", pady=(10, 0)
         )
 
-        time_group = ttk.LabelFrame(controls, text="Time Window", padding=12)
-        time_group.grid(row=1, column=0, sticky="ew", pady=(14, 0))
-        time_group.grid_columnconfigure(0, weight=1)
-        ttk.Label(time_group, text="Time column").grid(row=0, column=0, sticky="w")
-        self.time_combo = ttk.Combobox(
-            time_group, textvariable=self.time_column_var, state="readonly", values=[FALLBACK_TIME_LABEL]
-        )
-        self.time_combo.grid(row=1, column=0, sticky="ew", pady=(4, 8))
-        ttk.Label(time_group, text="Start time (seconds, optional)").grid(row=2, column=0, sticky="w")
-        ttk.Entry(time_group, textvariable=self.start_time_var).grid(row=3, column=0, sticky="ew", pady=(4, 8))
-        ttk.Label(time_group, text="End time (seconds, optional)").grid(row=4, column=0, sticky="w")
-        ttk.Entry(time_group, textvariable=self.end_time_var).grid(row=5, column=0, sticky="ew", pady=(4, 0))
-        ttk.Button(time_group, text="Run Analysis", command=self.run_analysis).grid(row=6, column=0, sticky="ew", pady=(12, 0))
-
         fields_group = ttk.LabelFrame(controls, text="Accepted Current Fields", padding=12)
-        fields_group.grid(row=2, column=0, sticky="nsew", pady=(14, 0))
+        fields_group.grid(row=1, column=0, sticky="nsew", pady=(14, 0))
         fields_group.grid_rowconfigure(1, weight=1)
         fields_group.grid_columnconfigure(0, weight=1)
-        controls.grid_rowconfigure(2, weight=1)
+        controls.grid_rowconfigure(1, weight=1)
 
         quick_actions = ttk.Frame(fields_group)
         quick_actions.grid(row=0, column=0, sticky="ew", pady=(0, 8))
@@ -178,6 +166,24 @@ class TelemetryAnalyserApp(tk.Tk):
         self.field_frame = ScrollableCheckFrame(fields_group)
         self.field_frame.grid(row=1, column=0, sticky="nsew")
 
+        time_group = ttk.LabelFrame(controls, text="Time Window", padding=12)
+        time_group.grid(row=2, column=0, sticky="ew", pady=(14, 0))
+        time_group.grid_columnconfigure(0, weight=1)
+        ttk.Label(time_group, text="Time column").grid(row=0, column=0, sticky="w")
+        self.time_combo = ttk.Combobox(
+            time_group, textvariable=self.time_column_var, state="readonly", values=[FALLBACK_TIME_LABEL]
+        )
+        self.time_combo.grid(row=1, column=0, sticky="ew", pady=(4, 8))
+        ttk.Label(time_group, text="Start time (seconds, optional)").grid(row=2, column=0, sticky="w")
+        ttk.Entry(time_group, textvariable=self.start_time_var).grid(row=3, column=0, sticky="ew", pady=(4, 8))
+        ttk.Label(time_group, text="End time (seconds, optional)").grid(row=4, column=0, sticky="w")
+        ttk.Entry(time_group, textvariable=self.end_time_var).grid(row=5, column=0, sticky="ew", pady=(4, 0))
+
+        action_group = ttk.LabelFrame(controls, text="Analysis", padding=12)
+        action_group.grid(row=3, column=0, sticky="ew", pady=(14, 0))
+        action_group.grid_columnconfigure(0, weight=1)
+        ttk.Button(action_group, text="Run Analysis", command=self.run_analysis).grid(row=0, column=0, sticky="ew")
+
         content = ttk.Notebook(root)
         content.grid(row=1, column=1, sticky="nsew")
 
@@ -185,12 +191,12 @@ class TelemetryAnalyserApp(tk.Tk):
         self.totals_tab = ttk.Frame(content, padding=10, style="Panel.TFrame")
         self.field_tab = ttk.Frame(content, padding=10, style="Panel.TFrame")
         content.add(self.summary_tab, text="Summary")
-        content.add(self.totals_tab, text="Total Current")
         content.add(self.field_tab, text="Field Detail")
+        content.add(self.totals_tab, text="Total Current")        
 
         self._build_summary_tab()
-        self._build_totals_tab()
         self._build_field_tab()
+        self._build_totals_tab()
 
     def _build_summary_tab(self) -> None:
         self.summary_tab.grid_columnconfigure(0, weight=1)
@@ -203,18 +209,17 @@ class TelemetryAnalyserApp(tk.Tk):
         )
         self.summary_info_label.grid(row=0, column=0, sticky="w", pady=(0, 8))
 
-        columns = ("field", "avg_amps", "avg_per_second", "sum_per_second", "peak_amps")
+        columns = ("field", "avg_amps", "sum_per_second", "peak_amps")
         self.summary_tree = ttk.Treeview(self.summary_tab, columns=columns, show="headings", height=18)
         headings = {
             "field": "Field",
             "avg_amps": "Avg Current (A)",
-            "avg_per_second": "Avg of 1 s Avg (A)",
             "sum_per_second": "1 s Avg Sum",
             "peak_amps": "Peak Current (A)",
         }
-        widths = {"field": 260, "avg_amps": 140, "avg_per_second": 150, "sum_per_second": 120, "peak_amps": 140}
+        widths = {"field": 300, "avg_amps": 150, "sum_per_second": 140, "peak_amps": 150}
         for key in columns:
-            self.summary_tree.heading(key, text=headings[key])
+            self.summary_tree.heading(key, text=headings[key], command=lambda col=key: self._sort_summary_by(col))
             self.summary_tree.column(key, width=widths[key], anchor="center")
 
         summary_scroll = ttk.Scrollbar(self.summary_tab, orient="vertical", command=self.summary_tree.yview)
@@ -512,18 +517,38 @@ class TelemetryAnalyserApp(tk.Tk):
         for row_id in self.summary_tree.get_children():
             self.summary_tree.delete(row_id)
 
-        for _, row in self.analysis_result.summary_df.iterrows():
+        summary_df = self.analysis_result.summary_df.copy()
+        if self.summary_sort_column:
+            summary_df = summary_df.sort_values(
+                by=self.summary_sort_column,
+                ascending=not self.summary_sort_descending,
+                kind="mergesort",
+                na_position="last",
+            )
+
+        for _, row in summary_df.iterrows():
             self.summary_tree.insert(
                 "",
                 "end",
                 values=(
                     row["field"],
                     self._fmt(row["avg_amps"]),
-                    self._fmt(row["avg_per_second"]),
                     self._fmt(row["sum_per_second"]),
                     self._fmt(row["peak_amps"]),
                 ),
             )
+
+    def _sort_summary_by(self, column: str) -> None:
+        if self.analysis_result is None:
+            return
+
+        if self.summary_sort_column == column:
+            self.summary_sort_descending = not self.summary_sort_descending
+        else:
+            self.summary_sort_column = column
+            self.summary_sort_descending = True
+
+        self._update_summary_table()
 
     def _update_total_plot(self) -> None:
         if self.analysis_result is None or self.total_figure is None or self.total_canvas is None:
