@@ -127,7 +127,7 @@ public final class Constants {
     public static final double kYawKD = 0.01;
 
     public static final double kPitchEncoderToDegConversionFactor = 29.0 / 39.29; // Difference between min and max / motor rotations
-    public static final double kPitchMinAngleDeg = 18.0;
+    public static final double kPitchMinAngleDeg = 28.4;
     public static final double kPitchMaxAngleDeg = 48.0;
     public static final int kPitchMaxCurrent = 12;
     public static final double kPitchMaxVoltage = 3.6;

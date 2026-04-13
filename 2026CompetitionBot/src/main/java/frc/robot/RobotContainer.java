@@ -358,8 +358,5 @@ public class RobotContainer {
       }
   }
 
-  public void periodic() {
-    SmartDashboard.putNumber("PD Total Amps", m_pd.getTotalCurrent());
-    SmartDashboard.putNumber("PD Voltage", m_pd.getVoltage());
-  }
+  public void periodic() {}
 }

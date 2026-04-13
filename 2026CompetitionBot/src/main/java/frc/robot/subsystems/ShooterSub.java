@@ -206,7 +206,6 @@ public class ShooterSub extends SubsystemBase {
     SmartDashboard.putNumber("Sht Fly Power", m_flywheelMotorL.get());
     SmartDashboard.putNumber("Sht Fly Pos", getFlywheelPositionRot());
     SmartDashboard.putNumber("Sht Fly Voltage", m_flywheelMotorL.getMotorVoltage().getValueAsDouble());
-    SmartDashboard.putNumber("Sht Fly TAmps", m_flywheelMotorL.getTorqueCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Sht Fly Amps L", m_flywheelMotorL.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Sht Fly Amps R", m_flywheelMotorR.getSupplyCurrent().getValueAsDouble());
 

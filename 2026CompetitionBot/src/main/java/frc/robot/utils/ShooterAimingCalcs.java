@@ -20,36 +20,49 @@ public class ShooterAimingCalcs {
 
   static InterpolatingDoubleTreeMap m_distanceToFlywheelMap = new InterpolatingDoubleTreeMap();
   static InterpolatingDoubleTreeMap m_distanceToPitchMap = new InterpolatingDoubleTreeMap();
+  static InterpolatingDoubleTreeMap m_distanceToTOFMap = new InterpolatingDoubleTreeMap();
   static {
     //This will need to be derived experementally, currentlty based on theoretical values
     // Key is distance to target in metres
     // Value is flywheel speed in rps
     m_distanceToFlywheelMap.put(0.0, Constants.Shooter.kFlywheelMinVelocityRotsPerSec); // Change this to minimum flywheel speed
-    m_distanceToFlywheelMap.put(1.5, 54.0);
-    m_distanceToFlywheelMap.put(2.0, 51.0);
-    m_distanceToFlywheelMap.put(2.5, 54.0);
-    m_distanceToFlywheelMap.put(3.0, 60.0);
-    m_distanceToFlywheelMap.put(3.5, 65.0);
-    m_distanceToFlywheelMap.put(4.0, 70.0);
-    m_distanceToFlywheelMap.put(4.5, 73.0);
-    m_distanceToFlywheelMap.put(5.0, 78.0);
-    m_distanceToFlywheelMap.put(5.5, 83.0);
+    m_distanceToFlywheelMap.put(1.5, 60.0);
+    m_distanceToFlywheelMap.put(2.0, 62.0);
+    m_distanceToFlywheelMap.put(2.5, 67.0);
+    m_distanceToFlywheelMap.put(3.0, 71.0);
+    m_distanceToFlywheelMap.put(3.5, 76.0);
+    m_distanceToFlywheelMap.put(4.0, 80.0);
+    m_distanceToFlywheelMap.put(4.5, 84.0);
+    m_distanceToFlywheelMap.put(5.0, 88.0);
+    m_distanceToFlywheelMap.put(5.5, 91.0);
     m_distanceToFlywheelMap.put(16.540988, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
 
     //This will need to be derived experementally, currentlty based on theoretical values
     // Key is distance to target in metres
     // Value is pitch angle in degrees
-    m_distanceToPitchMap.put(0.0, 28.0);
-    m_distanceToPitchMap.put(1.5, 28.0);
-    m_distanceToPitchMap.put(2.0, 28.0);
-    m_distanceToPitchMap.put(2.5, 30.0);
-    m_distanceToPitchMap.put(3.0, 32.0);
-    m_distanceToPitchMap.put(3.5, 34.0);
-    m_distanceToPitchMap.put(4.0, 36.0);
-    m_distanceToPitchMap.put(4.5, 37.0);
-    m_distanceToPitchMap.put(5.0, 38.0);
-    m_distanceToPitchMap.put(5.5, 39.0);
+    m_distanceToPitchMap.put(0.0, 29.0);
+    m_distanceToPitchMap.put(1.5, 29.0);
+    m_distanceToPitchMap.put(2.0, 33.0);
+    m_distanceToPitchMap.put(2.5, 38.0);
+    m_distanceToPitchMap.put(3.0, 41.0);
+    m_distanceToPitchMap.put(3.5, 42.0);
+    m_distanceToPitchMap.put(4.0, 44.0);
+    m_distanceToPitchMap.put(4.5, 45.0);
+    m_distanceToPitchMap.put(5.0, 45.0);
+    m_distanceToPitchMap.put(5.5, 47.0);
     m_distanceToPitchMap.put(16.540988, Constants.Shooter.kPitchMaxAngleDeg);
+
+    m_distanceToTOFMap.put(0.0, 0.0);
+    m_distanceToTOFMap.put(1.5, 0.95);
+    m_distanceToTOFMap.put(2.0, 0.98);
+    m_distanceToTOFMap.put(2.5, 1.05);
+    m_distanceToTOFMap.put(3.0, 1.08);
+    m_distanceToTOFMap.put(3.5, 1.06);
+    m_distanceToTOFMap.put(4.0, 1.16);
+    m_distanceToTOFMap.put(4.5, 1.20);
+    m_distanceToTOFMap.put(5.0, 1.26);
+    m_distanceToTOFMap.put(5.5, 1.33);
+    m_distanceToTOFMap.put(16.540988, Constants.Shooter.kPitchMaxAngleDeg);
   }
 
   public double getInterpolatedFlywheelVelocity(double distance) {
@@ -88,11 +101,11 @@ public class ShooterAimingCalcs {
     return (targetYawAngle - robotYawAngle);
   }
 
-  public double calculateTimeOfFlight(Pose2d current, Pose2d target, double flywheelVelocity, double pitchAngleDeg) {
-    double distanceX = target.minus(current).getTranslation().getNorm();
-    double flywheelVelocityX = Constants.Shooter.kFlywheelRotsPerSecToMpsConversionFactor * flywheelVelocity / 2 //since only one side of ball is propelled, ball spin and speed is half
-        * Math.cos(Math.toRadians(90 - pitchAngleDeg));
-    return distanceX / flywheelVelocityX;
+  public double calculateTimeOfFlight(double distance) {
+    // double distanceX = target.minus(current).getTranslation().getNorm();
+    // double flywheelVelocityX = Constants.Shooter.kFlywheelRotsPerSecToMpsConversionFactor * flywheelVelocity / 2 //since only one side of ball is propelled, ball spin and speed is half
+    //     * Math.cos(Math.toRadians(90 - pitchAngleDeg));
+    return m_distanceToTOFMap.get(distance);//distanceX / flywheelVelocityX;
   }
 
   public double[] calculateShooterPitchDegrees(Pose2d current, Pose2d target, double flywheelVelocity,
@@ -170,7 +183,7 @@ public class ShooterAimingCalcs {
     Translation2d turretVector =
         new Translation2d(-ccw * (turret.getY() - centre.getY()), ccw * (turret.getX() - centre.getX()))
             .times(velocity.omegaRadiansPerSecond);
-    double tof = calculateTimeOfFlight(turret, target, flywheelVelocity, pitchAngleDeg);
+    double tof = calculateTimeOfFlight(distance);
     Pose2d offsetPos;
 
     if(RobotStatus.isCompensateForMotion()) {
@@ -180,8 +193,7 @@ public class ShooterAimingCalcs {
         distance = (new Pose2d(targetX, targetY, new Rotation2d(0.0)).minus(turret)).getTranslation().getNorm();
         pitchAngleDeg = getInterpolatedPitchAngle(distance);
         flywheelVelocity = getInterpolatedFlywheelVelocity(distance);
-        tof = calculateTimeOfFlight(turret, new Pose2d(targetX, targetY, new Rotation2d(0.0)), flywheelVelocity,
-            pitchAngleDeg);
+        tof = calculateTimeOfFlight(distance);
       }
     }
     SmartDashboard.putNumber("tof", tof);
