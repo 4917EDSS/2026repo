@@ -121,10 +121,10 @@ public final class Constants {
     public static final double kYawDeadzoneMin = 0.0;
     public static final double kYawDeadzoneMinWrapparound = 355.0;
     public static final double kYawDeadzoneMax = 50.0;
-    public static final double kYawKS = 0.3;
-    public static final double kYawKP = 0.6;
+    public static final double kYawKS = 0.20;//0.3;
+    public static final double kYawKP = 0.7;//0.6;
     public static final double kYawKI = 0.0;
-    public static final double kYawKD = 0.0;
+    public static final double kYawKD = 0.01;
 
     public static final double kPitchEncoderToDegConversionFactor = 29.0 / 39.29; // Difference between min and max / motor rotations
     public static final double kPitchMinAngleDeg = 18.0;
