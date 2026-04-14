@@ -48,7 +48,7 @@ public class AimCmd extends Command {
     } else {
       m_shooterSub.setPitchYawFlywheelTarget(
           m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getPose(),
-              m_drivetrainSub.getFieldRelativeSpeeds()));
+              m_drivetrainSub.getFieldRelativeSpeeds(), m_shooterSub.getYawAngleDeg()));
     }
   }
 

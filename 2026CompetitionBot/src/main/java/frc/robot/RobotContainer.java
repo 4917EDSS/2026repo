@@ -297,7 +297,10 @@ public class RobotContainer {
 
     // Operator Right Stick
     m_operatorController.rightStick()
-        .onTrue(new KillAllCmd(m_canSub, m_drivetrainSub, m_hopperSub, m_intakeSub, m_shooterSub));
+        .onTrue(new InstantCommand(() -> {
+          m_shooterSub.disableYawAutomation();
+          m_shooterSub.unsetYawEncoder();
+        }));
 
 
   }

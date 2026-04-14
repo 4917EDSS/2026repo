@@ -89,7 +89,7 @@ public final class Constants {
     public static final double kDeployInAngleDeg = -110.0;
     public static final double kDeployBumpAngleDeg = -45.0; //it will never get to this angle (this is on purpose)
     public static final double kDeployInToleranceDeg = 40.0;
-    public static final double kDeployShakeMin = -20.0;
+    public static final double kDeployShakeMin = -40.0;
     public static final double kDeployOutAngleDeg = 1.0;
     public static final double kDeployNearlyMax = 7.0;
     public static final double kDeployMaxCurrent = 60.0;
@@ -122,7 +122,7 @@ public final class Constants {
     public static final double kYawDeadzoneMinWrapparound = 355.0;
     public static final double kYawDeadzoneMax = 50.0;
     public static final double kYawKS = 0.20;//0.3;
-    public static final double kYawKP = 0.7;//0.6;
+    public static final double kYawKP = 0.00007;//0.6;
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.01;
 

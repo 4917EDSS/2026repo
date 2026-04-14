@@ -21,6 +21,7 @@ public class ShooterAimingCalcs {
   static InterpolatingDoubleTreeMap m_distanceToFlywheelMap = new InterpolatingDoubleTreeMap();
   static InterpolatingDoubleTreeMap m_distanceToPitchMap = new InterpolatingDoubleTreeMap();
   static InterpolatingDoubleTreeMap m_distanceToTOFMap = new InterpolatingDoubleTreeMap();
+  static InterpolatingDoubleTreeMap m_rotationToFlywheel = new InterpolatingDoubleTreeMap();
   static {
     //This will need to be derived experementally, currentlty based on theoretical values
     // Key is distance to target in metres
@@ -63,6 +64,16 @@ public class ShooterAimingCalcs {
     m_distanceToTOFMap.put(5.0, 1.26);
     m_distanceToTOFMap.put(5.5, 1.33);
     m_distanceToTOFMap.put(16.540988, Constants.Shooter.kPitchMaxAngleDeg);
+
+    m_rotationToFlywheel.put(0.0, 1.0);
+    m_rotationToFlywheel.put(45.0, 0.9);
+    m_rotationToFlywheel.put(90.0, 0.85);
+    m_rotationToFlywheel.put(135.0, 0.9);
+    m_rotationToFlywheel.put(180.0, 0.9);
+    m_rotationToFlywheel.put(225.0, 0.8);
+    m_rotationToFlywheel.put(270.0, 0.8);
+    m_rotationToFlywheel.put(315.0, 0.9);
+    m_rotationToFlywheel.put(360.0, 1.0);
   }
 
   public double getInterpolatedFlywheelVelocity(double distance) {
@@ -170,6 +181,7 @@ public class ShooterAimingCalcs {
   }
 
   public double[] calculationsInMotion(Pose2d turret, Pose2d centre, Pose2d target, ChassisSpeeds velocity,
+      double turretYaw,
       boolean isLobbing) {
 
     double distance = (target.minus(turret)).getTranslation().getNorm(); //please test this is might break everything because i don't knw if subtracting teh rotations causes issues.
@@ -196,6 +208,8 @@ public class ShooterAimingCalcs {
         tof = calculateTimeOfFlight(distance);
       }
     }
+    flywheelVelocity *= m_rotationToFlywheel.get(turretYaw);
+
     SmartDashboard.putNumber("tof", tof);
     SmartDashboard.putNumber("distance From Hub", distance);
     offsetPos = new Pose2d(targetX, targetY, new Rotation2d(0.0)); // Pose2d offsetPos = new Pose2d(target.getX() + offsetX, target.getY() + offsetY, new Rotation2d(0.0));
@@ -209,7 +223,7 @@ public class ShooterAimingCalcs {
     return trajectoriesArray;
   }
 
-  public double[] setTargets(Pose2d turret, Pose2d centre, ChassisSpeeds velocity) {
+  public double[] setTargets(Pose2d turret, Pose2d centre, ChassisSpeeds velocity, double turretYaw) {
     Alliance alliance = GameData.getAlliance();
     Pose2d target;
     boolean isLobbing = false;
@@ -273,6 +287,6 @@ public class ShooterAimingCalcs {
         }
       }
     }
-    return calculationsInMotion(turret, centre, target, velocity, isLobbing);
+    return calculationsInMotion(turret, centre, target, velocity, turretYaw, isLobbing);
   }
 }
