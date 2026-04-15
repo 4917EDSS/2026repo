@@ -102,7 +102,7 @@ public class RobotContainer {
             .withRotationalRate(-m_driverController.getRightX() * m_maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    //m_shooterSub.setDefaultCommand(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub));
+    m_shooterSub.setDefaultCommand(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub));
 
     m_intakeSub.setDefaultCommand(new HoldIntakeCmd(m_intakeSub));
   }
@@ -152,9 +152,9 @@ public class RobotContainer {
 
     // Driver Y
     m_driverController.y().whileTrue(new StartEndCommand(() -> {
-      m_shooterSub.setTargetYawAngle(80.0);
-      m_shooterSub.setTargetPitchAngle(0.0);
-      m_shooterSub.setTargetFlywheelVelocity(0.0);
+      m_shooterSub.setTargetYawAngle(180.0);
+      m_shooterSub.setTargetPitchAngle(24.0);
+      m_shooterSub.setTargetFlywheelVelocity(66.0);
     }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub));
     // m_driverController.y().onTrue(
     //     new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(m_shooterAimingCalcs
@@ -287,8 +287,8 @@ public class RobotContainer {
     // Operator POV Left
     m_operatorController.povLeft().whileTrue(new StartEndCommand(() -> {
       m_shooterSub.setTargetYawAngle(180.0);
-      m_shooterSub.setTargetPitchAngle(0.0);
-      m_shooterSub.setTargetFlywheelVelocity(0.0);
+      m_shooterSub.setTargetPitchAngle(24.0);
+      m_shooterSub.setTargetFlywheelVelocity(66.0);
     }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub));
 
     // Operator Left Stick
