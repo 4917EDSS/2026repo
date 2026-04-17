@@ -146,6 +146,8 @@ public class ShooterSub extends SubsystemBase {
     outputConfigs.DutyCycleNeutralDeadband = 0.02; // Ignore values below 2%
     outputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Invert = Clockwise
     outputConfigs.NeutralMode = NeutralModeValue.Coast;
+    //outputConfigs.ControlTimesyncFreqHz = 500; idk could be right we'll see
+
     talonFXConfigurator1.apply(outputConfigs);
 
     outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -480,7 +482,8 @@ public class ShooterSub extends SubsystemBase {
       m_flywheelMotorL.setControl(new DutyCycleOut(0.0));
     } else {
       m_flywheelMotorL
-          .setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetFlywheelVelocityRotsPerSec));
+          .setControl(new VelocityVoltage(0.0).withSlot(0).withVelocity(m_targetFlywheelVelocityRotsPerSec)
+              .withUpdateFreqHz(1000));
     }
   }
 

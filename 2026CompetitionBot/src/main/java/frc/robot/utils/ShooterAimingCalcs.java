@@ -30,7 +30,7 @@ public class ShooterAimingCalcs {
     m_distanceToFlywheelMap.put(1.5, 60.0);
     m_distanceToFlywheelMap.put(2.0, 62.0);
     m_distanceToFlywheelMap.put(2.5, 67.0);
-    m_distanceToFlywheelMap.put(3.0, 71.0);
+    m_distanceToFlywheelMap.put(3.0, 70.0);
     m_distanceToFlywheelMap.put(3.5, 76.0);
     m_distanceToFlywheelMap.put(4.0, 80.0);
     m_distanceToFlywheelMap.put(4.5, 84.0);
@@ -44,8 +44,8 @@ public class ShooterAimingCalcs {
     m_distanceToPitchMap.put(0.0, 29.0);
     m_distanceToPitchMap.put(1.5, 29.0);
     m_distanceToPitchMap.put(2.0, 33.0);
-    m_distanceToPitchMap.put(2.5, 38.0);
-    m_distanceToPitchMap.put(3.0, 41.0);
+    m_distanceToPitchMap.put(2.5, 37.0);
+    m_distanceToPitchMap.put(3.0, 40.0);
     m_distanceToPitchMap.put(3.5, 42.0);
     m_distanceToPitchMap.put(4.0, 44.0);
     m_distanceToPitchMap.put(4.5, 45.0);
@@ -63,17 +63,17 @@ public class ShooterAimingCalcs {
     m_distanceToTOFMap.put(4.5, 1.20);
     m_distanceToTOFMap.put(5.0, 1.26);
     m_distanceToTOFMap.put(5.5, 1.33);
-    m_distanceToTOFMap.put(16.540988, Constants.Shooter.kPitchMaxAngleDeg);
+    m_distanceToTOFMap.put(16.540988, 3.0);
 
-    m_rotationToFlywheel.put(0.0, 1.0);
+    m_rotationToFlywheel.put(0.0, 0.9);
     m_rotationToFlywheel.put(45.0, 0.9);
     m_rotationToFlywheel.put(90.0, 0.85);
     m_rotationToFlywheel.put(135.0, 0.9);
-    m_rotationToFlywheel.put(180.0, 0.9);
+    m_rotationToFlywheel.put(180.0, 0.85);
     m_rotationToFlywheel.put(225.0, 0.8);
     m_rotationToFlywheel.put(270.0, 0.8);
     m_rotationToFlywheel.put(315.0, 0.9);
-    m_rotationToFlywheel.put(360.0, 1.0);
+    m_rotationToFlywheel.put(360.0, 0.9);
   }
 
   public double getInterpolatedFlywheelVelocity(double distance) {

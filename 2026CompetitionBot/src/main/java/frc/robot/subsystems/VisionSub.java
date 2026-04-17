@@ -257,6 +257,13 @@ public class VisionSub extends SubsystemBase {
         return;
       }
 
+      if(mt2.tagCount == 1
+          && (mt2.rawFiducials[0].id == 2 || mt2.rawFiducials[0].id == 5 || mt2.rawFiducials[0].id == 15
+              || mt2.rawFiducials[0].id == 18 || mt2.rawFiducials[0].id == 21 || mt2.rawFiducials[0].id == 31)) {
+        //only for provincials, filters out crappy apriltags if theyre the only ones we see please get rid of this before worlds  
+        return;
+      }
+
       double standardDeviation = calculateStandardDeviation(mt2); // 0.7 is a good starting value according to limelight docs.
 
       double posDif = m_drivetrainSub.getPose().minus(mt2.pose).getTranslation().getNorm();

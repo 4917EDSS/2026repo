@@ -17,6 +17,7 @@ public class RunIntakeAgitation extends InstantCommand {
   CommandXboxController m_driverController;
   boolean m_withintake;
   double m_direction;
+  double counter;
 
   public RunIntakeAgitation(IntakeSub intakeSub, CommandXboxController driverController) {
     m_intakeSub = intakeSub;
@@ -28,16 +29,20 @@ public class RunIntakeAgitation extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    counter = 0;
   }
 
   @Override
   public void execute() {
-    if(m_intakeSub.getDeployAngleDeg() < Constants.Intake.kDeployShakeMin) {
+    if(m_intakeSub.getDeployAngleDeg() < Constants.Intake.kDeployShakeMin || (m_direction < 0 && counter >= 50)) {
       m_direction = 1.0;
+      counter = 0;
     } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployOutAngleDeg) {
       // Bring the intake in needs more power
       m_direction = -2.0;
+      counter = 0;
+    } else {
+      counter++;
     }
     if(Math.abs(m_driverController.getLeftX()) < 0.05 && Math.abs(m_driverController.getLeftY()) < 0.05
         && Math.abs(m_driverController.getRightX()) < 0.05) {
