@@ -152,7 +152,7 @@ public class ShooterSub extends SubsystemBase {
 
     outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
     talonFXConfigurator2.apply(outputConfigs);
-    m_flywheelMotorR.setControl(new Follower(m_flywheelMotorL.getDeviceID(), MotorAlignmentValue.Opposed));
+    m_flywheelMotorR.setControl(new Follower(m_flywheelMotorL.getDeviceID(), MotorAlignmentValue.Opposed).withUpdateFreqHz(1000));
 
     m_yawPidController.setTolerance(Constants.Shooter.kYawTolerance);
 
