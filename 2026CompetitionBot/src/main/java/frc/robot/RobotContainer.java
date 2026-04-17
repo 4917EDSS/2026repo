@@ -152,7 +152,7 @@ public class RobotContainer {
 
     // Driver Y
     m_driverController.y().whileTrue(new StartEndCommand(() -> {
-      m_shooterSub.setTargetYawAngle(180.0);
+      m_shooterSub.setTargetYawAngle(280.0);
       m_shooterSub.setTargetPitchAngle(24.0);
       m_shooterSub.setTargetFlywheelVelocity(66.0);
     }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub));
@@ -286,7 +286,7 @@ public class RobotContainer {
 
     // Operator POV Left
     m_operatorController.povLeft().whileTrue(new StartEndCommand(() -> {
-      m_shooterSub.setTargetYawAngle(180.0);
+      m_shooterSub.setTargetYawAngle(80.0);
       m_shooterSub.setTargetPitchAngle(24.0);
       m_shooterSub.setTargetFlywheelVelocity(66.0);
     }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub));

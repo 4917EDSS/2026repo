@@ -88,6 +88,7 @@ public final class Constants {
     public static final double kDeployEncoderToDegConversionFactor = 2.72244; // Gearing is 0.014368 (approx 1:69.5)
     public static final double kDeployInAngleDeg = -110.0;
     public static final double kDeployBumpAngleDeg = -45.0; //it will never get to this angle (this is on purpose)
+    public static final double kDeployFFZoneMax = -90.0;
     public static final double kDeployInToleranceDeg = 40.0;
     public static final double kDeployShakeMin = -40.0;
     public static final double kDeployOutAngleDeg = 1.0;
@@ -125,6 +126,7 @@ public final class Constants {
     public static final double kYawKP = 0.5;//0.6;
     public static final double kYawKI = 0.0;
     public static final double kYawKD = 0.0;
+    public static final double kYawSpringCompensation = 0.0;
 
     public static final double kPitchEncoderToDegConversionFactor = 29.0 / 39.29; // Difference between min and max / motor rotations
     public static final double kPitchMinAngleDeg = 28.4;

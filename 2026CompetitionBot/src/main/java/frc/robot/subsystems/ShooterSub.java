@@ -152,7 +152,8 @@ public class ShooterSub extends SubsystemBase {
 
     outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
     talonFXConfigurator2.apply(outputConfigs);
-    m_flywheelMotorR.setControl(new Follower(m_flywheelMotorL.getDeviceID(), MotorAlignmentValue.Opposed).withUpdateFreqHz(1000));
+    m_flywheelMotorR
+        .setControl(new Follower(m_flywheelMotorL.getDeviceID(), MotorAlignmentValue.Opposed).withUpdateFreqHz(1000));
 
     m_yawPidController.setTolerance(Constants.Shooter.kYawTolerance);
 
@@ -407,7 +408,7 @@ public class ShooterSub extends SubsystemBase {
 
     double currentAngle = getYawAngleDeg();
     double pidVolts = m_yawPidController.calculate(currentAngle);
-    double ffVolts = m_yawKS * Math.signum(pidVolts);
+    double ffVolts = m_yawKS * Math.signum(pidVolts) + Constants.Shooter.kYawSpringCompensation;
     double totalVolts = pidVolts;
     if(!m_yawPidController.atSetpoint()) {
       totalVolts += ffVolts;

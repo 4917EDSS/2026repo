@@ -42,7 +42,7 @@ public class IntakeSub extends SubsystemBase {
 
   private boolean m_deployAutomationEnabled = false;
   private double m_targetDeployAngleDeg = 0.0;
-  private double m_deployKS;
+  private double m_deployKS = 3.0;
   private double m_deployKG;
 
   /** Creates a new IntakeSub. */
@@ -184,8 +184,10 @@ public class IntakeSub extends SubsystemBase {
     double currentAngle = getDeployAngleDeg();
     double pidVolts = m_deployPidController.calculate(currentAngle);
     double kSVolts = m_deployKS;
-    if(currentAngle - m_targetDeployAngleDeg > 0) {
-      kSVolts *= -1;
+    if(currentAngle < -90) {
+      kSVolts = m_deployKS;
+    } else {
+      kSVolts = 0.0;
     }
     double kGVolts = m_deployKG * Math.cos(-currentAngle / 180 * Math.PI);
     double totalVolts = pidVolts + kGVolts + kSVolts;
