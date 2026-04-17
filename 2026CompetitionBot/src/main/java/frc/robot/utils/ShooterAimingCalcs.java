@@ -34,9 +34,10 @@ public class ShooterAimingCalcs {
     m_distanceToFlywheelMap.put(3.5, 76.0);
     m_distanceToFlywheelMap.put(4.0, 80.0);
     m_distanceToFlywheelMap.put(4.5, 84.0);
-    m_distanceToFlywheelMap.put(5.0, 88.0);
-    m_distanceToFlywheelMap.put(5.5, 91.0);
-    m_distanceToFlywheelMap.put(16.540988, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
+    m_distanceToFlywheelMap.put(5.0, 89.0);
+    m_distanceToFlywheelMap.put(5.5, 92.0);
+    m_distanceToFlywheelMap.put(8.0, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
+    m_distanceToFlywheelMap.put(Double.MAX_VALUE, Constants.Shooter.kFlywheelMaxVelocityRotsPerSec);
 
     //This will need to be derived experementally, currentlty based on theoretical values
     // Key is distance to target in metres
@@ -50,8 +51,9 @@ public class ShooterAimingCalcs {
     m_distanceToPitchMap.put(4.0, 44.0);
     m_distanceToPitchMap.put(4.5, 45.0);
     m_distanceToPitchMap.put(5.0, 45.0);
-    m_distanceToPitchMap.put(5.5, 47.0);
-    m_distanceToPitchMap.put(16.540988, Constants.Shooter.kPitchMaxAngleDeg);
+    m_distanceToPitchMap.put(5.5, 46.0);
+    m_distanceToPitchMap.put(8.0, 45.0); //45 deg is ideal theoretically, needs to be tested
+    m_distanceToPitchMap.put(Double.MAX_VALUE, 45.0);
 
     m_distanceToTOFMap.put(0.0, 0.0);
     m_distanceToTOFMap.put(1.5, 0.95);
@@ -63,7 +65,8 @@ public class ShooterAimingCalcs {
     m_distanceToTOFMap.put(4.5, 1.20);
     m_distanceToTOFMap.put(5.0, 1.26);
     m_distanceToTOFMap.put(5.5, 1.33);
-    m_distanceToTOFMap.put(16.540988, 3.0);
+    m_distanceToTOFMap.put(8.0, 1.0);
+    m_distanceToTOFMap.put(Double.MAX_VALUE, 1.0);
 
     m_rotationToFlywheel.put(0.0, 0.9);
     m_rotationToFlywheel.put(45.0, 0.9);

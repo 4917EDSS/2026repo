@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.subsystems.HopperSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
@@ -36,11 +37,15 @@ public class ShootCmd extends Command {
   @Override
   public void initialize() {
     m_hopperSub.setEscalatorTargetVelocityRps(Constants.Hopper.kEscalatorFeedSpeedRps);
-    RobotStatus.driveSlow();
-
   }
 
   public void execute() {
+    if(RobotStatus.isShooting()) {
+      RobotStatus.driveSlow();
+    } else {
+      RobotStatus.driveNormal();
+    }
+
     if(m_intakeSub.inDeploySafetyZone()) {
       m_hopperSub.setSingulatorVoltage(0.0);
       return;

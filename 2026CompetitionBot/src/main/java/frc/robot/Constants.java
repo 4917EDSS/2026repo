@@ -147,7 +147,7 @@ public final class Constants {
     public static final double kFlywheelRotsPerSecToMpsConversionFactor = 0.3164 / 2.0; // 4 inches diamater to metters / 2
     public static final double kFlywheelMinVelocityRotsPerSec = Hopper.kEscalatorMaxVelocityRotPerSec
         * (Hopper.kInputEscalatorRpsToMpsConversionFactor / kFlywheelRotsPerSecToMpsConversionFactor);
-    public static final double kFlywheelMaxVelocityRotsPerSec = 140.0;
+    public static final double kFlywheelMaxVelocityRotsPerSec = 155.0;
     public static final double kFlywheelVelocityToleranceRotsPerSec = 1.0;
     public static final double kFlywheelMaxCurrent = 60.0;
     public static final double kFlywheelMaxVoltage = 12.0;
@@ -192,9 +192,9 @@ public final class Constants {
     public static final double piecewiseSwapCalculationDistance = 3.5;
     public static final double shooterToHubHeight = 1.0668; // 42 in, not exactly measured
     public static final double kShooterToFloorHeight = 0.762;
-    public static final double kLeftLobY = 2.0;
-    public static final double kRightLobY = 6.0;
-    public static final double kBlueLobX = 1.5;
-    public static final double kRedLobX = 13.5;
+    public static final double kLeftLobY = 2.5;
+    public static final double kRightLobY = 5.5;
+    public static final double kBlueLobX = 2.5;
+    public static final double kRedLobX = 14.0;
   }
 }
