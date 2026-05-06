@@ -44,15 +44,15 @@ public class ShooterAimingCalcs {
     // Value is pitch angle in degrees
     m_distanceToPitchMap.put(0.0, 29.0);
     m_distanceToPitchMap.put(1.5, 29.0);
-    m_distanceToPitchMap.put(2.0, 33.0);
-    m_distanceToPitchMap.put(2.5, 37.0);
-    m_distanceToPitchMap.put(3.0, 40.0);
-    m_distanceToPitchMap.put(3.5, 42.0);
-    m_distanceToPitchMap.put(4.0, 44.0);
-    m_distanceToPitchMap.put(4.5, 45.0);
-    m_distanceToPitchMap.put(5.0, 45.0);
-    m_distanceToPitchMap.put(5.5, 46.0);
-    m_distanceToPitchMap.put(8.0, 45.0); //45 deg is ideal theoretically, needs to be tested
+    m_distanceToPitchMap.put(2.0, 29.0);
+    m_distanceToPitchMap.put(2.5, 29.0);
+    m_distanceToPitchMap.put(3.0, 29.0);
+    m_distanceToPitchMap.put(3.5, 29.0);
+    m_distanceToPitchMap.put(4.0, 29.0);
+    m_distanceToPitchMap.put(4.5, 29.0);
+    m_distanceToPitchMap.put(5.0, 29.0);
+    m_distanceToPitchMap.put(5.5, 29.0);
+    m_distanceToPitchMap.put(8.0, 29.0); //45 deg is ideal theoretically, needs to be tested
     m_distanceToPitchMap.put(Double.MAX_VALUE, 45.0);
 
     m_distanceToTOFMap.put(0.0, 0.0);
