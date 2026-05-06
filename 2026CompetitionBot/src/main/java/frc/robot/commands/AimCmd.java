@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DrivetrainSub;
 import frc.robot.subsystems.IntakeSub;
 import frc.robot.subsystems.ShooterSub;
+import frc.robot.subsystems.VisionSub;
 import frc.robot.utils.ShooterAimingCalcs;
 
 /*
@@ -18,15 +19,17 @@ public class AimCmd extends Command {
   private DrivetrainSub m_drivetrainSub;
   private ShooterSub m_shooterSub;
   private IntakeSub m_intakeSub;
+  private VisionSub m_visionSub;
   private final ShooterAimingCalcs m_shooterAimingCalcs;
 
   /** Creates a new AimCmd. */
   public AimCmd(ShooterSub shooterSub, ShooterAimingCalcs shooterAimingCalcs, DrivetrainSub drivetrainSub,
-      IntakeSub intakeSub) {
+      IntakeSub intakeSub, VisionSub visionSub) {
     m_drivetrainSub = drivetrainSub;
     m_shooterSub = shooterSub;
     m_intakeSub = intakeSub;
     m_shooterAimingCalcs = shooterAimingCalcs;
+    m_visionSub = visionSub;
     addRequirements(m_shooterSub);
   }
 
@@ -48,7 +51,7 @@ public class AimCmd extends Command {
     } else {
       m_shooterSub.setPitchYawFlywheelTarget(
           m_shooterAimingCalcs.setTargets(m_drivetrainSub.getTurretPose(), m_drivetrainSub.getPose(),
-              m_drivetrainSub.getFieldRelativeSpeeds(), m_shooterSub.getYawAngleDeg()));
+              m_drivetrainSub.getFieldRelativeSpeeds(), m_shooterSub.getYawAngleDeg(), m_visionSub.getApriltagPose()));
     }
   }
 

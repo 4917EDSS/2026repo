@@ -102,7 +102,7 @@ public class RobotContainer {
             .withRotationalRate(-m_driverController.getRightX() * m_maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    m_shooterSub.setDefaultCommand(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub));
+    m_shooterSub.setDefaultCommand(new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub, m_visionSub));
 
     m_intakeSub.setDefaultCommand(new HoldIntakeCmd(m_intakeSub));
   }
@@ -121,7 +121,7 @@ public class RobotContainer {
             new HoldShooterCmd(m_shooterSub)));
 
     NamedCommands.registerCommand("AimCmd",
-        (new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub)));
+        (new AimCmd(m_shooterSub, m_shooterAimingCalcs, m_drivetrainSub, m_intakeSub, m_visionSub)));
 
     NamedCommands.registerCommand("HitLimitSwitchesCmd", new HitLimitSwitchesCmd(m_shooterSub));
 

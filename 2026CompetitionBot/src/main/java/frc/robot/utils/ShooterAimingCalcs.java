@@ -184,8 +184,7 @@ public class ShooterAimingCalcs {
   }
 
   public double[] calculationsInMotion(Pose2d turret, Pose2d centre, Pose2d target, ChassisSpeeds velocity,
-      double turretYaw,
-      boolean isLobbing) {
+      double turretYaw) {
 
     double distance = (target.minus(turret)).getTranslation().getNorm(); //please test this is might break everything because i don't knw if subtracting teh rotations causes issues.
     // double[] pitchAngleDegAndFlywheelVelocity =
@@ -226,70 +225,7 @@ public class ShooterAimingCalcs {
     return trajectoriesArray;
   }
 
-  public double[] setTargets(Pose2d turret, Pose2d centre, ChassisSpeeds velocity, double turretYaw) {
-    Alliance alliance = GameData.getAlliance();
-    Pose2d target;
-    boolean isLobbing = false;
-
-    if(alliance == Alliance.Blue) {
-      if(RobotStatus.isLobbing()) {
-        isLobbing = true;
-        if(RobotStatus.getCurrentFieldPosition().equals("RightLob")) {
-          target = new Pose2d(Constants.TrajectoryCalculations.kBlueLobX, Constants.TrajectoryCalculations.kRightLobY,
-              new Rotation2d(0.0));
-        } else {
-          target = new Pose2d(Constants.TrajectoryCalculations.kBlueLobX, Constants.TrajectoryCalculations.kLeftLobY,
-              new Rotation2d(0.0));
-        }
-      } else if(RobotStatus.isShooting()) {
-        target = new Pose2d(Constants.FieldElements.kBlueHubX, Constants.FieldElements.kBlueHubY, turret.getRotation());
-      } else {
-        if(RobotStatus.wasLobbing()) {
-          isLobbing = true;
-          if(RobotStatus.getPreviousFieldPosition().equals("RightLob")) {
-            target = new Pose2d(Constants.TrajectoryCalculations.kBlueLobX, Constants.TrajectoryCalculations.kRightLobY,
-                new Rotation2d(0.0));
-          } else {
-            target = new Pose2d(Constants.TrajectoryCalculations.kBlueLobX, Constants.TrajectoryCalculations.kLeftLobY,
-                new Rotation2d(0.0));
-          }
-        } else if(RobotStatus.wasShooting()) {
-          target =
-              new Pose2d(Constants.FieldElements.kBlueHubX, Constants.FieldElements.kBlueHubY, new Rotation2d(0.0));
-        } else {
-          target = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
-        }
-      }
-    } else {
-      if(RobotStatus.isLobbing()) {
-        isLobbing = true;
-        if(RobotStatus.getCurrentFieldPosition().equals("RightLob")) {
-          target = new Pose2d(Constants.TrajectoryCalculations.kRedLobX, Constants.TrajectoryCalculations.kRightLobY,
-              new Rotation2d(0.0));
-        } else {
-          target = new Pose2d(Constants.TrajectoryCalculations.kRedLobX, Constants.TrajectoryCalculations.kLeftLobY,
-              new Rotation2d(0.0));
-        }
-      } else if(RobotStatus.isShooting()) {
-        target = new Pose2d(Constants.FieldElements.kRedHubX, Constants.FieldElements.kRedHubY, new Rotation2d(0.0));
-      } else {
-        if(RobotStatus.wasLobbing()) {
-          isLobbing = true;
-          if(RobotStatus.getPreviousFieldPosition().equals("RightLob")) {
-            target = new Pose2d(Constants.TrajectoryCalculations.kRedLobX, Constants.TrajectoryCalculations.kRightLobY,
-                new Rotation2d(0.0));
-          } else {
-            target = new Pose2d(Constants.TrajectoryCalculations.kRedLobX, Constants.TrajectoryCalculations.kLeftLobY,
-                new Rotation2d(0.0));
-          }
-        } else if(RobotStatus.wasShooting()) {
-          target =
-              new Pose2d(Constants.FieldElements.kRedHubX, Constants.FieldElements.kRedHubY, new Rotation2d(0.0));
-        } else {
-          target = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
-        }
-      }
-    }
-    return calculationsInMotion(turret, centre, target, velocity, turretYaw, isLobbing);
+  public double[] setTargets(Pose2d turret, Pose2d centre, ChassisSpeeds velocity, double turretYaw, Pose2d target) {
+    return calculationsInMotion(turret, centre, target, velocity, turretYaw);
   }
 }

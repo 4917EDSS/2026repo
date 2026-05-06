@@ -58,6 +58,7 @@ public class VisionSub extends SubsystemBase {
   NetworkTableEntry m_botposeTargetL;
   NetworkTableEntry m_botposeL;
   NetworkTableEntry m_botposeblueL;
+  NetworkTableEntry m_targetposeL;
 
   NetworkTableEntry m_tidR;
   NetworkTableEntry m_t2dR;
@@ -70,6 +71,7 @@ public class VisionSub extends SubsystemBase {
   NetworkTableEntry m_botposeTargetR;
   NetworkTableEntry m_botposeR;
   NetworkTableEntry m_botposeblueR;
+  NetworkTableEntry m_targetposeR;
 
   long id;
   double[] t2d;
@@ -82,6 +84,7 @@ public class VisionSub extends SubsystemBase {
   double[] botposeTarget;
   double[] botpose;
   double[] botposeblue;
+  double[] targetpose;
 
   int m_printPosCounter = 0;
   int ticksSincePoseUpdate = 0;
@@ -100,6 +103,7 @@ public class VisionSub extends SubsystemBase {
     m_botposeTargetL = m_networkTableL.getEntry("botpose_targetspace");
     m_botposeL = m_networkTableL.getEntry("botpose");
     m_botposeblueL = m_networkTableL.getEntry("botpose_wpiblue");
+    m_targetposeL = m_networkTableL.getEntry("targetpose_robotspace");
 
     m_t2dR = m_networkTableR.getEntry("t2d");
     m_tidR = m_networkTableR.getEntry("tid");
@@ -112,6 +116,7 @@ public class VisionSub extends SubsystemBase {
     m_botposeTargetR = m_networkTableR.getEntry("botpose_targetspace");
     m_botposeR = m_networkTableR.getEntry("botpose");
     m_botposeblueR = m_networkTableR.getEntry("botpose_wpiblue");
+    m_targetposeR = m_networkTableR.getEntry("targetpose_robotspace");
 
     m_drivetrainSub = drivetrainSub;
     init();
@@ -146,6 +151,7 @@ public class VisionSub extends SubsystemBase {
       botposeTarget = m_botposeTargetL.getDoubleArray(new double[8]);
       botpose = m_botposeL.getDoubleArray(new double[8]);
       botposeblue = m_botposeblueL.getDoubleArray(new double[8]);
+      targetpose = m_targetposeL.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", true);
       updateOdometryLeft(m_drivetrainSub.getState());
     } else {
@@ -160,6 +166,7 @@ public class VisionSub extends SubsystemBase {
       botposeTarget = m_botposeTargetR.getDoubleArray(new double[8]);
       botpose = m_botposeR.getDoubleArray(new double[8]);
       botposeblue = m_botposeblueR.getDoubleArray(new double[8]);
+      targetpose = m_targetposeR.getDoubleArray(new double[8]);
       SmartDashboard.putBoolean("Vi Use Left LL", false);
       updateOdometryRight(m_drivetrainSub.getState());
     }
@@ -212,6 +219,10 @@ public class VisionSub extends SubsystemBase {
 
   public Pose2d getEstimatedPose() {
     return new Pose2d(botposeblue[0], botposeblue[1], m_drivetrainSub.getPose().getRotation());
+  }
+
+  public Pose2d getApriltagPose() {
+    return new Pose2d(targetpose[0], targetpose[1], new Rotation2d(Math.toRadians(targetpose[4])));
   }
 
   public double calculateStandardDeviation(PoseEstimate mt2) {
