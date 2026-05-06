@@ -10,6 +10,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -221,10 +222,6 @@ public class VisionSub extends SubsystemBase {
     return new Pose2d(botposeblue[0], botposeblue[1], m_drivetrainSub.getPose().getRotation());
   }
 
-  public Pose2d getApriltagPose() {
-    return new Pose2d(targetpose[0], targetpose[1], new Rotation2d(Math.toRadians(targetpose[4])));
-  }
-
   public double calculateStandardDeviation(PoseEstimate mt2) {
     if(mt2.tagCount <= 0) {
       return 999999.9;
@@ -279,7 +276,7 @@ public class VisionSub extends SubsystemBase {
 
       double posDif = m_drivetrainSub.getPose().minus(mt2.pose).getTranslation().getNorm();
       if(Math.abs(posDif) > 2.0) {
-        m_logger.info("jump distance: " + posDif);
+        //m_logger.info("jump distance: " + posDif);
         //return;
       }
       m_drivetrainSub.addVisionMeasurement(

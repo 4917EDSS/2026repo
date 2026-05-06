@@ -46,13 +46,13 @@ public class RunIntakeAgitation extends InstantCommand {
     }
     if(Math.abs(m_driverController.getLeftX()) < 0.05 && Math.abs(m_driverController.getLeftY()) < 0.05
         && Math.abs(m_driverController.getRightX()) < 0.05) {
-      m_intakeSub.setDeployVoltage(m_direction * 1.5);
+      m_intakeSub.setDeployVoltage(m_direction * 0.0);
       m_intakeSub.setBeltVoltage(Constants.Intake.kBeltAgitationVoltage);
     } else if(m_intakeSub.getDeployAngleDeg() > Constants.Intake.kDeployNearlyMax) {
-      m_intakeSub.setDeployVoltage(0.25);
+      m_intakeSub.setDeployVoltage(0.0);
       m_intakeSub.setBeltVoltage(Constants.Intake.kBeltIntakeVoltage);
     } else {
-      m_intakeSub.setDeployVoltage(2.0);
+      m_intakeSub.setDeployVoltage(0.0);
       m_intakeSub.setBeltVoltage(Constants.Intake.kBeltIntakeVoltage);
     }
 

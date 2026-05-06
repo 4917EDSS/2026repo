@@ -40,7 +40,7 @@ public class IntakeSetPositionCmd extends Command {
     if(m_intakeSub.getDeployAngleDeg() >= m_targetPositionDeg) {
       m_direction = -1.0;
     }
-    m_intakeSub.setDeployVoltage(m_direction * m_voltage);
+    m_intakeSub.setDeployVoltage(m_direction * 0.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
