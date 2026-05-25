@@ -68,15 +68,15 @@ public class ShooterAimingCalcs {
     m_distanceToTOFMap.put(8.0, 1.0);
     m_distanceToTOFMap.put(Double.MAX_VALUE, 1.0);
 
-    m_rotationToFlywheel.put(0.0, 0.9);
-    m_rotationToFlywheel.put(45.0, 0.9);
-    m_rotationToFlywheel.put(90.0, 0.85);
-    m_rotationToFlywheel.put(135.0, 0.9);
-    m_rotationToFlywheel.put(180.0, 0.85);
-    m_rotationToFlywheel.put(225.0, 0.8);
-    m_rotationToFlywheel.put(270.0, 0.8);
-    m_rotationToFlywheel.put(315.0, 0.9);
-    m_rotationToFlywheel.put(360.0, 0.9);
+    m_rotationToFlywheel.put(0.0, 1.0);
+    m_rotationToFlywheel.put(45.0, 1.0);
+    m_rotationToFlywheel.put(90.0, 1.0);
+    m_rotationToFlywheel.put(135.0, 1.0);
+    m_rotationToFlywheel.put(180.0, 1.0);
+    m_rotationToFlywheel.put(225.0, 1.0);
+    m_rotationToFlywheel.put(270.0, 1.0);
+    m_rotationToFlywheel.put(315.0, 1.0);
+    m_rotationToFlywheel.put(360.0, 1.0);
   }
 
   public double getInterpolatedFlywheelVelocity(double distance) {
