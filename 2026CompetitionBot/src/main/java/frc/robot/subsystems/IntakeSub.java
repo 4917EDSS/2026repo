@@ -38,11 +38,11 @@ public class IntakeSub extends SubsystemBase {
   VoltageOut voltageRequest = new VoltageOut(0.0).withEnableFOC(true);
 
   private final PIDController m_deployPidController =
-      new PIDController(Constants.Intake.kDeployKP, Constants.Intake.kDeployKI, Constants.Intake.kDeployKD);
+      new PIDController(0.0, 0.0, 0.0);
 
   private boolean m_deployAutomationEnabled = false;
   private double m_targetDeployAngleDeg = 0.0;
-  private double m_deployKS = 3.0;
+  private double m_deployKS = 0.0;
   private double m_deployKG;
 
   /** Creates a new IntakeSub. */
@@ -124,14 +124,16 @@ public class IntakeSub extends SubsystemBase {
   }
 
   public void setBeltVoltage(double volts) {
-    voltageRequest.Output = volts;
-    m_beltMotor.setControl(voltageRequest);
-    SmartDashboard.putNumber("Int Belt Tar Volts", volts);
+    return;
+    // voltageRequest.Output = volts;
+    // m_beltMotor.setControl(voltageRequest);
+    // SmartDashboard.putNumber("Int Belt Tar Volts", volts);
   }
 
   public void setDeployVoltage(double volts) {
-    SmartDashboard.putNumber("Int Dep Volts", volts);
-    m_deployMotor.setVoltage(volts);
+    return;
+    // SmartDashboard.putNumber("Int Dep Volts", volts);
+    // m_deployMotor.setVoltage(volts);
   }
 
   public double getDeployAngleDeg() {
@@ -159,7 +161,7 @@ public class IntakeSub extends SubsystemBase {
 
   ////////////////////////////// Deploy automation //////////////////////////////
   public void enableDeployAutomation() {
-    m_deployAutomationEnabled = true;
+    m_deployAutomationEnabled = false;
   }
 
   public void disableDeployAutomation() {

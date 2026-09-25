@@ -73,9 +73,9 @@ public class ShooterSub extends SubsystemBase {
   private boolean m_pitchHasBeenReset = false;
   private boolean m_yawHasBeenReset = false;
   private int m_yawSwitchHitCounter = 0;
-  private double m_pitchKS = Constants.Shooter.kPitchKS;
-  private double m_pitchKG = Constants.Shooter.kPitchKG;
-  private double m_yawKS = Constants.Shooter.kYawKS;
+  private double m_pitchKS = 0.0;//Constants.Shooter.kPitchKS;
+  private double m_pitchKG = 0.0;//Constants.Shooter.kPitchKG;
+  private double m_yawKS = 0.0;//Constants.Shooter.kYawKS;
 
   // private double m_lastYawEncoderRots = 0.0;
   // private double m_currentYawEncoderRots = 0.0;
@@ -281,16 +281,19 @@ public class ShooterSub extends SubsystemBase {
 
 
   public void setYawVoltage(double volts) {
-    m_yawMotor.setVoltage(volts);
+    return;
+    //m_yawMotor.setVoltage(volts);
   }
 
   public void setPitchVoltage(double volts) {
-    SmartDashboard.putNumber("Sht Ptc Vlt", volts);
-    m_pitchMotor.setVoltage(volts);
+    return;
+    //SmartDashboard.putNumber("Sht Ptc Vlt", volts);
+    //m_pitchMotor.setVoltage(volts);
   }
 
   public void setFlywheelVoltage(double volts) {
-    m_flywheelMotorL.setVoltage(volts);
+    return;
+    //m_flywheelMotorL.setVoltage(volts);
     // Motor 2 should follow motor 1
   }
 
@@ -370,7 +373,7 @@ public class ShooterSub extends SubsystemBase {
 
   ////////////////////////////// Yaw automation //////////////////////////////
   public void enableYawAutomation() {
-    m_yawAutomationEnabled = true;
+    m_yawAutomationEnabled = false;
   }
 
   public void disableYawAutomation() {

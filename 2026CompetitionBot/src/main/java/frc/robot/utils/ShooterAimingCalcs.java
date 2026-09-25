@@ -290,6 +290,6 @@ public class ShooterAimingCalcs {
         }
       }
     }
-    return calculationsInMotion(turret, centre, target, velocity, turretYaw, isLobbing);
+    return calculationsInMotion(null, null, null, velocity, 0.0, isLobbing);
   }
 }
