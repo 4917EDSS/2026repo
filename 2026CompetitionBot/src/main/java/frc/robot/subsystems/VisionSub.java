@@ -123,6 +123,8 @@ public class VisionSub extends SubsystemBase {
     SmartDashboard.putData("FieldLLRight", m_fieldLLRight);
     SmartDashboard.putData("FieldLLLeft", m_fieldLLLeft);
     SmartDashboard.putNumber("std", 0.0);
+    LimelightHelpers.SetIMUMode(RIGHT, 4);
+    LimelightHelpers.SetIMUMode(LEFT, 4);
   }
 
 
