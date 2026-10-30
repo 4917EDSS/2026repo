@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.function.BooleanSupplier;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -19,8 +20,11 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AimCmd;
@@ -50,6 +54,8 @@ public class RobotContainer {
   // Swerve variables
   private double m_maxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double m_maxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+  private boolean m_aimLocked = false;
+  private BooleanSupplier m_aimLockedSupplier = () -> m_aimLocked;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric m_drive = new SwerveRequest.FieldCentric()
@@ -151,11 +157,16 @@ public class RobotContainer {
     m_driverController.x().onTrue(new HitLimitSwitchesCmd(m_shooterSub));
 
     // Driver Y
-    m_driverController.y().whileTrue(new StartEndCommand(() -> {
-      m_shooterSub.setTargetYawAngle(180.0);
-      m_shooterSub.setTargetPitchAngle(24.0);
-      m_shooterSub.setTargetFlywheelVelocity(66.0);
-    }, () -> m_shooterSub.getYawAngleDeg(), m_shooterSub));
+    m_driverController.y().onTrue(new ConditionalCommand(
+        new InstantCommand(() -> {
+          m_shooterSub.getYawAngleDeg();
+          m_aimLocked = false;
+        }), new RunCommand(() -> {
+          m_shooterSub.setTargetYawAngle(180.0);
+          m_shooterSub.setTargetPitchAngle(24.0);
+          m_shooterSub.setTargetFlywheelVelocity(66.0);
+          m_aimLocked = true;
+        }), m_aimLockedSupplier));
     // m_driverController.y().onTrue(
     //     new InstantCommand(() -> m_shooterSub.setTargetPitchAngle(m_shooterAimingCalcs
     //         .getInterpolatedPitchAngle(m_shooterAimingCalcs.getDistanceToHub(m_drivetrainSub.getPose()))))
